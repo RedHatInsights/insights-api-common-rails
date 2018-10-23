@@ -28,5 +28,14 @@ module OpenApi
     def [](version)
       @cache[version]
     end
+
+    def routes
+      @routes ||= begin
+        @cache.each_with_object([]) do |(version, doc), routes|
+          next unless /\d+\.\d+/ =~ version # Skip unless major.minor
+          routes.concat(doc.routes)
+        end
+      end
+    end
   end
 end
