@@ -1,7 +1,8 @@
 require 'active_record'
+require 'rails'
 require 'acts_as_tenant'
 class Authentication < ActiveRecord::Base
-  #acts_as_tenant(:tenant)
+  acts_as_tenant(:tenant)
 
   belongs_to :resource, :polymorphic => true
   has_one :encryption, :dependent => :destroy

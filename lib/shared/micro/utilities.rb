@@ -1,4 +1,5 @@
 require "shared/micro/utilities/version"
+
 require "models/authentication"
 require "models/concerns/encryption_concern"
 require "models/encryption"
