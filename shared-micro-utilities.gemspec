@@ -1,4 +1,3 @@
-
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "shared/micro/utilities/version"
@@ -37,6 +36,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "activemodel"
   spec.add_runtime_dependency "actionpack"
   spec.add_runtime_dependency "acts_as_tenant"
+  spec.add_runtime_dependency "manageiq-password", ">=0.1.0"
   spec.add_runtime_dependency "pg", "~> 1.0"
   spec.add_runtime_dependency "rest-client", ">= 1.8.0"
 

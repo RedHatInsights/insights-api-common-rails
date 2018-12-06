@@ -1,3 +1,4 @@
+require 'manageiq/password'
 module EncryptionConcern
   extend ActiveSupport::Concern
 
