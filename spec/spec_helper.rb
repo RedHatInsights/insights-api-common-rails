@@ -1,6 +1,6 @@
 require "bundler/setup"
 require "factory_bot"
-require "shared/micro/utilities"
+require "shared_utilities/shared_utilities"
 require "models/authentication"
 require "models/encryption"
 

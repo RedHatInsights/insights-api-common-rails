@@ -1,10 +1,10 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "shared/micro/utilities/version"
+require "shared_utilities/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "shared-micro-utilities"
-  spec.version       = Shared::Micro::Utilities::VERSION
+  spec.name          = "shared_utilities"
+  spec.version       = SharedUtilities::VERSION
   spec.authors       = ["Drew Bomhof"]
   spec.email         = ["dbomhof@redhat.com"]
 
