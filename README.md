@@ -1,4 +1,4 @@
-# Shared::Micro::Utilities
+# SharedUtilities
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/shared/micro/utilities`. To experiment with that code, run `bin/console` for an interactive prompt.
 
@@ -9,7 +9,7 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'shared-micro-utilities'
+gem 'shared_utilities'
 ```
 
 And then execute:
@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install shared-micro-utilities
+    $ gem install shared_utilities
 
 ## Usage
 
@@ -34,6 +34,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/shared-micro-utilities. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-## Code of Conduct
-
-Everyone interacting in the Shared::Micro::Utilities project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/shared-micro-utilities/blob/master/CODE_OF_CONDUCT.md).
