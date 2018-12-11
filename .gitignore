@@ -1,3 +1,5 @@
 /Gemfile.lock
 /config/database.yml
 /v2_key
+/.ruby-version
+/.ruby-gemset
