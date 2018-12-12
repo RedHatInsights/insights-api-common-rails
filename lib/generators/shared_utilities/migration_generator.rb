@@ -7,7 +7,16 @@ module SharedUtilities
     include Rails::Generators::Migration
     include SharedUtilities::OrmHelper
 
+    argument :attributes, type: :array, default: [], banner: "field:type field:type"
+
+    class_option :primary_key_type, type: :string, desc: "The type for primary key"
+
     source_root File.expand_path("../templates", __FILE__)
+
+    def initialize(args, *options)
+      raise StandardError, "Only 'authentication' model is currently implemented" if args.first != "authentication"
+      super
+    end
 
     def manifest
       copy_migration
@@ -19,6 +28,19 @@ module SharedUtilities
       else
         migration_template "migration.rb", "#{migration_path}/create_#{table_name}.rb", migration_version: migration_version
       end
+    end
+
+    def migration_data
+<<RUBY
+   ## Required
+      #  t.references "resource", :polymorphic => true, :index => true
+      #  t.string       :name
+      #  t.string       :authtype
+      #  t.string       :status
+      #  t.string       :status_details
+      #  t.#{ip_column}     :tenant_id
+      #  t.timestamps
+RUBY
     end
 
     def ip_column

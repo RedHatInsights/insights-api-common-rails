@@ -1,8 +1,9 @@
 require "shared_utilities/version"
+require "shared_utilities/engine"
 
-require "models/authentication"
-require "models/concerns/encryption_concern"
-require "models/encryption"
+require "models/shared_utilities/authentication"
+require "models/shared_utilities/concerns/encryption_concern"
+require "models/shared_utilities/encryption"
 require "environment"
 
 
