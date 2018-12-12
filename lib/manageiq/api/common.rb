@@ -1,5 +1,5 @@
-require "shared_utilities/engine"
-require "shared_utilities/version"
+require "manageiq/api/engine"
+require "manageiq/api/version"
 
 require "models/authentication"
 require "models/concerns/encryption_concern"
@@ -7,5 +7,7 @@ require "models/encryption"
 require "environment"
 
 
-module SharedUtilities
+module ManageIQ
+  module API
+  end
 end

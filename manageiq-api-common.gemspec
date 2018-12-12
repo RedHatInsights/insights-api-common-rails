@@ -1,17 +1,15 @@
 $:.push File.expand_path("../lib", __FILE__)
-#lib = File.expand_path("../lib", __FILE__)
-#$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "shared_utilities/version"
+require "manageiq/api/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "shared_utilities"
-  spec.version       = SharedUtilities::VERSION
+  spec.name          = "manageiq-api-common"
+  spec.version       = ManageIQ::API::VERSION
   spec.authors       = ["Drew Bomhof"]
   spec.email         = ["dbomhof@redhat.com"]
 
-  spec.summary       = %q{Shared Utilites for Microservices}
-  spec.description   = %q{Header, Encryption, RBAC, Serialization General Utilities for shared microservices}
-  spec.homepage      = "https://github.com/syncrou/shared-micro-utilities.git"
+  spec.summary       = %q{Common Utilites for Microservices}
+  spec.description   = %q{Header, Encryption, RBAC, Serialization Common Behavior for microservices}
+  spec.homepage      = "https://github.com/ManageIQ/manageiq-api-common.git"
   spec.licenses      = ["Apache-2.0"]
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
