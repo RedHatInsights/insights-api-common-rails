@@ -1,8 +1,16 @@
-require "bundler/setup"
+if ENV['CI']
+  require 'simplecov'
+  SimpleCov.start
+end
+
+ENV["RAILS_ENV"] ||= 'test'
+require File.expand_path("../dummy/config/environment", __FILE__)
+
+require 'rspec/rails'
+
+Dir[File.expand_path("support/**/*.rb", __dir__)].each { |f| require f }
+
 require "factory_bot"
-require "shared_utilities/shared_utilities"
-require "models/authentication"
-require "models/encryption"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -14,7 +22,7 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
-
+  config.use_transactional_fixtures = true
   config.include FactoryBot::Syntax::Methods
   config.before(:suite) do
     FactoryBot.find_definitions

@@ -5,14 +5,15 @@
 /.ruby-gemset
 /.ruby-version
 /.yardoc
-/Gemfile.lock
 /_yardoc/
 /bundler.d/
 /config/database.yml
 /coverage/
 /doc/
+/Gemfile.lock
 /log/
 /pkg/
+/spec/dummy/
 /spec/reports/
 /tmp/
 /v2_key
