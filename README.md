@@ -1,5 +1,10 @@
 # SharedUtilities
 
+[![Build Status](https://travis-ci.org/ManageIQ/manageiq-api-common.svg)](https://travis-ci.org/ManageIQ/manageiq-api-common)
+[![Maintainability](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-api-common/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-api-common/test_coverage)
+[![Security](https://hakiri.io/github/ManageIQ/manageiq-api-common/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-api-common/master)
+
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/shared/micro/utilities`. To experiment with that code, run `bin/console` for an interactive prompt.
 
 TODO: Delete this and the text above, and describe your gem
@@ -34,3 +39,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/shared-micro-utilities. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
+## License
+
+This project is available as open source under the terms of the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).

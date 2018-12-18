@@ -10,13 +10,13 @@ default: &default
 
 development:
   <<: *default
-  database: service_portal_development
+  database: manageiq_api_common_development
   min_messages: notice
 
 test:
   <<: *default
-  database: service_portal_test
+  database: manageiq_api_common_test
 
 production:
   <<: *default
-  database: service_portal_production
+  database: manageiq_api_common_production
