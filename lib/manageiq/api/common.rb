@@ -1,4 +1,5 @@
 require "manageiq/api/common/engine"
+require "manageiq/api/common/inflections"
 
 module ManageIQ
   module API
