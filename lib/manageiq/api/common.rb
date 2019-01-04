@@ -1,13 +1,9 @@
-require "manageiq/api/engine"
-require "manageiq/api/version"
-
-require "models/authentication"
-require "models/concerns/encryption_concern"
-require "models/encryption"
-require "environment"
-
+require "manageiq/api/common/engine"
+require "manageiq/api/common/inflections"
 
 module ManageIQ
   module API
+    module Common
+    end
   end
 end
