@@ -8,10 +8,12 @@ module OpenApi
       version = [major, minor].compact.join(".")
       schema  = Api::Docs[version].definitions[self.class.name]
       attrs   = encryption_filtered.slice(*schema["properties"].keys)
+      encrypted_columns_set = (self.class.try(:encrypted_columns) || []).to_set
+
       schema["properties"].keys.each do |name|
         attrs[name] = attrs[name].iso8601 if attrs[name].kind_of?(Time)
         attrs[name] = attrs[name].to_s if name.ends_with?("_id") || name == "id"
-        attrs[name] = self.public_send(name) unless attrs.key?(name)
+        attrs[name] = self.public_send(name) if !attrs.key?(name) && !encrypted_columns_set.include?(name)
       end
       attrs.compact
     end
