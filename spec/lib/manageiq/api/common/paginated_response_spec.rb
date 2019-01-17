@@ -13,6 +13,16 @@ describe ManageIQ::API::Common::PaginatedResponse do
     end
   end
 
+  context "values of offset" do
+    it "unspecified defaults to 0" do
+      expect(described_class.new(base_query: nil, request: nil).offset).to eq(0)
+    end
+
+    it "minimum is 0" do
+      expect(described_class.new(base_query: nil, request: nil, offset: -100).offset).to eq(0)
+    end
+  end
+
   context "private links methods" do
     let(:base_query) { double("AR:Clause", :count => count) }
     let(:request) { double("Request", :original_url => "http://example.com/resource?param1=true&limit=#{limit}") }

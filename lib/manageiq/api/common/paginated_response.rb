@@ -8,7 +8,7 @@ module ManageIQ
           @base_query = base_query
           @request    = request
           @limit      = (limit || 100).to_i.clamp(1, 1000)
-          @offset     = (offset || 0).to_i
+          @offset     = (offset || 0).to_i.clamp(0, Float::INFINITY)
         end
 
         def response
