@@ -18,6 +18,9 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "pg", "> 0"
   spec.add_runtime_dependency "rails", ">= 5.2.1.1", "~> 5.2"
 
+  # For ManageIQ::API::Common::Logging
+  spec.add_runtime_dependency "manageiq-loggers", "~> 0.1"
+
   spec.add_development_dependency "factory_bot"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
