@@ -7,7 +7,7 @@ module ManageIQ
         def initialize(base_query:, request:, limit: nil, offset: nil)
           @base_query = base_query
           @request    = request
-          @limit      = (limit || 100).to_i
+          @limit      = (limit || 100).to_i.clamp(1, 1000)
           @offset     = (offset || 0).to_i
         end
 
