@@ -21,6 +21,9 @@ Gem::Specification.new do |spec|
   # For ManageIQ::API::Common::Logging
   spec.add_runtime_dependency "manageiq-loggers", "~> 0.1"
 
+  # For ManageIQ::API::Common::Metrics
+  spec.add_runtime_dependency "prometheus-client", "~> 0.8.0"
+
   spec.add_development_dependency "factory_bot"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
