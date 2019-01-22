@@ -1,4 +1,28 @@
 describe ManageIQ::API::Common::PaginatedResponse do
+  context "values of limit" do
+    it "unspecified defaults to 100" do
+      expect(described_class.new(base_query: nil, request: nil).limit).to eq(100)
+    end
+
+    it "minimum is 1" do
+      expect(described_class.new(base_query: nil, request: nil, limit: 0).limit).to eq(1)
+    end
+
+    it "maximum is 1000" do
+      expect(described_class.new(base_query: nil, request: nil, limit: 1_000_000).limit).to eq(1_000)
+    end
+  end
+
+  context "values of offset" do
+    it "unspecified defaults to 0" do
+      expect(described_class.new(base_query: nil, request: nil).offset).to eq(0)
+    end
+
+    it "minimum is 0" do
+      expect(described_class.new(base_query: nil, request: nil, offset: -100).offset).to eq(0)
+    end
+  end
+
   context "private links methods" do
     let(:base_query) { double("AR:Clause", :count => count) }
     let(:request) { double("Request", :original_url => "http://example.com/resource?param1=true&limit=#{limit}") }
