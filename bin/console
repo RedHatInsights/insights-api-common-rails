@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'rails/all'
 require "bundler/setup"
 require "manageiq/api/common"
 
