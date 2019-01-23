@@ -16,23 +16,26 @@ module ManageIQ
           HeaderScope.current
         end
 
-        def self.decode(key)
-          header = HeaderScope.current || nil
-          if header
-            val = header.instance_variable_get(:@req)
-            JSON.parse(Base64.decode64(val[key]))
-          end
+        def self.decode(headers, key)
+          validate_headers(headers)
+          val = headers.instance_variable_get(:@req).stringify_keys
+          JSON.parse(Base64.decode64(val[key]))
         end
 
         def self.encode(val, key)
-          Base64.strict_encode64(val[key].to_json)
+          if val.is_a?(Hash)
+            hashed = val.stringify_keys
+            Base64.strict_encode64(hashed[key].to_json)
+          else
+            raise StandardError, "Must be a Hash"
+          end
         end
 
         def self.validate_headers(val)
           if val.is_a?(ActionDispatch::Http::Headers)
-            return
+            true
           else
-            raise StandardError, 'Not a Header Class'
+            raise StandardError, 'Not an ActionDispatch::Http::Headers Class'
           end
         end
       end
