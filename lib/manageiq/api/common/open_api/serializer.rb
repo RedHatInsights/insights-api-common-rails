@@ -5,7 +5,7 @@ module OpenApi
       encrypted_columns_set = (self.class.try(:encrypted_columns) || []).to_set
       encryption_filtered = previous.except(*encrypted_columns_set)
       return encryption_filtered unless arg.key?(:prefixes)
-      /\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ arg[:prefixes].first
+      /\A\/?(?<api>\w+)\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ arg[:prefixes].first
       version = [major, minor].compact.join(".")
       schema  = Api::Docs[version].definitions[self.class.name]
       attrs   = encryption_filtered.slice(*schema["properties"].keys)
