@@ -4,7 +4,7 @@ require "manageiq/api/common/headers"
 require "manageiq/api/common/inflections"
 require "manageiq/api/common/logging"
 require "manageiq/api/common/metrics"
-require "manageiq/api/common/users"
+require "manageiq/api/common/user"
 
 module ManageIQ
   module API

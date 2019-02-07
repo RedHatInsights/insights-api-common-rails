@@ -33,4 +33,14 @@ describe ManageIQ::API::Common::Headers do
       end.to raise_exception(ManageIQ::API::Common::HeadersNotSet)
     end
   end
+
+  context "Base64 encoding" do
+    it 'returns a Base64 representation of a hash' do
+      headers = { 'x-rh-auth-identity' => { 'identity' => { 'is_org_admin' => false } } }
+
+      encoded = described_class.encode(headers['x-rh-auth-identity'])
+      expect(encoded).to be_a String
+      expect(encoded).to eq "eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOmZhbHNlfX0="
+    end
+  end
 end
