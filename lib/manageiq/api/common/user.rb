@@ -7,12 +7,14 @@ module ManageIQ
         IDENTITY_KEY = 'x-rh-identity'.freeze
         VALID_USER_HEADER_KEYS = %w(account_number user username email is_org_admin)
 
-        def self.current
-          Thread.current[:attr_current_user] = new
+        def self.with_logged_in_user(user = nil)
+          yield Thread.current[:attr_current_user] = new(user)
+        ensure
+          Thread.current[:attr_current_user] = nil
         end
 
-        def initialize(headers = ManageIQ::API::Common::Headers.current)
-          @headers = headers
+        def initialize(user = nil)
+          @current = user || ManageIQ::API::Common::Headers.current
           user_hash = validate
           @identity = user_hash['identity']
           build_methods
@@ -22,9 +24,12 @@ module ManageIQ
         private
 
         def decode(key = IDENTITY_KEY)
-          raise StandardError, "Requires a valid header object" unless @headers
-
-          val = @headers.instance_variable_get(:@req).stringify_keys
+          raise StandardError, "Requires a valid header or user hash" unless @current
+          if @current.is_a?(ActionDispatch::Http::Headers)
+            val = @current.instance_variable_get(:@req).stringify_keys
+          else
+            val = @current.stringify_keys
+          end
           JSON.parse(Base64.decode64(val[key]))
         end
 
