@@ -31,7 +31,7 @@ module ManageIQ
             "last"  => link_to_last,
             "prev"  => link_to_prev,
             "next"  => link_to_next,
-          }
+          }.compact
         end
 
         def link_to_first
