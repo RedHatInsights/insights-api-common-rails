@@ -28,7 +28,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
     let(:request) { double("Request", :original_url => "http://example.com/resource?param1=true&limit=#{limit}") }
 
     def url_with_offset(offset)
-      "http://example.com/resource?limit=#{limit}&offset=#{offset}&param1=true"
+      "/resource?limit=#{limit}&offset=#{offset}&param1=true"
     end
 
     context "number of records evenly divisible by limit" do
@@ -39,7 +39,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "first page" do
         expect(described_class.new(base_query: base_query, request: request, limit: 2).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => url_with_offset(2), "prev" => nil
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(2)
         )
       end
 
@@ -51,7 +51,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "third page" do
         expect(described_class.new(base_query: base_query, request: request, limit: 2, offset: 4).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => nil, "prev" => url_with_offset(2)
+          "first" => first_url, "last" => last_url, "prev" => url_with_offset(2)
         )
       end
     end
@@ -64,7 +64,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "first page" do
         expect(described_class.new(base_query: base_query, request: request, limit: 10).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => url_with_offset(10), "prev" => nil
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(10)
         )
       end
 
@@ -82,7 +82,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "fourth page" do
         expect(described_class.new(base_query: base_query, request: request, limit: 10, offset: 30).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => nil, "prev" => url_with_offset(20)
+          "first" => first_url, "last" => last_url, "prev" => url_with_offset(20)
         )
       end
     end
