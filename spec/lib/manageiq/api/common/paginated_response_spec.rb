@@ -28,7 +28,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
     let(:request) { double("Request", :original_url => "http://example.com/resource?param1=true&limit=#{limit}") }
 
     def url_with_offset(offset)
-      "http://example.com/resource?limit=#{limit}&offset=#{offset}&param1=true"
+      "/resource?limit=#{limit}&offset=#{offset}&param1=true"
     end
 
     context "number of records evenly divisible by limit" do

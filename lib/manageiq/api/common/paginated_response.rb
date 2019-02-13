@@ -56,9 +56,7 @@ module ManageIQ
         end
 
         def link_with_new_offset(offset)
-          request_uri.dup.tap do |u|
-            u.query = query_hash_merge("offset" => offset.to_s)
-          end.to_s
+          URI::Generic.build(:path => request_uri.path, :query => query_hash_merge("offset" => offset.to_s)).to_s
         end
 
         def query_hash_merge(new_hash)
