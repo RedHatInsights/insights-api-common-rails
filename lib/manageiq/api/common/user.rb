@@ -4,22 +4,38 @@ module ManageIQ
       class User
         IDENTITY_KEY = 'x-rh-identity'.freeze
 
+        def self.raw_current=(raw_current)
+          Thread.current[:attr_raw_current] = raw_current
+        end
+
+        def self.raw_current
+          Thread.current[:attr_raw_current]
+        end
+
         def self.current
+          raise "Current User has not been set" unless Thread.current[:attr_current_user]
           Thread.current[:attr_current_user]
         end
 
-        def self.current=(user_header)
-          Thread.current[:attr_current_user] = new(user_header)
+        def self.current=(user)
+          raise StandardError, "Must be a ManageIQ::API::Common::User" unless user.is_a?(ManageIQ::API::Common::User)
+          Thread.current[:attr_current_user] = user
+        end
+
+        def self.from_header(raw_header)
+          self.raw_current = raw_header
+          raw_header.nil? ? Thread.current[:attr_current_user] = nil : self.current = new(raw_current)
         end
 
         def self.with_logged_in_user(user_header)
-          alternate_user = new(user_header)
-          yield alternate_user
+          self.from_header(user_header)
+          yield self.current
         ensure
-          alternate_user = nil
+          Thread.current[:attr_current_user] = nil
         end
 
         def initialize(user_header)
+          raise StandardError, "Must pass in a valid Header or User Hash"  unless user_header.present?
           @user = user_header
         end
 
@@ -55,6 +71,12 @@ module ManageIQ
           validate_and_return(__method__)
         end
 
+        def tenant
+          result = decode.dig('identity','account_number')
+          raise StandardError "Tenant key doesn't exist" if result.nil?
+          result
+        end
+
         private
 
         def decode
@@ -69,9 +91,13 @@ module ManageIQ
         end
 
         def validate_and_return(key)
-          decoded_hash = decode
-          raise StandardError "#{key} doesn't exist" unless decoded_hash['identity']['user'].has_key?(key.to_s)
-          decoded_hash['identity']['user'][key.to_s]
+          find_user_key(decode, key)
+        end
+
+        def find_user_key(hash, key)
+          result = hash.dig('identity', 'user', key.to_s)
+          raise StandardError "#{key} doesn't exist" if result.nil?
+          result
         end
       end
     end
