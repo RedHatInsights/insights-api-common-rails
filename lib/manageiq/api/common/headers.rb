@@ -2,9 +2,9 @@ module ManageIQ
   module API
     module Common
       module Headers
-        FORWARDABLE_HEADER_KEYS = %w(X-Request-ID x-rh-identity)
+        FORWARDABLE_HEADER_KEYS = %w(X-Request-ID x-rh-identity).freeze
         def self.current=(val)
-          validate_headers(val)
+          validate_headers(val) if val
           Thread.current[:attr_current_headers] = val
         end
 
@@ -12,13 +12,20 @@ module ManageIQ
           Thread.current[:attr_current_headers]
         end
 
-        def self.forwardable_headers
-          raise "Current Headers has not been set" unless Thread.current[:attr_current_headers]
-          Thread.current[:attr_current_headers].to_h.slice(*FORWARDABLE_HEADER_KEYS)
+        def self.with_headers(headers)
+          self.current = headers
+          yield current
+        ensure
+          self.current = nil
+        end
+
+        def self.current_forwardable
+          raise ManageIQ::API::Common::HeadersNotSet, "Current Headers has not been set" unless Thread.current[:attr_current_headers]
+          current.to_h.slice(*FORWARDABLE_HEADER_KEYS)
         end
 
         private_class_method def self.validate_headers(val)
-          raise ArgumentError, 'Not an ActionDispatch::Http::Headers Class' unless val.is_a?(ActionDispatch::Http::Headers)
+          raise ArgumentError, 'Not an ActionDispatch::Http::Headers Class' unless val.kind_of?(ActionDispatch::Http::Headers)
           true
         end
       end
