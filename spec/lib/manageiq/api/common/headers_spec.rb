@@ -21,7 +21,7 @@ describe ManageIQ::API::Common::Headers do
 
   context "get forwardable headers" do
     it "x-rh-identity" do
-      described_class.with_headers(header_good) do |_x|
+      described_class.with_headers(header_good) do
         hash = described_class.current_forwardable
         expect(hash).to eq('x-rh-identity' => 'abc')
       end

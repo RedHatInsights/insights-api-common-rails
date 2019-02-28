@@ -21,7 +21,7 @@ module ManageIQ
         end
 
         def self.current_forwardable
-          raise ManageIQ::API::Common::HeadersNotSet, "Current header have not been set" unless Thread.current[:attr_current_headers]
+          raise ManageIQ::API::Common::HeadersNotSet, "Current header have not been set" unless current
           current.to_h.slice(*FORWARDABLE_HEADER_KEYS)
         end
 
