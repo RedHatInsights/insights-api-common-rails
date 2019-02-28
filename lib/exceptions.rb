@@ -1,7 +1,7 @@
 module ManageIQ
   module API
     module Common
-      class HeadersNotSet < StandardError; end
+      class HeadersNotSet < ArgumentError; end
     end
   end
 end

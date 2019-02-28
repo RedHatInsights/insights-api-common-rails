@@ -13,10 +13,11 @@ module ManageIQ
         end
 
         def self.with_headers(headers)
+          saved_headers = current
           self.current = headers
           yield current
         ensure
-          self.current = nil
+          self.current = saved_headers
         end
 
         def self.current_forwardable
