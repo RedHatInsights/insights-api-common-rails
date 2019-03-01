@@ -22,7 +22,7 @@ module ManageIQ
         private
 
         def metadata_hash
-          @metadata_hash ||= {"count" => count}
+          @metadata_hash ||= {"count" => count, "limit" => limit, "offset" => offset}
         end
 
         def links_hash
