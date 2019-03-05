@@ -1,7 +1,6 @@
 describe ManageIQ::API::Common::Request do
   let(:request_good) do
-    headers = ActionDispatch::Http::Headers.from_hash('HTTP_blah'          => 'blah',
-                                                      'HTTP_X_RH_IDENTITY' => 'abc')
+    headers = ActionDispatch::Http::Headers.from_hash({})
     ActionDispatch::Request.new(headers)
   end
 
@@ -51,9 +50,9 @@ describe ManageIQ::API::Common::Request do
 
   describe ".current_forwardable" do
     it "x-rh-identity" do
-      described_class.with_request(request_good) do
+      described_class.with_request(request_hash) do
         hash = described_class.current_forwardable
-        expect(hash).to eq('x-rh-identity' => 'abc')
+        expect(hash).to eq('x-rh-identity' => encoded_user_hash)
       end
     end
 
@@ -62,6 +61,15 @@ describe ManageIQ::API::Common::Request do
       expect do
         described_class.current_forwardable
       end.to raise_exception(ManageIQ::API::Common::HeadersNotSet)
+    end
+  end
+
+  describe ".to_h" do
+    it "contains header and original_url" do
+      described_class.with_request(request_hash) do
+        hash = described_class.current.to_h
+        expect(hash).to eq(:headers => {'x-rh-identity' => encoded_user_hash}, :original_url => "")
+      end
     end
   end
 end
