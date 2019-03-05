@@ -32,7 +32,9 @@ module ManageIQ
 
         def self.current_forwardable
           raise ManageIQ::API::Common::HeadersNotSet, "Current headers have not been set" unless current
-          current.headers.to_h.slice(*FORWARDABLE_HEADER_KEYS)
+          FORWARDABLE_HEADER_KEYS.each_with_object({}) do |key, hash|
+            hash[key] = current.headers[key] if current.headers.key?(key)
+          end
         end
 
         attr_reader :headers, :original_url

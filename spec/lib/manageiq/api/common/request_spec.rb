@@ -1,7 +1,7 @@
 describe ManageIQ::API::Common::Request do
   let(:request_good) do
-    headers = ActionDispatch::Http::Headers.from_hash(:blah           => 'blah',
-                                                      'x-rh-identity' => 'abc')
+    headers = ActionDispatch::Http::Headers.from_hash('HTTP_blah'          => 'blah',
+                                                      'HTTP_X_RH_IDENTITY' => 'abc')
     ActionDispatch::Request.new(headers)
   end
 
