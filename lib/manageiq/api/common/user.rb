@@ -4,36 +4,19 @@ module ManageIQ
       class User
         IDENTITY_KEY = 'x-rh-identity'.freeze
 
-        def username
-          validate_and_return(__method__)
-        end
-
-        def email
-          validate_and_return(__method__)
-        end
-
-        def first_name
-          validate_and_return(__method__)
-        end
-
-        def last_name
-          validate_and_return(__method__)
-        end
-
-        def is_active?
-          validate_and_return(:is_active)
-        end
-
-        def is_org_admin?
-          validate_and_return(:is_org_admin)
-        end
-
-        def is_internal?
-          validate_and_return(:is_internal)
-        end
-
-        def locale
-          validate_and_return(__method__)
+        %w[
+          username
+          email
+          first_name
+          is_active
+          is_org_admin
+          is_internal
+          last_name
+          locale
+        ].each do |m|
+          define_method(m.start_with?("is_") ? "#{m[3..-1]}?" : m) do
+            find_user_key(m)
+          end
         end
 
         def tenant
@@ -48,12 +31,8 @@ module ManageIQ
           JSON.parse(Base64.decode64(user_hash))
         end
 
-        def validate_and_return(key)
-          find_user_key(decode, key)
-        end
-
-        def find_user_key(hash, key)
-          result = hash.dig('identity', 'user', key.to_s)
+        def find_user_key(key)
+          result = decode.dig('identity', 'user', key.to_s)
           raise ManageIQ::API::Common::HeaderIdentityError, "#{key} doesn't exist" if result.nil?
           result
         end

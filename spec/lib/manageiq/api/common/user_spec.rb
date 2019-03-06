@@ -17,7 +17,7 @@ describe ManageIQ::API::Common::User do
   end
 
   context "user getter methods" do
-    let(:user_keys)   { %w(username email first_name last_name is_active? is_org_admin? is_internal? locale tenant) }
+    let(:user_keys)   { %w(username email first_name last_name active? org_admin? internal? locale tenant) }
     let(:user_values) { ['jdoe', 'jdoe@acme.com', 'John', 'Doe', true, false, false, 'en_US', '0369233'] }
     let(:bad_user)    { %w(fred barney type) }
     let(:user)        { ManageIQ::API::Common::Request.current.user }
