@@ -10,14 +10,14 @@ base: &base
 
 development:
   <<: *base
-  database: dummy_development
+  database: manageiq_api_common_development
   min_messages: notice
 
 production:
   <<: *base
-  database: dummy_production
+  database: manageiq_api_common_production
 
 test: &test
   <<: *base
   pool: 3
-  database: dummy_test
+  database: manageiq_api_common_test
