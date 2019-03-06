@@ -23,6 +23,28 @@ describe ManageIQ::API::Common::PaginatedResponse do
     end
   end
 
+  context "metainformation" do
+    let(:base_query) { double("AR:Clause", :count => count) }
+    let(:request) { double("Request", :original_url => "http://example.com/resource?param1=true&limit=#{limit}") }
+    let(:count) { 6 }
+    let(:limit) { 2 }
+    let(:offset) { 2 }
+
+    context "contains correct count, limit and offset" do
+      it "first page" do
+        expect(described_class.new(base_query: base_query, request: request, limit: limit).send(:metadata_hash)).to eq(
+          "count" => count, "limit" => limit, "offset" => 0
+        )
+      end
+
+      it "second page" do
+        expect(described_class.new(base_query: base_query, request: request, limit: limit, offset: offset).send(:metadata_hash)).to eq(
+          "count" => count, "limit" => limit, "offset" => offset
+        )
+      end
+    end
+  end
+
   context "private links methods" do
     let(:base_query) { double("AR:Clause", :count => count) }
     let(:request) { double("Request", :original_url => "http://example.com/resource?param1=true&limit=#{limit}") }
