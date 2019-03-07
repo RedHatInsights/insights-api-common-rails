@@ -56,7 +56,7 @@ describe ManageIQ::API::Common::User do
 
   context "user bad hash" do
     it "raises an exception when a user method does not respond" do
-      expect { ManageIQ::API::Common::Request.current.user.last_name }.to raise_exception(ManageIQ::API::Common::HeaderIdentityError)
+      expect { ManageIQ::API::Common::Request.current.user.last_name }.to raise_exception(ManageIQ::API::Common::IdentityError)
     end
   end
 end

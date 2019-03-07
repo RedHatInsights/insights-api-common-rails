@@ -21,7 +21,7 @@ describe ManageIQ::API::Common::Request do
   let(:forwardable_good) do
     {
       'x-rh-identity' => encoded_user_hash,
-      'X-Request-ID'  => "01234567-89ab-cdef-0123-456789abcde",
+      'x-request-id'  => "01234567-89ab-cdef-0123-456789abcde",
     }
   end
 
@@ -53,6 +53,43 @@ describe ManageIQ::API::Common::Request do
 
     it "#to_h" do
       expect(@instance.to_h).to eq(:headers => forwardable_good, :original_url => "https://example.com")
+    end
+
+    it "#user" do
+      expect(@instance.user).to be_a(ManageIQ::API::Common::User)
+    end
+
+    it "#request_id" do
+      expect(@instance.request_id).to eq "01234567-89ab-cdef-0123-456789abcde"
+    end
+
+    it "#identity" do
+      expect(@instance.identity).to eq default_user_hash
+    end
+
+    it "#to_h" do
+      expect(@instance.to_h).to eq(:headers => forwardable_good, :original_url => "https://example.com")
+    end
+  end
+
+  context "with a bad request" do
+    around do |example|
+      described_class.with_request(request_bad) do |instance|
+        @instance = instance
+        example.call
+      end
+    end
+
+    it "#user" do
+      expect { @instance.user }.to raise_exception(KeyError, 'x-rh-identity')
+    end
+
+    it "#identity" do
+      expect { @instance.identity }.to raise_exception(KeyError, 'x-rh-identity')
+    end
+
+    it "#request_id" do
+      expect { @instance.request_id }.to raise_exception(KeyError, 'x-request-id')
     end
   end
 
