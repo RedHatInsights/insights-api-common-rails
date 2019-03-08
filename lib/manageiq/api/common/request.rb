@@ -1,11 +1,21 @@
 module ManageIQ
   module API
     module Common
+      class RequestNotSet < ArgumentError
+        def initialize
+          super("Current request has not been set")
+        end
+      end
+
       class Request
         FORWARDABLE_HEADER_KEYS = %w(X-Request-ID x-rh-identity).freeze
 
         def self.current
           Thread.current[:current_request]
+        end
+
+        def self.current!
+          current || raise(RequestNotSet)
         end
 
         def self.current=(request)
@@ -31,8 +41,7 @@ module ManageIQ
         end
 
         def self.current_forwardable
-          raise ManageIQ::API::Common::HeadersNotSet, "Current headers have not been set" unless current
-          current.forwardable
+          current!.forwardable
         end
 
         attr_reader :headers, :original_url

@@ -113,6 +113,20 @@ describe ManageIQ::API::Common::Request do
     end
   end
 
+  describe ".current!" do
+    it "when the request is set" do
+      described_class.with_request(request_good) do |instance|
+        expect(described_class.current!).to eq instance
+      end
+    end
+
+    it "when the request is not set" do
+      expect do
+        described_class.current!
+      end.to raise_exception(ManageIQ::API::Common::RequestNotSet)
+    end
+  end
+
   describe ".current_forwardable" do
     it "only includes expected headers" do
       described_class.with_request(request_good) do
@@ -125,7 +139,7 @@ describe ManageIQ::API::Common::Request do
     it "raises exception when headers not set" do
       expect do
         described_class.current_forwardable
-      end.to raise_exception(ManageIQ::API::Common::HeadersNotSet)
+      end.to raise_exception(ManageIQ::API::Common::RequestNotSet)
     end
   end
 end

@@ -26,7 +26,7 @@ module ManageIQ
         private
 
         def decode
-          hashed = ManageIQ::API::Common::Request.current.to_h
+          hashed = Request.current!.to_h
           user_hash = hashed[:headers][IDENTITY_KEY]
           JSON.parse(Base64.decode64(user_hash))
         end
