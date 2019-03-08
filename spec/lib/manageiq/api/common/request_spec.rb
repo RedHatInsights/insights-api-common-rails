@@ -1,75 +1,131 @@
 describe ManageIQ::API::Common::Request do
-  let(:request_good) do
+  let(:request_object) do
     headers = ActionDispatch::Http::Headers.from_hash({})
     ActionDispatch::Request.new(headers)
   end
 
-  let(:request_hash) do
-    { :headers => {'x-rh-identity' => encoded_user_hash}, :original_url => '' }
+  let(:request_bad) do
+    {
+      :headers      => { 'blah' => 'blah' },
+      :original_url => 'bad_url'
+    }
   end
 
-  let(:request_bad) { { :headers => {:blah => 'blah' }, :original_url => 'whatever' } }
-  let(:random_str)  { rand(10.000).to_s }
+  let(:request_good) do
+    {
+      :headers      => forwardable_good.merge('x-some-header' => "some_value"),
+      :original_url => 'https://example.com'
+    }
+  end
 
-  context "user" do
-    it "returns a lazy loaded user instance" do
+  let(:forwardable_good) do
+    {
+      'x-rh-identity' => encoded_user_hash,
+      'X-Request-ID'  => "01234567-89ab-cdef-0123-456789abcde",
+    }
+  end
+
+  context "with a good request" do
+    around do |example|
       described_class.with_request(request_good) do |instance|
-        expect(instance.user).to be_a(ManageIQ::API::Common::User)
+        @instance = instance
+        example.call
       end
     end
 
-    it 'returns a lazy loaded user instance with a correctly formatted Hash' do
-      described_class.with_request(request_hash) do |instance|
-        expect(instance).to be_a(ManageIQ::API::Common::Request)
-        expect(instance.headers).to be_a(ActionDispatch::Http::Headers)
+    it "#original_url" do
+      expect(@instance.original_url).to eq "https://example.com"
+    end
+
+    describe "#headers" do
+      it "return a headers object" do
+        expect(@instance.headers).to be_a(ActionDispatch::Http::Headers)
       end
+
+      it "allows case-insensitive lookup" do
+        expect(@instance.headers["X-Rh-Identity"]).to eq encoded_user_hash
+      end
+    end
+
+    it "#user" do
+      expect(@instance.user).to be_a(ManageIQ::API::Common::User)
+    end
+
+    it "#to_h" do
+      expect(@instance.to_h).to eq(:headers => forwardable_good, :original_url => "https://example.com")
     end
   end
 
-  context "set current headers" do
-    it 'sets if the class is correct' do
+  describe ".with_request / .current=" do
+    it 'with an ActionDispatch::Request' do
+      described_class.with_request(request_object) do |instance|
+        expect(described_class.current).to eq instance
+        expect(instance).to be_a(ManageIQ::API::Common::Request)
+        expect(instance.headers).to be_a(ActionDispatch::Http::Headers)
+      end
+    end
+
+    it 'with a specific Hash' do
       described_class.with_request(request_good) do |instance|
+        expect(described_class.current).to eq instance
         expect(instance).to be_a(ManageIQ::API::Common::Request)
         expect(instance.headers).to be_a(ActionDispatch::Http::Headers)
       end
     end
 
-    it 'sets if the class is a correctly formatted Hash' do
-      described_class.with_request(request_hash) do |instance|
-        expect(instance).to be_a(ManageIQ::API::Common::Request)
-        expect(instance.headers).to be_a(ActionDispatch::Http::Headers)
-      end
-    end
-
-    it 'raises an exception if the class is incorrect' do
+    it 'with an invalid Hash' do
       expect do
-        described_class.with_request(random_str) {}
+        described_class.with_request({}) {}
       end.to raise_exception(ArgumentError)
+    end
+
+    it 'with invalid argument' do
+      expect do
+        described_class.with_request(rand(10_000).to_s) {}
+      end.to raise_exception(ArgumentError)
+    end
+
+    it 'with nil' do
+      described_class.with_request(nil) do |instance|
+        expect(described_class.current).to eq instance
+        expect(instance).to be_nil
+      end
+    end
+
+    it "will clear .current after the block finishes" do
+      expect(described_class.current).to be_nil
+      described_class.with_request(request_good) do |_instance|
+        expect(described_class.current).to_not be_nil
+      end
+      expect(described_class.current).to be_nil
+    end
+  end
+
+  describe ".current" do
+    it "when the request is set" do
+      described_class.with_request(request_good) do |instance|
+        expect(described_class.current).to eq instance
+      end
+    end
+
+    it "when the request is not set" do
+      expect(described_class.current).to be_nil
     end
   end
 
   describe ".current_forwardable" do
-    it "x-rh-identity" do
-      described_class.with_request(request_hash) do
+    it "only includes expected headers" do
+      described_class.with_request(request_good) do
         hash = described_class.current_forwardable
-        expect(hash).to eq('x-rh-identity' => encoded_user_hash)
+        expect(hash).to eq forwardable_good
+        expect(hash).to_not include("x-some-header")
       end
     end
 
     it "raises exception when headers not set" do
-      ManageIQ::API::Common::Request.current = nil
       expect do
         described_class.current_forwardable
       end.to raise_exception(ManageIQ::API::Common::HeadersNotSet)
-    end
-  end
-
-  describe ".to_h" do
-    it "contains header and original_url" do
-      described_class.with_request(request_hash) do
-        hash = described_class.current.to_h
-        expect(hash).to eq(:headers => {'x-rh-identity' => encoded_user_hash}, :original_url => "")
-      end
     end
   end
 end
