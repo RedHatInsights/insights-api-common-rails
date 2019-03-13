@@ -8,7 +8,9 @@ module ManageIQ
       end
 
       class Request
-        FORWARDABLE_HEADER_KEYS = %w(X-Request-ID x-rh-identity).freeze
+        REQUEST_ID_KEY = "x-request-id".freeze
+        IDENTITY_KEY   = 'x-rh-identity'.freeze
+        FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY].freeze
 
         def self.current
           Thread.current[:current_request]
@@ -46,13 +48,21 @@ module ManageIQ
 
         attr_reader :headers, :original_url
 
-        def initialize(headers:, original_url:, **kwargs)
+        def initialize(headers:, original_url:, **_kwargs)
           headers = from_hash(headers) if headers.kind_of?(Hash)
           @headers, @original_url = headers, original_url
         end
 
+        def request_id
+          headers.fetch(REQUEST_ID_KEY)
+        end
+
+        def identity
+          @identity ||= JSON.parse(Base64.decode64(headers.fetch(IDENTITY_KEY)))
+        end
+
         def user
-          @user ||= User.new
+          @user ||= User.new(identity)
         end
 
         def to_h
@@ -61,7 +71,7 @@ module ManageIQ
 
         def forwardable
           FORWARDABLE_HEADER_KEYS.each_with_object({}) do |key, hash|
-            hash[key] = @headers[key] if @headers.key?(key)
+            hash[key] = headers[key] if headers.key?(key)
           end
         end
 

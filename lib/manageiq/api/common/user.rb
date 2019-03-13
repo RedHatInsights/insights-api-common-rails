@@ -1,8 +1,12 @@
 module ManageIQ
   module API
     module Common
+      class IdentityError < StandardError; end
+
       class User
-        IDENTITY_KEY = 'x-rh-identity'.freeze
+        def initialize(identity)
+          @identity = identity
+        end
 
         %w[
           username
@@ -25,21 +29,17 @@ module ManageIQ
 
         private
 
-        def decode
-          hashed = Request.current!.to_h
-          user_hash = hashed[:headers][IDENTITY_KEY]
-          JSON.parse(Base64.decode64(user_hash))
-        end
+        attr_reader :identity
 
         def find_user_key(key)
-          result = decode.dig('identity', 'user', key.to_s)
-          raise ManageIQ::API::Common::HeaderIdentityError, "#{key} doesn't exist" if result.nil?
+          result = identity.dig('identity', 'user', key.to_s)
+          raise IdentityError, "#{key} doesn't exist" if result.nil?
           result
         end
 
         def find_tenant_key
-          result = decode.dig('identity', 'account_number')
-          raise ManageIQ::API::Common::HeaderIdentityError, "Tenant key doesn't exist" if result.nil?
+          result = identity.dig('identity', 'account_number')
+          raise IdentityError, "Tenant key doesn't exist" if result.nil?
           result
         end
       end
