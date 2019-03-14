@@ -1,18 +1,26 @@
 module TopologicalInventory
   module Api
-    class ErrorDocument < Hash
-      def initialize
-        self["errors"] = []
+    class ErrorDocument
+      def add(status = 400, message)
+        @status = status
+        errors << {"status" => status, "detail" => message}
+        self
       end
 
-      def add(status, message)
-        @status = status
-        self["errors"] << {"status" => status, "detail" => message}
-        self
+      def errors
+        @errors ||= []
       end
 
       def status
         @status
+      end
+
+      def blank?
+        errors.blank?
+      end
+
+      def to_h
+        {"errors" => errors}
       end
     end
   end
