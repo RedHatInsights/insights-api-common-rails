@@ -14,13 +14,13 @@ class ApplicationController
     def apply
       return query if @raw_filter.blank?
       @raw_filter.each do |k, v|
-        with_attribute_for_key(k) do |attribute|
-          if attribute["type"] == "string"
-            type = determine_string_attribute_type(attribute)
-            send(type, k, v)
-          else
-            errors.add("unsupported attribute type for: #{k}")
-          end
+        next unless attribute = attribute_for_key(k)
+
+        if attribute["type"] == "string"
+          type = determine_string_attribute_type(attribute)
+          send(type, k, v)
+        else
+          errors.add("unsupported attribute type for: #{k}")
         end
       end
 
@@ -40,9 +40,11 @@ class ApplicationController
       end
     end
 
-    def with_attribute_for_key(key)
+    def attribute_for_key(key)
       attribute = api_doc_definition.properties[key.to_s]
-      attribute ? yield(attribute) : errors.add("found unpermitted parameter: #{key}")
+      return attribute if attribute
+      errors.add("found unpermitted parameter: #{key}")
+      nil
     end
 
     def determine_string_attribute_type(attribute)
@@ -66,7 +68,8 @@ class ApplicationController
     end
 
     def add_filter(requested_comparator, allowed_comparators, key, value)
-      type = with_attribute_for_key(key) { |attribute| determine_string_attribute_type(attribute) }
+      return unless attribute = attribute_for_key(key)
+      type = determine_string_attribute_type(attribute)
 
       if requested_comparator.in?(["nil", "not_nil"])
         send("comparator_#{requested_comparator}", key, value)
