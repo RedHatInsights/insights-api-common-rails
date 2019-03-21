@@ -3,10 +3,11 @@ class ApplicationController
     INTEGER_COMPARISON_KEYWORDS = ["eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
     STRING_COMPARISON_KEYWORDS  = ["contains", "eq", "starts_with", "ends_with", "nil", "not_nil"].freeze
 
-    attr_reader :apply, :api_doc_definition
+    attr_reader :apply, :arel_table, :api_doc_definition
 
     def initialize(model, raw_filter, api_doc_definition)
       self.query          = model
+      @arel_table         = model.arel_table
       @raw_filter         = raw_filter
       @api_doc_definition = api_doc_definition
     end
@@ -113,15 +114,15 @@ class ApplicationController
 
     def comparator_contains(key, value)
       return value.each { |v| comparator_contains(key, v) } if value.kind_of?(Array)
-      self.query = query.where("#{key} LIKE ?", "%#{value}%")
+      self.query = query.where(arel_table[key].matches("%#{value}%"))
     end
 
     def comparator_starts_with(key, value)
-      self.query = query.where("#{key} LIKE ?", "#{value}%")
+      self.query = query.where(arel_table[key].matches("#{value}%"))
     end
 
     def comparator_ends_with(key, value)
-      self.query = query.where("#{key} LIKE ?", "%#{value}")
+      self.query = query.where(arel_table[key].matches("%#{value}"))
     end
 
     def comparator_eq(key, value)
@@ -129,19 +130,19 @@ class ApplicationController
     end
 
     def comparator_gt(key, value)
-      self.query = query.where("#{key} > ?", value)
+      self.query = query.where(arel_table[key].gt(value))
     end
 
     def comparator_gte(key, value)
-      self.query = query.where("#{key} >= ?", value)
+      self.query = query.where(arel_table[key].gteq(value))
     end
 
     def comparator_lt(key, value)
-      self.query = query.where("#{key} < ?", value)
+      self.query = query.where(arel_table[key].lt(value))
     end
 
     def comparator_lte(key, value)
-      self.query = query.where("#{key} <= ?", value)
+      self.query = query.where(arel_table[key].lteq(value))
     end
 
     def comparator_nil(key, _value = nil)
