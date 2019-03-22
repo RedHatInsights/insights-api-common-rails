@@ -114,15 +114,15 @@ class ApplicationController
 
     def comparator_contains(key, value)
       return value.each { |v| comparator_contains(key, v) } if value.kind_of?(Array)
-      self.query = query.where(arel_table[key].matches("%#{value}%"))
+      self.query = query.where(arel_table[key].matches("%#{query.sanitize_sql_like(value)}%", nil, true))
     end
 
     def comparator_starts_with(key, value)
-      self.query = query.where(arel_table[key].matches("#{value}%"))
+      self.query = query.where(arel_table[key].matches("#{query.sanitize_sql_like(value)}%", nil, true))
     end
 
     def comparator_ends_with(key, value)
-      self.query = query.where(arel_table[key].matches("%#{value}"))
+      self.query = query.where(arel_table[key].matches("%#{query.sanitize_sql_like(value)}", nil, true))
     end
 
     def comparator_eq(key, value)
