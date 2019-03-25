@@ -38,14 +38,7 @@ module OpenApi
       end
 
       def routes
-        @routes ||= begin
-          paths.flat_map do |path, hash|
-            hash.collect do |verb, _details|
-              p = File.join(base_path, path).gsub(/{\w*}/, ":id")
-              {:path => p, :verb => verb.upcase}
-            end
-          end
-        end
+        @routes ||= Docs.path_routes(base_path, paths)
       end
     end
   end
