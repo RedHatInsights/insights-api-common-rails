@@ -8,9 +8,9 @@ module ManageIQ
       end
 
       class Request
-        REQUEST_ID_KEY = "x-request-id".freeze
+        X_RH_INSIGHTS_REQUEST_ID_KEY = "x-rh-insights-request-id".freeze
         IDENTITY_KEY   = 'x-rh-identity'.freeze
-        FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY].freeze
+        FORWARDABLE_HEADER_KEYS = [X_RH_INSIGHTS_REQUEST_ID_KEY, IDENTITY_KEY].freeze
 
         def self.current
           Thread.current[:current_request]
@@ -54,7 +54,7 @@ module ManageIQ
         end
 
         def request_id
-          headers.fetch(REQUEST_ID_KEY)
+          headers.fetch(X_RH_INSIGHTS_REQUEST_ID_KEY)
         end
 
         def identity
