@@ -52,6 +52,7 @@ module OpenApi
       end
 
       def regexp_from_pattern(pattern)
+        return pattern if pattern.kind_of?(Regexp)
         raise "Pattern #{pattern.inspect} is not a regular expression" unless pattern.starts_with?("/") && pattern.ends_with?("/")
         Regexp.new(pattern[1..-2])
       end
