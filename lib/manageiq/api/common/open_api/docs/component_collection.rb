@@ -13,7 +13,7 @@ module OpenApi
       end
 
       def load_definition(name)
-        raw_definition = @doc.content.fetch_path(@category.split("/"))[name]
+        raw_definition = @doc.content.fetch_path(*@category.split("/"), name)
         raise ArgumentError, "Failed to find definition for #{name}" unless raw_definition.kind_of?(Hash)
 
         definition = substitute_regexes(raw_definition)
