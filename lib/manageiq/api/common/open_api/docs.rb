@@ -6,12 +6,8 @@ module OpenApi
     end
 
     def load_file(file)
-      yaml = YAML.load_file(file)
-      doc = if yaml["swagger"] == "2.0"
-              DocV2.new(yaml)
-            elsif yaml["openapi"] =~ /3*/
-              DocV3.new(yaml)
-            end
+      openapi_spec = JSON.parse(File.read(file))
+      doc = DocV3.new(openapi_spec) if openapi_spec["openapi"] =~ /3*/
       store_doc(doc)
     end
 
