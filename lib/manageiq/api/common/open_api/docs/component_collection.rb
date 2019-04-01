@@ -43,8 +43,8 @@ module OpenApi
         if object.kind_of?(Array)
           object.collect { |i| substitute_regexes(i) }
         elsif object.kind_of?(Hash)
-          object.each do |k, v|
-            object[k] = k == "pattern" ? regexp_from_pattern(v) : substitute_regexes(v)
+          object.each_with_object({}) do |(k, v), o|
+            o[k] = k == "pattern" ? regexp_from_pattern(v) : substitute_regexes(v)
           end
         else
           object
@@ -52,7 +52,6 @@ module OpenApi
       end
 
       def regexp_from_pattern(pattern)
-        return pattern if pattern.kind_of?(Regexp)
         raise "Pattern #{pattern.inspect} is not a regular expression" unless pattern.starts_with?("/") && pattern.ends_with?("/")
         Regexp.new(pattern[1..-2])
       end
