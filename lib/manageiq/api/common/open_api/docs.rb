@@ -7,8 +7,7 @@ module OpenApi
 
     def load_file(file)
       openapi_spec = JSON.parse(File.read(file))
-      doc = DocV3.new(openapi_spec) if openapi_spec["openapi"] =~ /3*/
-      store_doc(doc)
+      store_doc(DocV3.new(openapi_spec))
     end
 
     def store_doc(doc)
@@ -34,15 +33,6 @@ module OpenApi
         @cache.each_with_object([]) do |(version, doc), routes|
           next unless /\d+\.\d+/ =~ version # Skip unless major.minor
           routes.concat(doc.routes)
-        end
-      end
-    end
-
-    def self.path_routes(base_path, paths)
-      paths.flat_map do |path, hash|
-        hash.collect do |verb, _details|
-          p = File.join(base_path, path).gsub(/{\w*}/, ":id")
-          {:path => p, :verb => verb.upcase}
         end
       end
     end
