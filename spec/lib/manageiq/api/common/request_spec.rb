@@ -20,8 +20,8 @@ describe ManageIQ::API::Common::Request do
 
   let(:forwardable_good) do
     {
-      'x-rh-identity' => encoded_user_hash,
-      'x-request-id'  => "01234567-89ab-cdef-0123-456789abcde",
+      'x-rh-identity'            => encoded_user_hash,
+      'x-rh-insights-request-id' => "01234567-89ab-cdef-0123-456789abcde",
     }
   end
 
@@ -89,7 +89,7 @@ describe ManageIQ::API::Common::Request do
     end
 
     it "#request_id" do
-      expect { @instance.request_id }.to raise_exception(KeyError, 'x-request-id')
+      expect { @instance.request_id }.to raise_exception(KeyError, 'x-rh-insights-request-id')
     end
   end
 

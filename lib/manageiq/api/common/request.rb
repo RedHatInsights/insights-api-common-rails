@@ -8,7 +8,7 @@ module ManageIQ
       end
 
       class Request
-        REQUEST_ID_KEY = "x-request-id".freeze
+        REQUEST_ID_KEY = "x-rh-insights-request-id".freeze
         IDENTITY_KEY   = 'x-rh-identity'.freeze
         FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY].freeze
 
