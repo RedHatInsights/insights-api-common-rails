@@ -1,3 +1,4 @@
+require "manageiq/api/common/action_dispatch-routing-option_redirect"
 require "manageiq/api/common/engine"
 require "manageiq/api/common/inflections"
 require "manageiq/api/common/logging"
