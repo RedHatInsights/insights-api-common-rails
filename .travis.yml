@@ -1,18 +1,19 @@
----
+dist: xenial
 language: ruby
 sudo: false
 cache: bundler
 rvm:
 - 2.4.5
 addons:
-  postgresql: '9.5'
+  postgresql: '10'
 env:
   global:
   - DATABASE_URL="postgresql://postgres:@localhost:5432/manageiq_api_common_test?encoding=utf8&pool=5&wait_timeout=5"
 before_install:
 - gem install bundler
 before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
 - bundle exec rake db:create db:migrate
