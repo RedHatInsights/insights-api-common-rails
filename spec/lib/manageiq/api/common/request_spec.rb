@@ -179,4 +179,51 @@ describe ManageIQ::API::Common::Request do
       end.to raise_exception(ManageIQ::API::Common::RequestNotSet)
     end
   end
+
+  describe ".optional_auth? and .required_auth?" do
+    it "handle fully qualified openapi.json path with major version" do
+      described_class.with_request(request_good.merge(
+                                     :original_url => "https://example.com/api/micro-service/v1/openapi.json"
+                                   )) do
+        expect(described_class.current.optional_auth?).to be_truthy
+        expect(described_class.current.required_auth?).to be_falsy
+      end
+    end
+
+    it "handle fully qualified openapi.json path with major and minor version" do
+      described_class.with_request(request_good.merge(
+                                     :original_url => "https://example.com/api/micro-service/v1.0/openapi.json"
+                                   )) do
+        expect(described_class.current.optional_auth?).to be_truthy
+        expect(described_class.current.required_auth?).to be_falsy
+      end
+    end
+
+    it "handle short openapi.json path with major version" do
+      described_class.with_request(request_good.merge(
+                                     :original_url => "https://example.com/api/v1/openapi.json"
+                                   )) do
+        expect(described_class.current.optional_auth?).to be_truthy
+        expect(described_class.current.required_auth?).to be_falsy
+      end
+    end
+
+    it "handle short openapi.json path with major and minor version" do
+      described_class.with_request(request_good.merge(
+                                     :original_url => "https://example.com/api/v1.0/openapi.json"
+                                   )) do
+        expect(described_class.current.optional_auth?).to be_truthy
+        expect(described_class.current.required_auth?).to be_falsy
+      end
+    end
+
+    it "handle normal authenticated paths" do
+      described_class.with_request(request_good.merge(
+                                     :original_url => "https://example.com/api/micro-service/v1.0/collection"
+                                   )) do
+        expect(described_class.current.optional_auth?).to be_falsy
+        expect(described_class.current.required_auth?).to be_truthy
+      end
+    end
+  end
 end

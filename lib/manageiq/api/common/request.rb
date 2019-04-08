@@ -11,6 +11,10 @@ module ManageIQ
         REQUEST_ID_KEY = "x-rh-insights-request-id".freeze
         IDENTITY_KEY   = 'x-rh-identity'.freeze
         FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY].freeze
+        OPTIONAL_AUTH_PATHS = [
+          %r{\A/api/v[0-9]+(\.[0-9]+)?/openapi.json\z},
+          %r{\A/api/[^/]+/v[0-9]+(\.[0-9]+)?/openapi.json\z}
+        ].freeze
 
         def self.current
           Thread.current[:current_request]
@@ -73,6 +77,15 @@ module ManageIQ
           FORWARDABLE_HEADER_KEYS.each_with_object({}) do |key, hash|
             hash[key] = headers[key] if headers.key?(key)
           end
+        end
+
+        def required_auth?
+          !optional_auth?
+        end
+
+        def optional_auth?
+          uri_path = URI.parse(original_url).path
+          OPTIONAL_AUTH_PATHS.any? { |optional_auth_path_regex| optional_auth_path_regex.match(uri_path) }
         end
 
         private
