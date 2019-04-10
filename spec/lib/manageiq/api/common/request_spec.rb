@@ -81,11 +81,11 @@ describe ManageIQ::API::Common::Request do
     end
 
     it "#user" do
-      expect { @instance.user }.to raise_exception(KeyError, 'x-rh-identity')
+      expect { @instance.user }.to raise_exception(ManageIQ::API::Common::IdentityError, 'x-rh-identity not found')
     end
 
     it "#identity" do
-      expect { @instance.identity }.to raise_exception(KeyError, 'x-rh-identity')
+      expect { @instance.identity }.to raise_exception(ManageIQ::API::Common::IdentityError, 'x-rh-identity not found')
     end
 
     it "#request_id" do
