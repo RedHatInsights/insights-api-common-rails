@@ -63,6 +63,8 @@ module ManageIQ
 
         def identity
           @identity ||= JSON.parse(Base64.decode64(headers.fetch(IDENTITY_KEY)))
+        rescue KeyError
+          raise IdentityError, "x-rh-identity not found"
         end
 
         def user
