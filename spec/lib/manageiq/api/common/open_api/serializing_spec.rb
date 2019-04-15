@@ -1,5 +1,5 @@
 RSpec.describe("Serializing ApplicationRecord instances to JSON") do
-  let(:base_class) { Class.new.tap { |c| c.prepend(OpenApi::Serializer) } }
+  let(:base_class) { Class.new.tap { |c| c.prepend(ManageIQ::API::Common::OpenApi::Serializer) } }
 
   context "Encrypted attributes are not in the JSON response" do
     it "on a model that has encrypted columns" do
