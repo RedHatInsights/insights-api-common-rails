@@ -102,6 +102,15 @@ describe ManageIQ::API::Common::Request do
       end
     end
 
+    it 'with a ManageIQ::API::Common::Request' do
+      common_request = described_class.new(request_good)
+      described_class.with_request(common_request) do |instance|
+        expect(described_class.current).to eq instance
+        expect(instance).to be_a(ManageIQ::API::Common::Request)
+        expect(instance.headers).to be_a(ActionDispatch::Http::Headers)
+      end
+    end
+
     it 'with a specific Hash' do
       described_class.with_request(request_good) do |instance|
         expect(described_class.current).to eq instance
