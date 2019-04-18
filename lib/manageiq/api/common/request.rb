@@ -31,10 +31,10 @@ module ManageIQ
               new(:headers => request.headers, :original_url => request.original_url)
             when Hash
               new(request)
-            when nil
+            when Request, nil
               request
             else
-              raise ArgumentError, 'Not an ActionDispatch::Http::Headers Class or Hash, or nil'
+              raise ArgumentError, 'Not a ManageIQ::API::Common::Request or ActionDispatch::Request Class, Hash, or nil'
             end
         end
 
