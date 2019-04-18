@@ -4,6 +4,13 @@ if ENV['CI']
 end
 
 ENV["RAILS_ENV"] ||= 'test'
+
+unless File.exists?("spec/dummy/config/database.yml")
+  print "\n"
+  puts "WARNING: spec/dummy/config/database.yml is missing, tests cannot continue!"
+  print "\n"
+  exit
+end
 require File.expand_path("../dummy/config/environment", __FILE__)
 
 require 'rspec/rails'
