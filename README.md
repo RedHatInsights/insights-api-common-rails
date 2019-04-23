@@ -27,7 +27,25 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+#### ManageIQ::Api::Common::Filter
+
+After implementing filtering in your application, this is the way to filter via parameters on index functions:
+
+| Query Parameter | Ruby Client Parameter | 
+| ------- | ------- | 
+|"?filter[name]=reviews"|`{:filter => { :name => "reviews" }}`|
+|"?filter[name][eq]=reviews"|`{:filter => { :name => { :eq => "reviews" } }}`|
+|"?filter[name][starts_with]=a"|`{:filter => { :name => { :starts_with => "a" } }}`|
+|"?filter[name][ends_with]=manager"|`{:filter => { :name => { :ends_with => "manager" } }}`|
+|"?filter[name][contains]=openshift"|`{:filter => { :name => { :contains => "openshift" } }}`|
+|"?filter[id]=5"|`{:filter => { :id => "5" }}`|
+|"?filter[id][eq]=5"|`{:filter => { :id => { :eq => "5" }}}`|
+|"?filter[id][gt]=180"|`{:filter => { :id => { :gt => "180" }}}`|
+|"?filter[id][gte]=190"|`{:filter => { :id => { :gte => "190" }}}`|
+|"?filter[id][lt]=5"|`{:filter => { :id => { :lt => "5" }}} `|
+|"?filter[id][lte]=5"|`{:filter => { :id => { :lte => "5" }}}`|
+|"?filter[id][]=5&filter[id][]=10&filter[id][]=15&filter[id][]=20"|`{:filter => { :id => ["5", "10", "15", "20"]}}`|
+|"?filter[id][eq][]=5&filter[id][eq][]=10&filter[id][eq][]=15&filter[id][eq][]=20"|`{:filter => { :id => { :eq => ["5", "10", "15", "20"]}}}`|
 
 ## Development
 
