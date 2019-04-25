@@ -1,4 +1,5 @@
 require "manageiq/api/common/engine"
+require "manageiq/api/common/entitlement"
 require "manageiq/api/common/error_document"
 require "manageiq/api/common/filter"
 require "manageiq/api/common/inflections"
