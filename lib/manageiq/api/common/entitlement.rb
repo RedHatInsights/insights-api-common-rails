@@ -25,7 +25,7 @@ module ManageIQ
 
         def find_entitlement_key(key)
           result = identity.dig('entitlements', key.to_s)
-          #TODO Always force entitlements key
+          # TODO: Always force entitlements key
           return true unless result
           result['is_entitled']
         end

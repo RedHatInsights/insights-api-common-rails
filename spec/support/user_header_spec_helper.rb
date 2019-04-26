@@ -1,7 +1,7 @@
 module UserHeaderSpecHelper
   DEFAULT_USER = {
     "entitlements" => {
-      "hybrid_cloud"      => {
+      "hybrid_cloud"     => {
         "is_entitled" => true
       },
       "insights"         => {
