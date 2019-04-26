@@ -14,7 +14,7 @@ module ManageIQ
           openshift
           smart_management
         ].each do |m|
-          define_method(m) do
+          define_method("#{m}?") do
             find_entitlement_key(m)
           end
         end
@@ -25,8 +25,8 @@ module ManageIQ
 
         def find_entitlement_key(key)
           result = identity.dig('entitlements', key.to_s)
+          #TODO Always force entitlements key
           return true unless result
-          #raise EntitlementError, "#{key} doesn't exist" if result.nil?
           result['is_entitled']
         end
       end
