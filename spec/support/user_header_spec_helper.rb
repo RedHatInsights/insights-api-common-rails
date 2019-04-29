@@ -21,6 +21,10 @@ module UserHeaderSpecHelper
     }
   }.freeze
 
+  def default_account_number
+    default_user_hash["identity"]["account_number"]
+  end
+
   def encode(val)
     if val.kind_of?(Hash)
       hashed = val.stringify_keys
