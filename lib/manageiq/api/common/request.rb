@@ -71,6 +71,10 @@ module ManageIQ
           @user ||= User.new(identity)
         end
 
+        def entitlement
+          @entitlement ||= Entitlement.new(identity)
+        end
+
         def to_h
           {:headers => forwardable, :original_url => original_url}
         end
