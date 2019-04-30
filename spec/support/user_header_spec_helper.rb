@@ -25,6 +25,10 @@ module UserHeaderSpecHelper
     default_user_hash["identity"]["account_number"]
   end
 
+  def default_username
+    default_user_hash["identity"]["user"]["username"]
+  end
+
   def encode(val)
     if val.kind_of?(Hash)
       hashed = val.stringify_keys
