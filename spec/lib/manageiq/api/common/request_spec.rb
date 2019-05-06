@@ -89,7 +89,7 @@ describe ManageIQ::API::Common::Request do
     end
 
     it "#request_id" do
-      expect { @instance.request_id }.to raise_exception(KeyError, 'x-rh-insights-request-id')
+      expect(@instance.request_id).to be_nil
     end
   end
 
