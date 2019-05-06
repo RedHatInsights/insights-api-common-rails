@@ -58,7 +58,7 @@ module ManageIQ
         end
 
         def request_id
-          headers.fetch(REQUEST_ID_KEY)
+          headers.fetch(REQUEST_ID_KEY, nil)
         end
 
         def identity
