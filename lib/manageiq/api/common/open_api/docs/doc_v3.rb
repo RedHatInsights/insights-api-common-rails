@@ -47,6 +47,10 @@ module ManageIQ
               @content["paths"]
             end
 
+            def to_json(options = nil)
+              content.to_json(options)
+            end
+
             def routes
               @routes ||= begin
                 paths.flat_map do |path, hash|
