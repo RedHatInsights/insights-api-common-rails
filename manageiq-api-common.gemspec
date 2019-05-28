@@ -19,7 +19,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "rails", ">= 5.2.1.1", "~> 5.2"
 
   # For ManageIQ::API::Common::Logging
-  spec.add_runtime_dependency "manageiq-loggers", "~> 0.1"
+  spec.add_runtime_dependency "manageiq-loggers", "~> 0.3"
+  spec.add_runtime_dependency "cloudwatchlogger", "~> 0.2"
 
   # For ManageIQ::API::Common::Metrics
   spec.add_runtime_dependency "prometheus-client", "~> 0.8.0"
