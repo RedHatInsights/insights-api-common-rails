@@ -53,7 +53,12 @@ module ManageIQ
             [collection_is_associated ? true : false, collection_associations.sort]
           end
 
-          def self.generate(api_version, openapi_content)
+          def self.init_schema
+            api_version = ManageIQ::API::GraphQL.version
+            openapi_content = Api::Docs[api_version].content
+
+puts "AHA:  api_version = #{api_version}"
+
             graphql_model_types = ""
 
             resources = openapi_content["paths"].keys.sort

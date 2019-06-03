@@ -8,6 +8,13 @@ module ManageIQ
   module API
     module Common
       module GraphQL
+        def self.version
+          /\/?\w+\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ ManageIQ::API::Common::Request.original_url
+          [major, minor].compact.join(".")
+        end
+
+        # Following code is auto-generated via rails generate graphql:install
+        #
         # Handle form data, JSON body, or a blank value
         def self.ensure_hash(ambiguous_param)
           case ambiguous_param
