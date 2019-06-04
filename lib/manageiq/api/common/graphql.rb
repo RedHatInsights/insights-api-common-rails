@@ -1,3 +1,7 @@
+require "graphql"
+require "graphql/batch"
+require "graphql/preload"
+
 require "manageiq/api/common/graphql/generator"
 
 require "manageiq/api/common/graphql/types/big_int"
@@ -8,9 +12,40 @@ module ManageIQ
   module API
     module Common
       module GraphQL
-        def self.version
-          /\/?\w+\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ ManageIQ::API::Common::Request.original_url
+        def self.version(request)
+          /\/?\w+\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ request.original_url
           [major, minor].compact.join(".")
+        end
+
+        def self.openapi_graphql_description
+          {
+            "summary"     => "Perform a GraphQL Query",
+            "operationId" => "postGraphQL",
+            "description" => "Performs a GraphQL Query",
+            "requestBody" => {
+              "content"     => {
+                "application/json" => {
+                  "schema" => {
+                    "type" => "object"
+                  }
+                }
+              },
+              "description" => "GraphQL Query Request",
+              "required"    => true
+            },
+            "responses"   => {
+              "200" => {
+                "description" => "GraphQL Query Response",
+                "content"     => {
+                  "application/json" => {
+                    "schema" => {
+                      "type" => "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
         end
 
         # Following code is auto-generated via rails generate graphql:install

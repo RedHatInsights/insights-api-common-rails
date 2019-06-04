@@ -1,47 +1,39 @@
+QueryType = ::GraphQL::ObjectType.define do
+  name "Query"
+  description "The query root of this schema"
 
-    QueryType = ::GraphQL::ObjectType.define do
-      name "Query"
-      description "The query root of this schema"
+  [
+    <%= collections.map { |c| ":#{c}" }.join(", ") %>
+  ].each do |collection|
 
-      [
-        <%= collections.map { |c| ":#{c}" }.join(", ") %>
-      ].each do |collection|
+    klass_names   = collection.to_s.camelize
+    klass_name    = klass_names.singularize
+    model_class   = klass_name.constantize
+    resource_type = "Api::#{version_namespace}::GraphQL::#{klass_name}Type".constantize
 
-        klass_names   = collection.to_s.camelize
-        klass_name    = klass_names.singularize
-        model_class   = klass_name.constantize
-        resource_type = "Api::GraphQL::#{klass_name}Type".constantize
-
-        field collection.to_s.singularize.to_sym do
-          type resource_type
-          argument :id, !types.ID
-          description model_class.name
-          resolve lambda { |_obj, args, _ctx|
-            model_class.where(:id => args[:id]).first
-          }
-        end
-
-        connection collection, !resource_type.connection_type, "List available #{klass_names}" do
-          argument :id, types.ID
-          argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter"
-
-          resolve lambda { |_obj, args, _ctx|
-            scope = if args[:filter]
-                      ::ManageIQ::API::Common::Filter.new(model_class,
-                                                          ActionController::Parameters.new(args[:filter]),
-                                                          ::Api::Docs["<%= api_version %>"].definitions[klass_name]).apply
-                    else
-                      model_class
-                    end
-            args[:id] ? scope.where(:id => args[:id]) : scope.all
-          }
-        end
-      end
+    field collection.to_s.singularize.to_sym do
+      type resource_type
+      argument :id, !types.ID
+      description model_class.name
+      resolve lambda { |_obj, args, _ctx|
+        model_class.where(:id => args[:id]).first
+      }
     end
 
-    Schema = ::GraphQL::Schema.define do
-      use ::GraphQL::Batch
-      enable_preloading
+    connection collection, !resource_type.connection_type, "List available #{klass_names}" do
+      argument :id, types.ID
+      argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter"
 
-      query QueryType
+      resolve lambda { |_obj, args, _ctx|
+        scope = if args[:filter]
+                  ::ManageIQ::API::Common::Filter.new(model_class,
+                                                      ActionController::Parameters.new(args[:filter]),
+                                                      ::Api::Docs["<%= api_version %>"].definitions[klass_name]).apply
+                else
+                  model_class
+                end
+        args[:id] ? scope.where(:id => args[:id]) : scope.all
+      }
     end
+  end
+end

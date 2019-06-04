@@ -12,10 +12,6 @@ module ManageIQ
             openapi_path.split("/")[1..-1]
           end
 
-          def self.graphql_schema_file
-            Rails.root.join("lib", "api", "graphql.rb").to_s
-          end
-
           def self.template(type)
             File.read(Pathname.new(__dir__).join(File.expand_path("templates", __dir__), "#{type}.erb").to_s)
           end
@@ -53,13 +49,24 @@ module ManageIQ
             [collection_is_associated ? true : false, collection_associations.sort]
           end
 
-          def self.init_schema
-            api_version = ManageIQ::API::GraphQL.version
-            openapi_content = Api::Docs[api_version].content
+          def self.init_schema(request)
+            api_version       = ::ManageIQ::API::Common::GraphQL.version(request)
+            version_namespace = "V#{api_version.tr('.', 'x')}"
+            openapi_content   = Api::Docs[api_version].content
 
-puts "AHA:  api_version = #{api_version}"
+            api_namespace = if ::Api.const_defined?(version_namespace, false)
+                              ::Api.const_get(version_namespace)
+                            else
+                              ::Api.const_set(version_namespace, Module.new)
+                            end
 
-            graphql_model_types = ""
+            graphql_namespace = if api_namespace.const_defined?("GraphQL", false)
+                                  api_namespace.const_get("GraphQL")
+                                else
+                                  api_namespace.const_set("GraphQL", Module.new)
+                                end
+
+            return graphql_namespace.const_get("Schema") if graphql_namespace.const_defined?("Schema", false)
 
             resources = openapi_content["paths"].keys.sort
             collections = []
@@ -73,8 +80,6 @@ puts "AHA:  api_version = #{api_version}"
               klass_name = collection.camelize.singularize
               this_schema = openapi_content.dig(*path_parts(SCHEMAS_PATH), klass_name)
               next if this_schema["type"] != "object" || this_schema["properties"].nil?
-
-              graphql_model_types << "\n" unless collections.empty?
 
               collections << collection
 
@@ -92,11 +97,17 @@ puts "AHA:  api_version = #{api_version}"
               end
 
               model_is_associated, model_associations = resource_associations(openapi_content, collection)
-              graphql_model_types << ERB.new(template("model_type"), nil, '<>').result(binding)
+
+              graphql_model_type_template = ERB.new(template("model_type"), nil, '<>').result(binding)
+              graphql_namespace.module_eval(graphql_model_type_template)
             end
-            graphql_query_type = ERB.new(template("query_type"), nil, '<>').result(binding)
-            graphql_schema = ERB.new(template("graphql"), nil, '<>').result(binding)
-            File.write(graphql_schema_file, graphql_schema)
+
+            graphql_query_type_template = ERB.new(template("query_type"), nil, '<>').result(binding)
+            graphql_namespace.module_eval(graphql_query_type_template)
+
+            graphql_schema_template = ERB.new(template("schema"), nil, '<>').result(binding)
+            graphql_namespace.module_eval(graphql_schema_template)
+            graphql_namespace.const_get("Schema")
           end
         end
       end
