@@ -11,15 +11,6 @@ QueryType = ::GraphQL::ObjectType.define do
     model_class   = klass_name.constantize
     resource_type = "Api::#{version_namespace}::GraphQL::#{klass_name}Type".constantize
 
-    field collection.to_s.singularize.to_sym do
-      type resource_type
-      argument :id, !types.ID
-      description model_class.name
-      resolve lambda { |_obj, args, _ctx|
-        model_class.where(:id => args[:id]).first
-      }
-    end
-
     connection collection, !resource_type.connection_type, "List available #{klass_names}" do
       argument :id, types.ID
       argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter"
