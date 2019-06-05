@@ -83,9 +83,14 @@ module ManageIQ
 
               collections << collection
 
+              model_class = klass_name.constantize
+              model_encrypted_columns_set = (model_class.try(:encrypted_columns) || []).to_set
+
               model_properties = []
               properties = this_schema["properties"]
               properties.keys.sort.each do |property_name|
+                next if model_encrypted_columns_set.include?(property_name)
+
                 property_schema = properties[property_name]
                 property_schema = openapi_content.dig(*path_parts(property_schema["$ref"])) if property_schema["$ref"]
                 property_format = property_schema["format"] || ""
