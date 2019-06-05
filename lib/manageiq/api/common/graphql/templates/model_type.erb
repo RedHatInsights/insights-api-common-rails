@@ -8,11 +8,12 @@
 
 <% model_properties.each do |property| %>
 <%   property_name, property_type, property_description = property %>
-<%   if property_description.nil? %>
-  field :<%= property_name %>, <%=property_type%>
-<%   else %>
-  field :<%= property_name %>, <%= property_type %>, "<%= property_description %>"
-<%   end %>
+<%   field_description = property_description.nil? ? "" : ", \"#{property_description}\"" %>
+<%   field_resolver = "" %>
+<%   if field_resolvers[property_name].present? %>
+<%     field_resolver = "do\n    resolve ->(obj, args, ctx) #{field_resolvers[property_name].strip}\n  end"%>
+<%   end%>
+  field :<%= property_name %>, <%=property_type%> <%=field_description%> <%=field_resolver%>
 <% end %>
 <% if model_associations.present? %>
 <%   model_associations.each do |association| %>

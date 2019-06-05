@@ -49,7 +49,17 @@ module ManageIQ
             [collection_is_associated ? true : false, collection_associations.sort]
           end
 
-          def self.init_schema(request)
+          def self.collection_field_resolvers(schema_overlay, collection)
+            field_resolvers = {}
+            schema_overlay.keys.each do |collection_regex|
+              next unless collection.match(collection_regex)
+
+              field_resolvers.merge!(schema_overlay.fetch_path(collection_regex, "field_resolvers") || {})
+            end
+            field_resolvers
+          end
+
+          def self.init_schema(request, schema_overlay = {})
             api_version       = ::ManageIQ::API::Common::GraphQL.version(request)
             version_namespace = "V#{api_version.tr('.', 'x')}"
             openapi_content   = Api::Docs[api_version].content
@@ -101,6 +111,7 @@ module ManageIQ
                 model_properties << [property_name, property_graphql_type, description] if property_graphql_type
               end
 
+              field_resolvers = collection_field_resolvers(schema_overlay, klass_name)
               model_is_associated, model_associations = resource_associations(openapi_content, collection)
 
               graphql_model_type_template = ERB.new(template("model_type"), nil, '<>').result(binding)
