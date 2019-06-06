@@ -40,7 +40,7 @@ module ManageIQ
             @request_counter.increment(counter_labels)
             @request_histogram.observe(duration, duration_labels)
 
-            @puma_max_threads.observe(JSON.parse(Puma.stats)["max_threads"])
+            @puma_max_threads.observe(puma_stats["max_threads"])
             @puma_busy_threads.decrement
           end
 
@@ -48,6 +48,12 @@ module ManageIQ
 
           def strip_ids_from_path(path)
             path.gsub(%r{/\d+(/|$)}, '/:id\\1')
+          end
+
+          def puma_stats
+            JSON.parse(Puma.stats)
+          rescue NoMethodError
+            {}
           end
         end
       end
