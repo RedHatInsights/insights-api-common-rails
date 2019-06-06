@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "cloudwatchlogger", "~> 0.2"
 
   # For ManageIQ::API::Common::Metrics
-  spec.add_runtime_dependency "prometheus-client", "~> 0.8.0"
+  spec.add_runtime_dependency 'prometheus_exporter', '~> 0.4.5'
 
   # For ManageIQ::API::Common::OpenApi
   spec.add_runtime_dependency "more_core_extensions"
