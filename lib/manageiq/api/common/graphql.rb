@@ -26,7 +26,26 @@ module ManageIQ
               "content"     => {
                 "application/json" => {
                   "schema" => {
-                    "type" => "object"
+                    "type"       => "object",
+                    "properties" => {
+                      "query"         => {
+                        "type"        => "string",
+                        "description" => "The GraphQL query",
+                        "default"     => "{}"
+                      },
+                      "operationName" => {
+                        "type"        => "string",
+                        "description" => "If the Query contains several named operations, the operationName controls which one should be executed",
+                        "default"     => ""
+                      },
+                      "variables"     => {
+                        "type"        => "object",
+                        "description" => "Optional Query variables"
+                      }
+                    },
+                    "required"   => [
+                      "query"
+                    ]
                   }
                 }
               },
@@ -39,7 +58,20 @@ module ManageIQ
                 "content"     => {
                   "application/json" => {
                     "schema" => {
-                      "type" => "object"
+                      "type"       => "object",
+                      "properties" => {
+                        "data"   => {
+                          "type"        => "object",
+                          "description" => "Results from the GraphQL query"
+                        },
+                        "errors" => {
+                          "type"        => "array",
+                          "description" => "Errors resulting from the GraphQL query",
+                          "items"       => {
+                            "type" => "object"
+                          }
+                        }
+                      }
                     }
                   }
                 }
