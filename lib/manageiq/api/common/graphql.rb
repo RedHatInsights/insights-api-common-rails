@@ -86,6 +86,13 @@ module ManageIQ
           }
         end
 
+        def self.paginated_search(scope, args)
+          offset = (args[:offset] || 0).to_i.clamp(0, Float::INFINITY)
+          limit  = (args[:limit]  || 100).to_i.clamp(1, 1000)
+          scope  = scope.where(:id => args[:id]) if args[:id]
+          scope.order(:id).offset(offset).limit(limit).all
+        end
+
         # Following code is auto-generated via rails generate graphql:install
         #
         # Handle form data, JSON body, or a blank value

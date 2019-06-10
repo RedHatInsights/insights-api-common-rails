@@ -11,9 +11,14 @@ QueryType = ::GraphQL::ObjectType.define do
     model_class   = klass_name.constantize
     resource_type = "Api::#{version_namespace}::GraphQL::#{klass_name}Type".constantize
 
-    connection collection, !resource_type.connection_type, "List available #{klass_names}" do
+    field collection do
+      description "List available #{collection}"
+      type types[resource_type]
+
       argument :id, types.ID
-      argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter"
+      argument :offset, types.Int, "The number of #{collection} to skip before starting to collect the result set"
+      argument :limit,  types.Int, "The number of #{collection} to return"
+      argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
 
       resolve lambda { |_obj, args, _ctx|
         scope = if args[:filter]
@@ -23,7 +28,7 @@ QueryType = ::GraphQL::ObjectType.define do
                 else
                   model_class
                 end
-        args[:id] ? scope.where(:id => args[:id]) : scope.all
+        ::ManageIQ::API::Common::GraphQL.paginated_search(scope, args)
       }
     end
   end
