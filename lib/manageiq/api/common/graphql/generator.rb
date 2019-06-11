@@ -83,10 +83,10 @@ module ManageIQ
             resources.each do |resource|
               next unless openapi_content.dig("paths", resource, "get") # we only care for queries
 
-              rmatch = resource.match("^/(.*)/{id}$")
+              rmatch = resource.match("^/(.*/)?([^/]*)/{id}$")
               next unless rmatch
 
-              collection = rmatch[1]
+              collection = rmatch[2]
               klass_name = collection.camelize.singularize
               this_schema = openapi_content.dig(*path_parts(SCHEMAS_PATH), klass_name)
               next if this_schema["type"] != "object" || this_schema["properties"].nil?
