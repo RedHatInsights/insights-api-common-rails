@@ -57,8 +57,7 @@ module ManageIQ
             end
 
             def regexp_from_pattern(pattern)
-              raise "Pattern #{pattern.inspect} is not a regular expression" unless pattern.starts_with?("/") && pattern.ends_with?("/")
-              Regexp.new(pattern[1..-2])
+              Regexp.new(pattern)
             end
           end
         end
