@@ -19,16 +19,15 @@ QueryType = ::GraphQL::ObjectType.define do
       argument :offset, types.Int, "The number of #{collection} to skip before starting to collect the result set"
       argument :limit,  types.Int, "The number of #{collection} to return"
       argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
-
       resolve lambda { |_obj, args, _ctx|
-        scope = if args[:filter]
-                  ::ManageIQ::API::Common::Filter.new(model_class,
-                                                      ActionController::Parameters.new(args[:filter]),
-                                                      ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"].definitions[klass_name]).apply
-                else
-                  model_class
-                end
-        ::ManageIQ::API::Common::GraphQL.paginated_search(scope, args)
+        scope = ::ManageIQ::API::Common::GraphQL.ordered_search(model_class, args)
+        if args[:filter]
+          scope = ::ManageIQ::API::Common::Filter.new(
+            scope,
+            ActionController::Parameters.new(args[:filter]),
+            ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"].definitions[klass_name]).apply
+        end
+        ::ManageIQ::API::Common::GraphQL.paged_search(scope, args)
       }
     end
   end
