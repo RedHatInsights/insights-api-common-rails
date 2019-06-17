@@ -15,7 +15,6 @@
 <%   model_associations.each do |association| %>
 <%     associations = association.pluralize %>
 <%     association_class_name  = association.camelize.singularize %>
-<%     association_class = association_class_name.constantize %>
 
   field :<%= associations %> do
     description "The <%= associations %> associated with this <%= klass_name %>"
@@ -24,21 +23,12 @@
     argument :id, types.ID
     argument :offset, types.Int, "The number of <%= associations %> to skip before starting to collect the result set"
     argument :limit,  types.Int, "The number of <%= associations %> to return"
-    argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the associated <%= associations %>"
 
     preload :<%= associations %>
-    preload_scope ->(args, ctx) do
-      scope = ::ManageIQ::API::Common::GraphQL.ordered_search(<%= association_class %>, args)
-      if args[:filter]
-        scope = ::ManageIQ::API::Common::Filter.new(
-                  scope,
-                  ActionController::Parameters.new(args[:filter]),
-                  ::Api::Docs["<%= api_version %>"].definitions["<%= association_class_name %>"]).apply
-      end
-      ::ManageIQ::API::Common::GraphQL.paged_search(scope, args)
-    end
 
-    resolve lambda { |obj, _args, _ctx| obj.<%= associations %> }
+    resolve lambda { |obj, args, _ctx|
+      ::ManageIQ::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", args).load(obj)
+    }
   end
 <%   end %>
 <% end %>
