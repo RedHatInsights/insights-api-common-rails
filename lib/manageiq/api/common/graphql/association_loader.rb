@@ -23,8 +23,10 @@ module ManageIQ
 
           def read_association(record)
             recs = ::ManageIQ::API::Common::GraphQL::AssociatedRecords.new(record.public_send(association_name).to_a)
-            recs = ::ManageIQ::API::Common::GraphQL.ordered_search(recs, args)
-            ::ManageIQ::API::Common::GraphQL.paged_search(recs, args)
+            recs = ::ManageIQ::API::Common::GraphQL.search_options(recs, args)
+            ::ManageIQ::API::Common::PaginatedResponse.new(
+              :base_query => recs, :request => nil, :limit => args[:limit], :offset => args[:offset]
+            ).search
           end
         end
       end

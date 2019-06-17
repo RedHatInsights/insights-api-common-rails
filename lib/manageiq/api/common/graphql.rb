@@ -88,15 +88,9 @@ module ManageIQ
           }
         end
 
-        def self.ordered_search(scope, _args)
-          scope.order(:id)
-        end
-
-        def self.paged_search(scope, args)
-          scope  = scope.where(:id => args[:id]) if args[:id]
-          offset = (args[:offset] ||   0).to_i.clamp(0, Float::INFINITY)
-          limit  = (args[:limit]  || 100).to_i.clamp(1, 1000)
-          scope.offset(offset).limit(limit)
+        def self.search_options(scope, args)
+          scope = scope.where(:id => args[:id]) if args[:id]
+          scope
         end
 
         # Following code is auto-generated via rails generate graphql:install

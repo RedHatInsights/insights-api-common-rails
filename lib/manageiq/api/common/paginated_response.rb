@@ -19,6 +19,10 @@ module ManageIQ
           }
         end
 
+        def search
+          @base_query.order(:id).limit(limit).offset(offset)
+        end
+
         private
 
         def metadata_hash
@@ -84,7 +88,7 @@ module ManageIQ
         end
 
         def records
-          @records ||= @base_query.order(:id).limit(limit).offset(offset)
+          @records ||= search
         end
       end
     end
