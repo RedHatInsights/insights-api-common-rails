@@ -89,8 +89,7 @@ module ManageIQ
         end
 
         def self.search_options(scope, args)
-          scope = scope.where(:id => args[:id]) if args[:id]
-          scope
+          args[:id] ? scope.where(:id => args[:id]) : scope
         end
 
         # Following code is auto-generated via rails generate graphql:install
