@@ -3,7 +3,7 @@ module ManageIQ
     module Common
       module GraphQL
         class AssociationLoader < ::GraphQL::Batch::Loader
-          attr_reader :model, :association_name, :args
+          attr_reader :args, :association_name, :model
 
           def initialize(model, association_name, args = {})
             @model            = model

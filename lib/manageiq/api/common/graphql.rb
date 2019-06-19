@@ -2,10 +2,9 @@ require "graphql"
 require "graphql/batch"
 require "graphql/preload"
 
-require "manageiq/api/common/graphql/generator"
 require "manageiq/api/common/graphql/association_loader"
 require "manageiq/api/common/graphql/associated_records"
-
+require "manageiq/api/common/graphql/generator"
 require "manageiq/api/common/graphql/types/big_int"
 require "manageiq/api/common/graphql/types/date_time"
 require "manageiq/api/common/graphql/types/query_filter"
