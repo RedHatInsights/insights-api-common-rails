@@ -1,6 +1,6 @@
 require "more_core_extensions/core_ext/hash"
 require "more_core_extensions/core_ext/array"
-
+require "openapi_parser"
 
 module ManageIQ
   module API
@@ -15,6 +15,23 @@ module ManageIQ
               raise "Unsupported OpenAPI Specification version #{spec_version}" unless spec_version =~ /\A3\..*\z/
 
               @content = content
+            end
+
+            # Validates data types against OpenAPI schema
+            #
+            # @param http_method [String] POST/PATCH/...
+            # @param request_path [String] i.e. /api/sources/v1.0/sources
+            # @param api_version [String] i.e. "v1.0", has to be part of **request_path**
+            # @param payload [String] JSON if payload_content_type == 'application/json'
+            # @param payload_content_type [String]
+            #
+            # @raise OpenAPIParser::OpenAPIError
+            def validate!(http_method, request_path, api_version, payload, payload_content_type = 'application/json')
+              path = request_path.split(api_version)[1]
+              raise "API version not found in request_path" if path.nil?
+
+              request_operation = validator_doc.request_operation(http_method.to_s.downcase, path)
+              request_operation.validate_request_body(payload_content_type, payload)
             end
 
             def version
@@ -60,6 +77,12 @@ module ManageIQ
                   end
                 end
               end
+            end
+
+            private
+
+            def validator_doc(opts = { :coerce_value => true, :datetime_coerce_class => DateTime })
+              @validator_doc ||= ::OpenAPIParser.parse(content, opts)
             end
           end
         end

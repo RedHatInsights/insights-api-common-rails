@@ -27,6 +27,8 @@ Gem::Specification.new do |spec|
 
   # For ManageIQ::API::Common::OpenApi
   spec.add_runtime_dependency "more_core_extensions"
+  spec.add_runtime_dependency "openapi_parser",      '~> 0.3.0'
+
 
   # For ManageIQ::API::Common::GraphQL
   spec.add_runtime_dependency "graphql",         "~> 1.7"
