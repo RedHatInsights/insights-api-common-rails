@@ -26,12 +26,12 @@ module ManageIQ
 
           def filter_collection_by_options(options)
             res = @collection
+            if options[:where].present?
+              options[:where].each_pair { |k, v| res = res.select { |rec| rec[k].to_s == v.to_s } }
+            end
             if options[:order].present?
               order_by = options[:order].first
               res = res.sort_by { |rec| rec[order_by] }
-            end
-            if options[:where].present?
-              options[:where].each_pair { |k, v| res = res.select { |rec| rec[k].to_s == v.to_s } }
             end
             res = res.drop(options[:offset]) if options[:offset]
             res = res.take(options[:limit])  if options[:limit]
