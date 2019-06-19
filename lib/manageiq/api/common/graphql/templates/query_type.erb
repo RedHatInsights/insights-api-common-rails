@@ -30,7 +30,7 @@ QueryType = ::GraphQL::ObjectType.define do
         scope = ::ManageIQ::API::Common::GraphQL.search_options(scope, args)
         ::ManageIQ::API::Common::PaginatedResponse.new(
           base_query: scope, request: nil, limit: args[:limit], offset: args[:offset]
-        ).search
+        ).records
       }
     end
   end

@@ -26,7 +26,7 @@ module ManageIQ
             recs = GraphQL.search_options(recs, args)
             PaginatedResponse.new(
               :base_query => recs, :request => nil, :limit => args[:limit], :offset => args[:offset]
-            ).search
+            ).records
           end
         end
       end
