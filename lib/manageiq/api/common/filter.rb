@@ -52,7 +52,7 @@ module ManageIQ
 
         def determine_string_attribute_type(attribute)
           return :timestamp if attribute["format"] == "date-time"
-          return :integer if attribute["pattern"] == /^\d+$/
+          return :integer if attribute["pattern"].in?([/^\d+$/, /\/^\d+$\//])
           :string
         end
 
