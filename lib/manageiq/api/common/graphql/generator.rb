@@ -62,7 +62,7 @@ module ManageIQ
           def self.init_schema(request, schema_overlay = {})
             api_version       = ::ManageIQ::API::Common::GraphQL.version(request)
             version_namespace = "V#{api_version.tr('.', 'x')}"
-            openapi_content   = Api::Docs[api_version].content
+            openapi_content   = ::ManageIQ::API::Common::OpenApi::Docs.instance[api_version].content
 
             api_namespace = if ::Api.const_defined?(version_namespace, false)
                               ::Api.const_get(version_namespace)
