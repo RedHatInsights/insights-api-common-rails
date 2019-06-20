@@ -8,7 +8,7 @@ module ManageIQ
           include Enumerable
           include QueryRelation::Queryable
 
-          def initialize(collection = [])
+          def initialize(collection)
             @collection = collection
           end
 

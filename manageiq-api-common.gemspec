@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   # For ManageIQ::API::Common::GraphQL
   spec.add_runtime_dependency "graphql",         "~> 1.9"
   spec.add_runtime_dependency "graphql-batch",   "~> 0.4"
-  spec.add_runtime_dependency "graphql-preload", "~> 2.0.1"
+  spec.add_runtime_dependency "graphql-preload", "~> 2.0", "< 2.1"
   spec.add_runtime_dependency "query_relation"
 
   spec.add_development_dependency "factory_bot"
