@@ -21,7 +21,7 @@ module ManageIQ
 
               definition = substitute_regexes(raw_definition)
               definition = substitute_references(definition)
-              self[name] = OpenApi::Docs::ObjectDefinition.new.replace(definition)
+              self[name] = ::ManageIQ::API::Common::OpenApi::Docs::ObjectDefinition.new.replace(definition)
             end
 
             private

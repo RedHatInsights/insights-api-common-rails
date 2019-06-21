@@ -9,7 +9,7 @@ module ManageIQ
             encryption_filtered = previous.except(*encrypted_columns_set)
             return encryption_filtered unless arg.key?(:prefixes)
             version = api_version_from_prefix(arg[:prefixes].first)
-            schema  = Api::Docs[version].definitions[self.class.name]
+            schema  = ::ManageIQ::API::Common::OpenApi::Docs.instance[version].definitions[self.class.name]
             attrs   = encryption_filtered.slice(*schema["properties"].keys)
             schema["properties"].keys.each do |name|
               next if attrs[name].nil?
@@ -19,7 +19,7 @@ module ManageIQ
             end
             attrs.compact
           end
-      
+
           def api_version_from_prefix(prefix)
             /\/?\w+\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ prefix
             [major, minor].compact.join(".")

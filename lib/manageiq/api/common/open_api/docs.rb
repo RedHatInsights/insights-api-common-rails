@@ -7,6 +7,10 @@ module ManageIQ
     module Common
       module OpenApi
         class Docs
+          def self.instance
+            @instance ||= new(Dir.glob(Rails.root.join("public", "doc", "openapi*.json")))
+          end
+
           def initialize(glob)
             @cache = {}
             glob.each { |f| load_file(f) }

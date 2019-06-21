@@ -19,7 +19,7 @@ QueryType = ::GraphQL::ObjectType.define do
         scope = if args[:filter]
                   ::ManageIQ::API::Common::Filter.new(model_class,
                                                       ActionController::Parameters.new(args[:filter]),
-                                                      ::Api::Docs["<%= api_version %>"].definitions[klass_name]).apply
+                                                      ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"].definitions[klass_name]).apply
                 else
                   model_class
                 end

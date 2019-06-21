@@ -39,11 +39,11 @@ module ManageIQ
             end
 
             def parameters
-              @parameters ||= OpenApi::Docs::ComponentCollection.new(self, "components/parameters")
+              @parameters ||= ::ManageIQ::API::Common::OpenApi::Docs::ComponentCollection.new(self, "components/parameters")
             end
 
             def schemas
-              @schemas ||= OpenApi::Docs::ComponentCollection.new(self, "components/schemas")
+              @schemas ||= ::ManageIQ::API::Common::OpenApi::Docs::ComponentCollection.new(self, "components/schemas")
             end
 
             def definitions
