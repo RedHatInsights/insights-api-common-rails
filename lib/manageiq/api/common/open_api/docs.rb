@@ -8,7 +8,7 @@ module ManageIQ
       module OpenApi
         class Docs
           def self.instance
-            @instance ||= new(Dir.glob(Rails.root.join("public", "doc", "openapi*.json")))
+            @instance ||= new(Dir.glob(Rails.root.join("public", "**", "openapi*.json")))
           end
 
           def initialize(glob)
