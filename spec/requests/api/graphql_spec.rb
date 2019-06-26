@@ -1,18 +1,21 @@
 require "manageiq/api/common/graphql"
 
 RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
+  let!(:graphql_endpoint) { "/api/v1.0/graphql" }
+
   let!(:ext_tenant)   { rand(1000).to_s }
   let!(:tenant)       { Tenant.create!(:name => "tenant_a", :external_tenant => ext_tenant) }
   let!(:identity)     { Base64.encode64({'identity' => { 'account_number' => ext_tenant }}.to_json) }
   let!(:headers)      { { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity } }
 
-  let!(:source_type)  { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
+  let!(:source_typeR) { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
+  let!(:source_typeV) { SourceType.create(:name => "vmware", :product_name => "VmWare vCenter", :vendor => "vmware") }
 
-  let!(:source_a1)    { Source.create!(:tenant_id => tenant.id, :uid => "1", :name => "source_a1", :source_type => source_type) }
-  let!(:source_a2)    { Source.create!(:tenant_id => tenant.id, :uid => "2", :name => "source_a2", :source_type => source_type) }
-  let!(:source_b1)    { Source.create!(:tenant_id => tenant.id, :uid => "3", :name => "source_b1", :source_type => source_type) }
-  let!(:source_b2)    { Source.create!(:tenant_id => tenant.id, :uid => "4", :name => "source_b2", :source_type => source_type) }
-  let!(:source_b3)    { Source.create!(:tenant_id => tenant.id, :uid => "5", :name => "source_b3", :source_type => source_type) }
+  let!(:source_a1)    { Source.create!(:tenant_id => tenant.id, :uid => "1", :name => "source_a1", :source_type => source_typeR) }
+  let!(:source_a2)    { Source.create!(:tenant_id => tenant.id, :uid => "2", :name => "source_a2", :source_type => source_typeR) }
+  let!(:source_b1)    { Source.create!(:tenant_id => tenant.id, :uid => "3", :name => "source_b1", :source_type => source_typeR) }
+  let!(:source_b2)    { Source.create!(:tenant_id => tenant.id, :uid => "4", :name => "source_b2", :source_type => source_typeR) }
+  let!(:source_b3)    { Source.create!(:tenant_id => tenant.id, :uid => "5", :name => "source_b3", :source_type => source_typeR) }
 
   let!(:endpoint_a21) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "121", :role => "web_lb1") }
   let!(:endpoint_a22) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "122", :role => "web_lb2") }
@@ -26,7 +29,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
 
     it "with no offset or limit returns all sources" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources {
             uid
@@ -63,7 +66,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors limit parameter" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(limit: 2) {
             uid
@@ -88,7 +91,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors offset parameter" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(offset: 1) {
             uid
@@ -121,7 +124,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors offset and limit parameter" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(offset: 1, limit: 2) {
             uid
@@ -146,7 +149,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors filter parameter" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(filter: { name: { starts_with: "source_b"}}) {
             name
@@ -171,7 +174,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors filter and limit parameter" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(filter: { name: { ends_with: "2"}}, limit: 1) {
             name
@@ -190,7 +193,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors filter with offset and limit parameter" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(filter: { name: { starts_with: "source_b"}}, offset: 1, limit: 1) {
             name
@@ -213,7 +216,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
 
     it "with no offset or limit returns all resources" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources {
             name
@@ -274,7 +277,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors separate offset and limits" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(offset: 1, limit: 3) {
             name
@@ -313,7 +316,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     end
 
     it "honors separate filter, offset and limits" do
-      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(filter: { name: { starts_with: "source_b" } }, offset: 1, limit: 1) {
             name
@@ -340,6 +343,183 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             {
               "host": "www.source_a2.com",
               "port": "122"
+            }
+          ]
+        }'))
+    end
+  end
+
+  context "querying associations" do
+    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
+
+    it "honors one-off associations" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          sources(filter: { name: { starts_with: "source_b" } }) {
+            name
+            endpoints {
+              host
+              port
+              role
+            }
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_b1",
+              "endpoints": []
+            },
+            {
+              "name": "source_b2",
+              "endpoints": [
+                {
+                  "host": "www.source_b2.com",
+                  "port": "221",
+                  "role": "web_lb1"
+                },
+                {
+                  "host": "www.source_b2.com",
+                  "port": "222",
+                  "role": "web_lb2"
+                },
+                {
+                  "host": "www.source_b2.com",
+                  "port": "223",
+                  "role": "web_lb3"
+                }
+              ]
+            },
+            {
+              "name": "source_b3",
+              "endpoints": []
+            }
+          ]
+        }'))
+    end
+
+    it "honors one-off associations with different offsets and limits" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          sources(filter: { name: { starts_with: "source_b" } }, offset: 1, limit: 1) {
+            name
+            endpoints(offset: 0, limit: 2) {
+              host
+              port
+              role
+            }
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_b2",
+              "endpoints": [
+                {
+                  "host": "www.source_b2.com",
+                  "port": "221",
+                  "role": "web_lb1"
+                },
+                {
+                  "host": "www.source_b2.com",
+                  "port": "222",
+                  "role": "web_lb2"
+                }
+              ]
+            }
+          ]
+        }'))
+    end
+
+    it "honors multi-level associations" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          source_types {
+            vendor
+            product_name
+            sources {
+              name
+              endpoints {
+                host
+                port
+                role
+              }
+            }
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "source_types": [
+            {
+              "vendor": "redhat",
+              "product_name": "RedHat Virtualization",
+              "sources": [
+                {
+                  "name": "source_a1",
+                  "endpoints": []
+                },
+                {
+                  "name": "source_a2",
+                  "endpoints": [
+                    {
+                      "host": "www.source_a2.com",
+                      "port": "121",
+                      "role": "web_lb1"
+                    },
+                    {
+                      "host": "www.source_a2.com",
+                      "port": "122",
+                      "role": "web_lb2"
+                    },
+                    {
+                      "host": "www.source_a2.com",
+                      "port": "123",
+                      "role": "web_lb3"
+                    }
+                  ]
+                },
+                {
+                  "name": "source_b1",
+                  "endpoints": []
+                },
+                {
+                  "name": "source_b2",
+                  "endpoints": [
+                    {
+                      "host": "www.source_b2.com",
+                      "port": "221",
+                      "role": "web_lb1"
+                    },
+                    {
+                      "host": "www.source_b2.com",
+                      "port": "222",
+                      "role": "web_lb2"
+                    },
+                    {
+                      "host": "www.source_b2.com",
+                      "port": "223",
+                      "role": "web_lb3"
+                    }
+                  ]
+                },
+                {
+                  "name": "source_b3",
+                  "endpoints": []
+                }
+              ]
+            },
+            {
+              "vendor": "vmware",
+              "product_name": "VmWare vCenter",
+              "sources": []
             }
           ]
         }'))
