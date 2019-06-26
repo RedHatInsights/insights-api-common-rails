@@ -1,19 +1,26 @@
 require "manageiq/api/common/graphql"
 
 RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
-  let!(:source_type) { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
-  let!(:ext_tenant1) { rand(1000).to_s }
-  let!(:tenant1)   { Tenant.create!(:name => "tenant_a", :external_tenant => ext_tenant1) }
-  let!(:identity1) { Base64.encode64({'identity' => { 'account_number' => ext_tenant1 }}.to_json) }
-  let!(:headers)   { { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity1 } }
+  let!(:ext_tenant)   { rand(1000).to_s }
+  let!(:tenant)       { Tenant.create!(:name => "tenant_a", :external_tenant => ext_tenant) }
+  let!(:identity)     { Base64.encode64({'identity' => { 'account_number' => ext_tenant }}.to_json) }
+  let!(:headers)      { { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity } }
 
-  let!(:source_a1)   { Source.create!(:tenant_id => tenant1.id, :uid => "1", :name => "source_a1", :source_type => source_type) }
-  let!(:source_a2)   { Source.create!(:tenant_id => tenant1.id, :uid => "2", :name => "source_a2", :source_type => source_type) }
-  let!(:source_b1)   { Source.create!(:tenant_id => tenant1.id, :uid => "3", :name => "source_b1", :source_type => source_type) }
-  let!(:source_b2)   { Source.create!(:tenant_id => tenant1.id, :uid => "4", :name => "source_b2", :source_type => source_type) }
-  let!(:source_b3)   { Source.create!(:tenant_id => tenant1.id, :uid => "5", :name => "source_b3", :source_type => source_type) }
+  let!(:source_type)  { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
 
-  let!(:graphql_source_query) { { "query" => "{ sources { id name } }" }.to_json }
+  let!(:source_a1)    { Source.create!(:tenant_id => tenant.id, :uid => "1", :name => "source_a1", :source_type => source_type) }
+  let!(:source_a2)    { Source.create!(:tenant_id => tenant.id, :uid => "2", :name => "source_a2", :source_type => source_type) }
+  let!(:source_b1)    { Source.create!(:tenant_id => tenant.id, :uid => "3", :name => "source_b1", :source_type => source_type) }
+  let!(:source_b2)    { Source.create!(:tenant_id => tenant.id, :uid => "4", :name => "source_b2", :source_type => source_type) }
+  let!(:source_b3)    { Source.create!(:tenant_id => tenant.id, :uid => "5", :name => "source_b3", :source_type => source_type) }
+
+  let!(:endpoint_a21) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "121", :role => "web_lb1") }
+  let!(:endpoint_a22) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "122", :role => "web_lb2") }
+  let!(:endpoint_a23) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "123", :role => "web_lb3") }
+
+  let!(:endpoint_b21) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "221", :role => "web_lb1") }
+  let!(:endpoint_b22) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "222", :role => "web_lb2") }
+  let!(:endpoint_b23) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "223", :role => "web_lb3") }
 
   context "querying sources" do
     before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
@@ -196,6 +203,143 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           "sources": [
             {
               "name": "source_b2"
+            }
+          ]
+        }'))
+    end
+  end
+
+  context "querying multiple collections" do
+    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
+
+    it "with no offset or limit returns all resources" do
+      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+        {
+          sources {
+            name
+          },
+          endpoints {
+            host
+            port
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_a1"
+            },
+            {
+              "name": "source_a2"
+            },
+            {
+              "name": "source_b1"
+            },
+            {
+              "name": "source_b2"
+            },
+            {
+              "name": "source_b3"
+            }
+          ],
+          "endpoints": [
+            {
+              "host": "www.source_a2.com",
+              "port": "121"
+            },
+            {
+              "host": "www.source_a2.com",
+              "port": "122"
+            },
+            {
+              "host": "www.source_a2.com",
+              "port": "123"
+            },
+            {
+              "host": "www.source_b2.com",
+              "port": "221"
+            },
+            {
+              "host": "www.source_b2.com",
+              "port": "222"
+            },
+            {
+              "host": "www.source_b2.com",
+              "port": "223"
+            }
+          ]
+        }'))
+    end
+
+    it "honors separate offset and limits" do
+      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+        {
+          sources(offset: 1, limit: 3) {
+            name
+          },
+          endpoints(offset: 3, limit: 2) {
+            host
+            port
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_a2"
+            },
+            {
+              "name": "source_b1"
+            },
+            {
+              "name": "source_b2"
+            }
+          ],
+          "endpoints": [
+            {
+              "host": "www.source_b2.com",
+              "port": "221"
+            },
+            {
+              "host": "www.source_b2.com",
+              "port": "222"
+            }
+          ]
+        }'))
+    end
+
+    it "honors separate filter, offset and limits" do
+      post("/api/v1.0/graphql", :headers => headers, :params => { "query" => '
+        {
+          sources(filter: { name: { starts_with: "source_b" } }, offset: 1, limit: 1) {
+            name
+          },
+          endpoints(filter: { host: { eq: "www.source_a2.com" } }, limit: 2) {
+            host
+            port
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_b2"
+            }
+          ],
+          "endpoints": [
+            {
+              "host": "www.source_a2.com",
+              "port": "121"
+            },
+            {
+              "host": "www.source_a2.com",
+              "port": "122"
             }
           ]
         }'))
