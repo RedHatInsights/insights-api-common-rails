@@ -11,19 +11,19 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
   let!(:source_typeR) { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
   let!(:source_typeV) { SourceType.create(:name => "vmware", :product_name => "VmWare vCenter", :vendor => "vmware") }
 
-  let!(:source_a1)    { Source.create!(:tenant_id => tenant.id, :uid => "1", :name => "source_a1", :source_type => source_typeR) }
-  let!(:source_a2)    { Source.create!(:tenant_id => tenant.id, :uid => "2", :name => "source_a2", :source_type => source_typeR) }
-  let!(:source_b1)    { Source.create!(:tenant_id => tenant.id, :uid => "3", :name => "source_b1", :source_type => source_typeR) }
-  let!(:source_b2)    { Source.create!(:tenant_id => tenant.id, :uid => "4", :name => "source_b2", :source_type => source_typeR) }
-  let!(:source_b3)    { Source.create!(:tenant_id => tenant.id, :uid => "5", :name => "source_b3", :source_type => source_typeR) }
+  let!(:source_a1)    { Source.create!(:tenant => tenant, :uid => "1", :name => "source_a1", :source_type => source_typeR) }
+  let!(:source_a2)    { Source.create!(:tenant => tenant, :uid => "2", :name => "source_a2", :source_type => source_typeR) }
+  let!(:source_b1)    { Source.create!(:tenant => tenant, :uid => "3", :name => "source_b1", :source_type => source_typeR) }
+  let!(:source_b2)    { Source.create!(:tenant => tenant, :uid => "4", :name => "source_b2", :source_type => source_typeR) }
+  let!(:source_b3)    { Source.create!(:tenant => tenant, :uid => "5", :name => "source_b3", :source_type => source_typeR) }
 
-  let!(:endpoint_a21) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "121", :role => "web_lb1") }
-  let!(:endpoint_a22) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "122", :role => "web_lb2") }
-  let!(:endpoint_a23) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_a2.id, :host => "www.source_a2.com", :port => "123", :role => "web_lb3") }
+  let!(:endpoint_a21) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "www.source_a2.com", :port => "121", :role => "web_lb1") }
+  let!(:endpoint_a22) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "www.source_a2.com", :port => "122", :role => "web_lb2") }
+  let!(:endpoint_a23) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "www.source_a2.com", :port => "123", :role => "web_lb3") }
 
-  let!(:endpoint_b21) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "221", :role => "web_lb1") }
-  let!(:endpoint_b22) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "222", :role => "web_lb2") }
-  let!(:endpoint_b23) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "223", :role => "web_lb3") }
+  let!(:endpoint_b21) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "www.source_b2.com", :port => "221", :role => "web_lb1") }
+  let!(:endpoint_b22) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "www.source_b2.com", :port => "222", :role => "web_lb2") }
+  let!(:endpoint_b23) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "www.source_b2.com", :port => "223", :role => "web_lb3") }
 
   let!(:auth_a221)    { Authentication.create!(:tenant => tenant, :resource => endpoint_a22, :authtype => "userpassword", :username => "admin", :password => "secret") }
   let!(:auth_a222)    { Authentication.create!(:tenant => tenant, :resource => endpoint_a22, :authtype => "token") }
