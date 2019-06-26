@@ -25,6 +25,12 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
   let!(:endpoint_b22) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "222", :role => "web_lb2") }
   let!(:endpoint_b23) { Endpoint.create!(:tenant_id => tenant.id, :source_id => source_b2.id, :host => "www.source_b2.com", :port => "223", :role => "web_lb3") }
 
+  let!(:auth_a221)    { Authentication.create!(:tenant => tenant, :resource => endpoint_a22, :authtype => "userpassword", :username => "admin", :password => "secret") }
+  let!(:auth_a222)    { Authentication.create!(:tenant => tenant, :resource => endpoint_a22, :authtype => "token") }
+
+  let!(:auth_b221)    { Authentication.create!(:tenant => tenant, :resource => endpoint_b22, :authtype => "userpassword", :username => "admin", :password => "secret") }
+  let!(:auth_b222)    { Authentication.create!(:tenant => tenant, :resource => endpoint_b22, :authtype => "token") }
+
   context "querying sources" do
     before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
 
@@ -437,7 +443,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
         }'))
     end
 
-    it "honors multi-level associations" do
+    it "honors 2-level associations" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           source_types {
@@ -523,6 +529,136 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             }
           ]
         }'))
+    end
+
+    it "honors 3-level associations" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          source_types(filter: {vendor: {eq: "redhat"}}) {
+            vendor
+            product_name
+            sources {
+              name
+              endpoints {
+                host
+                port
+                role
+                authentications {
+                  authtype
+                  username
+                }
+              }
+            }
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "source_types": [
+            {
+              "vendor": "redhat",
+              "product_name": "RedHat Virtualization",
+              "sources": [
+                {
+                  "name": "source_a1",
+                  "endpoints": []
+                },
+                {
+                  "name": "source_a2",
+                  "endpoints": [
+                    {
+                      "host": "www.source_a2.com",
+                      "port": "121",
+                      "role": "web_lb1",
+                      "authentications": []
+                    },
+                    {
+                      "host": "www.source_a2.com",
+                      "port": "122",
+                      "role": "web_lb2",
+                      "authentications": [
+                        {
+                          "authtype": "userpassword",
+                          "username": "admin"
+                        },
+                        {
+                          "authtype": "token",
+                          "username": null
+                        }
+                      ]
+                    },
+                    {
+                      "host": "www.source_a2.com",
+                      "port": "123",
+                      "role": "web_lb3",
+                      "authentications": []
+                    }
+                  ]
+                },
+                {
+                  "name": "source_b1",
+                  "endpoints": []
+                },
+                {
+                  "name": "source_b2",
+                  "endpoints": [
+                    {
+                      "host": "www.source_b2.com",
+                      "port": "221",
+                      "role": "web_lb1",
+                      "authentications": []
+                    },
+                    {
+                      "host": "www.source_b2.com",
+                      "port": "222",
+                      "role": "web_lb2",
+                      "authentications": [
+                        {
+                          "authtype": "userpassword",
+                          "username": "admin"
+                        },
+                        {
+                          "authtype": "token",
+                          "username": null
+                        }
+                      ]
+                    },
+                    {
+                      "host": "www.source_b2.com",
+                      "port": "223",
+                      "role": "web_lb3",
+                      "authentications": []
+                    }
+                  ]
+                },
+                {
+                  "name": "source_b3",
+                  "endpoints": []
+                }
+              ]
+            }
+          ]
+        }'))
+    end
+  end
+
+  context "querying authentications" do
+    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
+
+    it "must return an error if asking for encrypted attributes" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          authentications {
+            authtype
+            username
+            password
+          }
+        }' }.to_json)
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to be_nil
+      expect(response.parsed_body["errors"].first["message"]).to match("Field 'password' doesn't exist on type 'Authentication'")
     end
   end
 end
