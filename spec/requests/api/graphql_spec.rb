@@ -282,7 +282,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
         }'))
     end
 
-    it "honors separate offset and limits" do
+    it "honors separate offset and limit" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(offset: 1, limit: 3) {
@@ -321,7 +321,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
         }'))
     end
 
-    it "honors separate filter, offset and limits" do
+    it "honors separate filter, offset and limit" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(filter: { name: { starts_with: "source_b" } }, offset: 1, limit: 1) {
@@ -407,7 +407,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
         }'))
     end
 
-    it "honors one-off associations with different offsets and limits" do
+    it "honors one-off associations with different offset and limit" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
           sources(filter: { name: { starts_with: "source_b" } }, offset: 1, limit: 1) {
