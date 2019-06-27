@@ -58,22 +58,28 @@ module ManageIQ
                 "content"     => {
                   "application/json" => {
                     "schema" => {
-                      "type"       => "object",
-                      "properties" => {
-                        "data"   => {
-                          "type"        => "object",
-                          "description" => "Results from the GraphQL query"
-                        },
-                        "errors" => {
-                          "type"        => "array",
-                          "description" => "Errors resulting from the GraphQL query",
-                          "items"       => {
-                            "type" => "object"
-                          }
-                        }
-                      }
+                      "$ref" => "#/components/schemas/GraphQLResponse"
                     }
                   }
+                }
+              }
+            }
+          }
+        end
+
+        def self.openapi_graphql_response
+          {
+            "type"       => "object",
+            "properties" => {
+              "data"   => {
+                "type"        => "object",
+                "description" => "Results from the GraphQL query"
+              },
+              "errors" => {
+                "type"        => "array",
+                "description" => "Errors resulting from the GraphQL query",
+                "items"       => {
+                  "type" => "object"
                 }
               }
             }
