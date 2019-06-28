@@ -17,13 +17,13 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
   let!(:source_b2)    { Source.create!(:tenant => tenant, :uid => "4", :name => "source_b2", :source_type => source_typeR) }
   let!(:source_b3)    { Source.create!(:tenant => tenant, :uid => "5", :name => "source_b3", :source_type => source_typeR) }
 
-  let!(:endpoint_a21) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "www.source_a2.com", :port => "121", :role => "web_lb1") }
-  let!(:endpoint_a22) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "www.source_a2.com", :port => "122", :role => "web_lb2") }
-  let!(:endpoint_a23) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "www.source_a2.com", :port => "123", :role => "web_lb3") }
+  let!(:endpoint_a21) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "source_a2.example.com", :port => "121", :role => "web_lb1") }
+  let!(:endpoint_a22) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "source_a2.example.com", :port => "122", :role => "web_lb2") }
+  let!(:endpoint_a23) { Endpoint.create!(:tenant => tenant, :source => source_a2, :host => "source_a2.example.com", :port => "123", :role => "web_lb3") }
 
-  let!(:endpoint_b21) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "www.source_b2.com", :port => "221", :role => "web_lb1") }
-  let!(:endpoint_b22) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "www.source_b2.com", :port => "222", :role => "web_lb2") }
-  let!(:endpoint_b23) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "www.source_b2.com", :port => "223", :role => "web_lb3") }
+  let!(:endpoint_b21) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "source_b2.example.com", :port => "221", :role => "web_lb1") }
+  let!(:endpoint_b22) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "source_b2.example.com", :port => "222", :role => "web_lb2") }
+  let!(:endpoint_b23) { Endpoint.create!(:tenant => tenant, :source => source_b2, :host => "source_b2.example.com", :port => "223", :role => "web_lb3") }
 
   let!(:auth_a221)    { Authentication.create!(:tenant => tenant, :resource => endpoint_a22, :authtype => "userpassword", :username => "admin", :password => "secret") }
   let!(:auth_a222)    { Authentication.create!(:tenant => tenant, :resource => endpoint_a22, :authtype => "token") }
@@ -255,27 +255,27 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           ],
           "endpoints": [
             {
-              "host": "www.source_a2.com",
+              "host": "source_a2.example.com",
               "port": "121"
             },
             {
-              "host": "www.source_a2.com",
+              "host": "source_a2.example.com",
               "port": "122"
             },
             {
-              "host": "www.source_a2.com",
+              "host": "source_a2.example.com",
               "port": "123"
             },
             {
-              "host": "www.source_b2.com",
+              "host": "source_b2.example.com",
               "port": "221"
             },
             {
-              "host": "www.source_b2.com",
+              "host": "source_b2.example.com",
               "port": "222"
             },
             {
-              "host": "www.source_b2.com",
+              "host": "source_b2.example.com",
               "port": "223"
             }
           ]
@@ -310,11 +310,11 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           ],
           "endpoints": [
             {
-              "host": "www.source_b2.com",
+              "host": "source_b2.example.com",
               "port": "221"
             },
             {
-              "host": "www.source_b2.com",
+              "host": "source_b2.example.com",
               "port": "222"
             }
           ]
@@ -327,7 +327,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           sources(filter: { name: { starts_with: "source_b" } }, offset: 1, limit: 1) {
             name
           },
-          endpoints(filter: { host: { eq: "www.source_a2.com" } }, limit: 2) {
+          endpoints(filter: { host: { eq: "source_a2.example.com" } }, limit: 2) {
             host
             port
           }
@@ -343,11 +343,11 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           ],
           "endpoints": [
             {
-              "host": "www.source_a2.com",
+              "host": "source_a2.example.com",
               "port": "121"
             },
             {
-              "host": "www.source_a2.com",
+              "host": "source_a2.example.com",
               "port": "122"
             }
           ]
@@ -383,17 +383,17 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
               "name": "source_b2",
               "endpoints": [
                 {
-                  "host": "www.source_b2.com",
+                  "host": "source_b2.example.com",
                   "port": "221",
                   "role": "web_lb1"
                 },
                 {
-                  "host": "www.source_b2.com",
+                  "host": "source_b2.example.com",
                   "port": "222",
                   "role": "web_lb2"
                 },
                 {
-                  "host": "www.source_b2.com",
+                  "host": "source_b2.example.com",
                   "port": "223",
                   "role": "web_lb3"
                 }
@@ -428,12 +428,12 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
               "name": "source_b2",
               "endpoints": [
                 {
-                  "host": "www.source_b2.com",
+                  "host": "source_b2.example.com",
                   "port": "221",
                   "role": "web_lb1"
                 },
                 {
-                  "host": "www.source_b2.com",
+                  "host": "source_b2.example.com",
                   "port": "222",
                   "role": "web_lb2"
                 }
@@ -476,17 +476,17 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                   "name": "source_a2",
                   "endpoints": [
                     {
-                      "host": "www.source_a2.com",
+                      "host": "source_a2.example.com",
                       "port": "121",
                       "role": "web_lb1"
                     },
                     {
-                      "host": "www.source_a2.com",
+                      "host": "source_a2.example.com",
                       "port": "122",
                       "role": "web_lb2"
                     },
                     {
-                      "host": "www.source_a2.com",
+                      "host": "source_a2.example.com",
                       "port": "123",
                       "role": "web_lb3"
                     }
@@ -500,17 +500,17 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                   "name": "source_b2",
                   "endpoints": [
                     {
-                      "host": "www.source_b2.com",
+                      "host": "source_b2.example.com",
                       "port": "221",
                       "role": "web_lb1"
                     },
                     {
-                      "host": "www.source_b2.com",
+                      "host": "source_b2.example.com",
                       "port": "222",
                       "role": "web_lb2"
                     },
                     {
-                      "host": "www.source_b2.com",
+                      "host": "source_b2.example.com",
                       "port": "223",
                       "role": "web_lb3"
                     }
@@ -568,13 +568,13 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                   "name": "source_a2",
                   "endpoints": [
                     {
-                      "host": "www.source_a2.com",
+                      "host": "source_a2.example.com",
                       "port": "121",
                       "role": "web_lb1",
                       "authentications": []
                     },
                     {
-                      "host": "www.source_a2.com",
+                      "host": "source_a2.example.com",
                       "port": "122",
                       "role": "web_lb2",
                       "authentications": [
@@ -589,7 +589,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                       ]
                     },
                     {
-                      "host": "www.source_a2.com",
+                      "host": "source_a2.example.com",
                       "port": "123",
                       "role": "web_lb3",
                       "authentications": []
@@ -604,13 +604,13 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                   "name": "source_b2",
                   "endpoints": [
                     {
-                      "host": "www.source_b2.com",
+                      "host": "source_b2.example.com",
                       "port": "221",
                       "role": "web_lb1",
                       "authentications": []
                     },
                     {
-                      "host": "www.source_b2.com",
+                      "host": "source_b2.example.com",
                       "port": "222",
                       "role": "web_lb2",
                       "authentications": [
@@ -625,7 +625,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                       ]
                     },
                     {
-                      "host": "www.source_b2.com",
+                      "host": "source_b2.example.com",
                       "port": "223",
                       "role": "web_lb3",
                       "authentications": []
