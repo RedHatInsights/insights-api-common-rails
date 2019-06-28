@@ -11,6 +11,10 @@ module ManageIQ
           @offset     = (offset || 0).to_i.clamp(0, Float::INFINITY)
         end
 
+        def records
+          @records ||= @base_query.order(:id).limit(limit).offset(offset)
+        end
+
         def response
           {
             "meta"  => metadata_hash,
@@ -81,10 +85,6 @@ module ManageIQ
 
         def count
           @count ||= @base_query.count
-        end
-
-        def records
-          @records ||= @base_query.order(:id).limit(limit).offset(offset)
         end
       end
     end

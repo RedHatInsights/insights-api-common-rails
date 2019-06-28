@@ -2,8 +2,9 @@ require "graphql"
 require "graphql/batch"
 require "graphql/preload"
 
+require "manageiq/api/common/graphql/association_loader"
+require "manageiq/api/common/graphql/associated_records"
 require "manageiq/api/common/graphql/generator"
-
 require "manageiq/api/common/graphql/types/big_int"
 require "manageiq/api/common/graphql/types/date_time"
 require "manageiq/api/common/graphql/types/query_filter"
@@ -84,6 +85,10 @@ module ManageIQ
               }
             }
           }
+        end
+
+        def self.search_options(scope, args)
+          args[:id] ? scope.where(:id => args[:id]) : scope
         end
 
         # Following code is auto-generated via rails generate graphql:install

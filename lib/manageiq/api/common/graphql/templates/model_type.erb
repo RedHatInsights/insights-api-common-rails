@@ -1,10 +1,6 @@
 <%= klass_name %>Type = ::GraphQL::ObjectType.define do
   name "<%= klass_name %>"
   description "A <%= klass_name %>"
-<% if model_is_associated %>
-
-  implements ::GraphQL::Relay::Node.interface
-<% end %>
 
 <% model_properties.each do |property| %>
 <%   property_name, property_type, property_description = property %>
@@ -17,10 +13,22 @@
 <% end %>
 <% if model_associations.present? %>
 <%   model_associations.each do |association| %>
-<%     connection = "#{association.pluralize}" %>
-<%     connection_type   = "#{association.camelize.singularize}Type.connection_type" %>
-  connection :<%= connection %>, <%= connection_type %>, "The <%= connection %> associated with this <%= klass_name %>Type" do
-    preload :<%= association %>
+<%     associations = association.pluralize %>
+<%     association_class_name  = association.camelize.singularize %>
+
+  field :<%= associations %> do
+    description "The <%= associations %> associated with this <%= klass_name %>"
+    type types[<%= "#{association_class_name}Type" %>]
+
+    argument :id, types.ID
+    argument :offset, types.Int, "The number of <%= associations %> to skip before starting to collect the result set"
+    argument :limit,  types.Int, "The number of <%= associations %> to return"
+
+    preload :<%= associations %>
+
+    resolve lambda { |obj, args, _ctx|
+      ::ManageIQ::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", args).load(obj)
+    }
   end
 <%   end %>
 <% end %>

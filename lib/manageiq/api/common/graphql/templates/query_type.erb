@@ -11,19 +11,26 @@ QueryType = ::GraphQL::ObjectType.define do
     model_class   = klass_name.constantize
     resource_type = "Api::#{version_namespace}::GraphQL::#{klass_name}Type".constantize
 
-    connection collection, !resource_type.connection_type, "List available #{klass_names}" do
-      argument :id, types.ID
-      argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter"
+    field collection do
+      description "List available #{collection}"
+      type types[resource_type]
 
+      argument :id, types.ID
+      argument :offset, types.Int, "The number of #{collection} to skip before starting to collect the result set"
+      argument :limit,  types.Int, "The number of #{collection} to return"
+      argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
       resolve lambda { |_obj, args, _ctx|
-        scope = if args[:filter]
-                  ::ManageIQ::API::Common::Filter.new(model_class,
-                                                      ActionController::Parameters.new(args[:filter]),
-                                                      ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"].definitions[klass_name]).apply
-                else
-                  model_class
-                end
-        args[:id] ? scope.where(:id => args[:id]) : scope.all
+        scope = model_class
+        if args[:filter]
+          scope = ::ManageIQ::API::Common::Filter.new(
+            scope,
+            ActionController::Parameters.new(args[:filter]),
+            ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"].definitions[klass_name]).apply
+        end
+        scope = ::ManageIQ::API::Common::GraphQL.search_options(scope, args)
+        ::ManageIQ::API::Common::PaginatedResponse.new(
+          base_query: scope, request: nil, limit: args[:limit], offset: args[:offset]
+        ).records
       }
     end
   end
