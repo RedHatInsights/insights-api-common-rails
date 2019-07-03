@@ -2,9 +2,9 @@ require "manageiq/password/password_mixin"
 
 class Authentication < ApplicationRecord
   include ::ManageIQ::Password::PasswordMixin
-  include TenancyConcern
-
   encrypt_column :password
+
+  include TenancyConcern
 
   belongs_to :resource, :polymorphic => true
 end
