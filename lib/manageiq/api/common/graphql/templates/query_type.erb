@@ -22,10 +22,12 @@ QueryType = ::GraphQL::ObjectType.define do
       resolve lambda { |_obj, args, _ctx|
         scope = model_class
         if args[:filter]
+          openapi_doc = ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"]
+          openapi_schema_name, _schema = ::ManageIQ::API::Common::GraphQL::Generator.openapi_schema(openapi_doc, klass_name)
           scope = ::ManageIQ::API::Common::Filter.new(
             scope,
             ActionController::Parameters.new(args[:filter]),
-            ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"].definitions[klass_name]).apply
+            openapi_doc.definitions[openapi_schema_name]).apply
         end
         scope = ::ManageIQ::API::Common::GraphQL.search_options(scope, args)
         ::ManageIQ::API::Common::PaginatedResponse.new(

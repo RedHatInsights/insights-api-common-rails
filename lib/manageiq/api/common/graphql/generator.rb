@@ -8,6 +8,14 @@ module ManageIQ
           PARAMETERS_PATH = "/components/parameters".freeze
           SCHEMAS_PATH = "/components/schemas".freeze
 
+          def self.openapi_schema(openapi_doc, klass_name)
+            schemas = openapi_doc.content.dig(*path_parts(SCHEMAS_PATH))
+            [klass_name, "#{klass_name}Out"].each do |name|
+              schema = schemas[name]
+              return [name, schema] if schema
+            end
+          end
+
           def self.path_parts(openapi_path)
             openapi_path.split("/")[1..-1]
           end
@@ -62,7 +70,8 @@ module ManageIQ
           def self.init_schema(request, schema_overlay = {})
             api_version       = ::ManageIQ::API::Common::GraphQL.version(request)
             version_namespace = "V#{api_version.tr('.', 'x')}"
-            openapi_content   = ::ManageIQ::API::Common::OpenApi::Docs.instance[api_version].content
+            openapi_doc       = ::ManageIQ::API::Common::OpenApi::Docs.instance[api_version]
+            openapi_content   = openapi_doc.content
 
             api_namespace = if ::Api.const_defined?(version_namespace, false)
                               ::Api.const_get(version_namespace)
@@ -88,8 +97,8 @@ module ManageIQ
 
               collection = rmatch[2]
               klass_name = collection.camelize.singularize
-              this_schema = openapi_content.dig(*path_parts(SCHEMAS_PATH), klass_name)
-              next if this_schema["type"] != "object" || this_schema["properties"].nil?
+              _schema_name, this_schema = openapi_schema(openapi_doc, klass_name)
+              next if this_schema.nil? || this_schema["type"] != "object" || this_schema["properties"].nil?
 
               collections << collection
 
