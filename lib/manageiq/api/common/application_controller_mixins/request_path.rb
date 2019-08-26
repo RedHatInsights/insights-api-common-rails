@@ -8,7 +8,7 @@ module ManageIQ
           end
 
           def request_path_parts
-            @request_path_parts ||= request_path.match(/\/(?<full_version_string>v\d+.\d+)\/(?<primary_collection_name>\w+)\/?(?<primary_collection_id>\d+)?\/?(?<subcollection_name>\w+)?/)&.named_captures || {}
+            @request_path_parts ||= request_path.match(/\/(?<full_version_string>v\d+.\d+)\/(?<primary_collection_name>\w+)(\/(?<primary_collection_id>\d+)(\/(?<subcollection_name>\w+))?)?/)&.named_captures || {}
           end
 
           def subcollection?
