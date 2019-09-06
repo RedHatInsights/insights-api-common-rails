@@ -3,14 +3,33 @@ module ManageIQ
     module Common
       module ApplicationControllerMixins
         module InputValidation
+          class BodyParseError < ::Exception
+          end
+
         private
+          def self.included(other)
+            ActionController::Parameters.action_on_unpermitted_parameters = :raise
+
+            other.before_action(:validate_request)
+
+            other.rescue_from ActionController::UnpermittedParameters do |exception|
+              error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
+              render :json => error_document.to_h, :status => error_document.status
+            end
+
+            other.rescue_from ManageIQ::API::Common::ApplicationControllerMixins::InputValidation::BodyParseError do |exception|
+              error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, "Failed to parse request body, expected JSON")
+              render :json => error_document.to_h, :status => error_document.status
+            end
+          end
+
           def body_params
             @body_params ||= begin
-              raw_body = request.body.read
-              parsed_body = JSON.parse(raw_body)
-              ActionController::Parameters.new(parsed_body)
+              raw_body       = request.body.read
+              parsed_body    = JSON.parse(raw_body)
+              ActionController::Parameters.new(parsed_body).permit!
             rescue JSON::ParserError
-              raise Sources::Api::BodyParseError
+              raise ManageIQ::API::Common::ApplicationControllerMixins::InputValidation::BodyParseError
             end
           end
 

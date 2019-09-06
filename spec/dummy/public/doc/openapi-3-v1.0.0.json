@@ -48,6 +48,34 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create a new Authentication",
+        "operationId": "createAuthentication",
+        "description": "Creates a Authentication object",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Authentication"
+              }
+            }
+          },
+          "description": "Authentication attributes to create",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Authentication creation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Authentication"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/authentications/{id}": {
@@ -470,6 +498,7 @@
     },
     "schemas": {
       "Authentication": {
+        "additionalProperties": false,
         "type": "object",
         "properties": {
           "authtype": {
@@ -506,6 +535,12 @@
           "username": {
             "example": "user@example.com",
             "type": "string"
+          },
+          "hash": {
+            "type": "object"
+          },
+          "array": {
+            "type": "array"
           }
         }
       },
