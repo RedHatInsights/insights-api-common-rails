@@ -3,6 +3,6 @@ class ApplicationController < ActionController::Base
 
   include ManageIQ::API::Common::ApplicationControllerMixins::ApiDoc
   include ManageIQ::API::Common::ApplicationControllerMixins::Common
-  include ManageIQ::API::Common::ApplicationControllerMixins::InputValidation
+  include ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation
   include ManageIQ::API::Common::ApplicationControllerMixins::RequestPath
 end
