@@ -67,6 +67,16 @@ module ManageIQ
             field_resolvers
           end
 
+          def self.collection_schema_overlay(schema_overlay, collection)
+            collection_schema_overlay = {}
+            schema_overlay.keys.each do |collection_regex|
+              next unless collection.match(collection_regex)
+
+              collection_schema_overlay.merge!(schema_overlay.fetch_path(collection_regex) || {})
+            end
+            collection_schema_overlay
+          end
+
           def self.init_schema(request, schema_overlay = {})
             api_version       = ::ManageIQ::API::Common::GraphQL.version(request)
             version_namespace = "V#{api_version.tr('.', 'x')}"

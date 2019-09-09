@@ -11,6 +11,9 @@ QueryType = ::GraphQL::ObjectType.define do
     model_class   = klass_name.constantize
     resource_type = "Api::#{version_namespace}::GraphQL::#{klass_name}Type".constantize
 
+    collection_schema_overlay = ::ManageIQ::API::Common::GraphQL::Generator.collection_schema_overlay(schema_overlay, collection)
+    base_query                = collection_schema_overlay["base_query"]
+
     field collection do
       description "List available #{collection}"
       type types[resource_type]
@@ -19,8 +22,14 @@ QueryType = ::GraphQL::ObjectType.define do
       argument :offset, types.Int, "The number of #{collection} to skip before starting to collect the result set"
       argument :limit,  types.Int, "The number of #{collection} to return"
       argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
-      resolve lambda { |_obj, args, _ctx|
-        scope = model_class
+      resolve lambda { |_obj, args, ctx|
+        if base_query.present?
+          impl, method = base_query.split('.')
+          scope = impl.constantize.send(method, model_class, ctx)
+        else
+          scope = model_class
+        end
+
         if args[:filter]
           openapi_doc = ::ManageIQ::API::Common::OpenApi::Docs.instance["<%= api_version %>"]
           openapi_schema_name, _schema = ::ManageIQ::API::Common::GraphQL::Generator.openapi_schema(openapi_doc, klass_name)
