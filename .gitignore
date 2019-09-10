@@ -13,7 +13,6 @@
 /Gemfile.lock
 /log/
 /pkg/
-/spec/dummy/db/schema.rb
 /spec/reports/
 /tmp/
 /v2_key

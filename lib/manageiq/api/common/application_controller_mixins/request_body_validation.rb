@@ -42,9 +42,10 @@ module ManageIQ
             return unless request.post? || request.patch?
             return unless self.class.openapi_enabled
 
-            api_version = self.class.send(:api_version)[1..-1].sub(/x/, ".")
+            raw_api_version = try(:api_version) || self.class.send(:api_version)
+            api_version     = raw_api_version[1..-1].sub(/x/, ".")
 
-            self.class.send(:api_doc).validate!(
+            self.class.send(:api_doc_for_version, raw_api_version).validate!(
               request.method,
               request.path,
               api_version,

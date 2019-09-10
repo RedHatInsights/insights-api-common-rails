@@ -446,7 +446,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     it "honors 2-level associations" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
-          source_types {
+          source_types(filter: {name: {eq: ["rhev", "vmware"]}}) {
             vendor
             product_name
             sources {
