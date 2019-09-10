@@ -72,7 +72,7 @@ module ManageIQ
             schema_overlay.keys.each do |collection_regex|
               next unless collection.match(collection_regex)
 
-              collection_schema_overlay.merge!(schema_overlay.fetch_path(collection_regex) || {})
+              collection_schema_overlay.merge!(schema_overlay[collection_regex] || {})
             end
             collection_schema_overlay
           end
