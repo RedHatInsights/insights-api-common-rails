@@ -24,8 +24,7 @@ QueryType = ::GraphQL::ObjectType.define do
       argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
       resolve lambda { |_obj, args, ctx|
         if base_query.present?
-          impl, method = base_query.split('.')
-          scope = impl.constantize.send(method, model_class, ctx)
+          scope = base_query.call(model_class, ctx)
         else
           scope = model_class
         end
