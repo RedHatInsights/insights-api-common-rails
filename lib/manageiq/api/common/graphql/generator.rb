@@ -68,13 +68,11 @@ module ManageIQ
           end
 
           def self.collection_schema_overlay(schema_overlay, collection)
-            collection_schema_overlay = {}
-            schema_overlay.keys.each do |collection_regex|
+            schema_overlay.keys.each_with_object({}) do |collection_regex, collection_schema_overlay|
               next unless collection.match(collection_regex)
 
               collection_schema_overlay.merge!(schema_overlay[collection_regex] || {})
             end
-            collection_schema_overlay
           end
 
           def self.init_schema(request, schema_overlay = {})
