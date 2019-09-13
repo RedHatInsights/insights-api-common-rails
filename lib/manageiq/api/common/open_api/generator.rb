@@ -59,7 +59,45 @@ module ManageIQ
           end
 
           def schemas
-            @schemas ||= {}
+            @schemas ||= {
+              "CollectionLinks" => {
+                "type"       => "object",
+                "properties" => {
+                  "first" => {
+                    "type" => "string"
+                  },
+                  "last"  => {
+                    "type" => "string"
+                  },
+                  "next"  => {
+                    "type" => "string"
+                  },
+                  "prev"  => {
+                    "type" => "string"
+                  },
+                }
+              },
+              "CollectionMetadata" => {
+                "type"       => "object",
+                "properties" => {
+                  "count"  => {
+                    "type" => "integer"
+                  },
+                  "limit"  => {
+                    "type" => "integer"
+                  },
+                  "offset" => {
+                    "type" => "integer"
+                  }
+                }
+              },
+              "ID" => {
+                "type" => "string",
+                "description" => "ID of the resource",
+                "pattern" => "^\\d+$",
+                "readOnly" => true,
+              },
+            }
           end
 
           def build_schema(klass_name)
@@ -68,7 +106,42 @@ module ManageIQ
           end
 
           def parameters
-            @parameters ||= {}
+            @parameters ||= {
+              "QueryFilter" => {
+                "in"          => "query",
+                "name"        => "filter",
+                "description" => "Filter for querying collections.",
+                "required"    => false,
+                "style"       => "deepObject",
+                "explode"     => true,
+                "schema"      => {
+                  "type" => "object"
+                }
+              },
+              "QueryLimit" => {
+                "in"          => "query",
+                "name"        => "limit",
+                "description" => "The numbers of items to return per page.",
+                "required"    => false,
+                "schema"      => {
+                  "type"    => "integer",
+                  "minimum" => 1,
+                  "maximum" => 1000,
+                  "default" => 100
+                }
+              },
+              "QueryOffset" => {
+                "in"          => "query",
+                "name"        => "offset",
+                "description" => "The number of items to skip before starting to collect the result set.",
+                "required"    => false,
+                "schema"      => {
+                  "type"    => "integer",
+                  "minimum" => 0,
+                  "default" => 0
+                }
+              },
+            }
           end
 
           def build_parameter(name, value = nil)
