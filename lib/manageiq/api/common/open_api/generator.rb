@@ -336,6 +336,16 @@ module ManageIQ
               properties_value.sort.to_h
             end
           end
+
+          def run(graphql = false)
+            new_content = openapi_contents
+            new_content["paths"] = build_paths.sort.to_h
+            new_content["components"] ||= {}
+            new_content["components"]["schemas"]    = schemas.sort.each_with_object({})    { |(name, val), h| h[name] = val || openapi_contents["components"]["schemas"][name]    || {} }
+            new_content["components"]["parameters"] = parameters.sort.each_with_object({}) { |(name, val), h| h[name] = val || openapi_contents["components"]["parameters"][name] || {} }
+            File.write(openapi_file, JSON.pretty_generate(new_content) + "\n")
+            ManageIQ::API::Common::GraphQL::Generator.generate(api_version, new_content) if graphql
+          end
         end
       end
     end
