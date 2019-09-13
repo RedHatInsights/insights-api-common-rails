@@ -204,6 +204,57 @@ module ManageIQ
               }
             }
           end
+
+          def openapi_schema_properties_value(klass_name, model, key, value)
+            if key == model.primary_key
+              {
+                "$ref" => "##{SCHEMAS_PATH}/ID"
+              }
+            elsif key.ends_with?("_id")
+              properties_value = {}
+              if GENERATOR_READ_ONLY_DEFINITIONS.include?(klass_name)
+                # Everything under providers data is read only for now
+                properties_value["$ref"] = "##{SCHEMAS_PATH}/ID"
+              else
+                properties_value["$ref"] = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, "$ref") || "##{SCHEMAS_PATH}/ID"
+              end
+              properties_value
+            else
+              properties_value = {
+                "type" => "string"
+              }
+
+              case value.sql_type_metadata.type
+              when :datetime
+                properties_value["format"] = "date-time"
+              when :integer
+                properties_value["type"] = "integer"
+              when :float
+                properties_value["type"] = "number"
+              when :boolean
+                properties_value["type"] = "boolean"
+              when :jsonb
+                properties_value["type"] = "object"
+                ['type', 'items', 'properties', 'additionalProperties'].each do |property_key|
+                  prop = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, property_key)
+                  properties_value[property_key] = prop if !prop.nil?
+                end
+              end
+
+              # Take existing attrs, that we won't generate
+              ['example', 'format', 'readOnly', 'title', 'description'].each do |property_key|
+                property_value                 = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, property_key)
+                properties_value[property_key] = property_value if property_value
+              end
+
+              if GENERATOR_READ_ONLY_DEFINITIONS.include?(klass_name) || GENERATOR_READ_ONLY_ATTRIBUTES.include?(key.to_sym)
+                # Everything under providers data is read only for now
+                properties_value['readOnly'] = true
+              end
+
+              properties_value.sort.to_h
+            end
+          end
         end
       end
     end
