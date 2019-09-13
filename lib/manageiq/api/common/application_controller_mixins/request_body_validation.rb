@@ -27,7 +27,7 @@ module ManageIQ
           def body_params
             @body_params ||= begin
               raw_body    = request.body.read
-              parsed_body = JSON.parse(raw_body)
+              parsed_body = raw_body.blank? ? {} : JSON.parse(raw_body)
               ActionController::Parameters.new(parsed_body).permit!
             rescue JSON::ParserError
               raise ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation::BodyParseError

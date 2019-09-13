@@ -7,8 +7,7 @@ RSpec.describe "ManageIQ::API::Common::ApplicationController Body", :type => :re
   it "empty body" do
     post("/api/v1.0/authentications", :headers => headers, :params => "")
 
-    expect(response.status).to eq(400)
-    expect(response.parsed_body).to eq("errors" => [{"detail" => "Failed to parse request body, expected JSON", "status" => 400}])
+    expect(response.status).to eq(200)
   end
 
   it "unpermitted key" do
