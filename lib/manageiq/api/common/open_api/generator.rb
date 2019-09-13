@@ -149,6 +149,14 @@ module ManageIQ
             "##{PARAMETERS_PATH}/#{name}"
           end
 
+          def openapi_schema(klass_name)
+            {
+              "type"                 => "object",
+              "properties"           => openapi_schema_properties(klass_name),
+              "additionalProperties" => false
+            }
+          end
+
           def openapi_list_description(klass_name, primary_collection)
             primary_collection = nil if primary_collection == klass_name
             {
