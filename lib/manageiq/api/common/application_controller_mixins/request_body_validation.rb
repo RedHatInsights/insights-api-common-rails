@@ -7,6 +7,7 @@ module ManageIQ
           end
 
           def self.included(other)
+            @@openapi_enabled = true
             ActionController::Parameters.action_on_unpermitted_parameters = :raise
 
             other.before_action(:validate_request)
@@ -38,7 +39,7 @@ module ManageIQ
           # - only for HTTP POST/PATCH
           def validate_request
             return unless request.post? || request.patch?
-            return unless self.class.to_s.split('::').length > 2
+            return unless @@openapi_enabled
 
             api_version = self.class.send(:api_version)[1..-1].sub(/x/, ".")
 
