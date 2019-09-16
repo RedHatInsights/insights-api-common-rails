@@ -1,10 +1,6 @@
 def update_or_create(model, attributes)
   obj = model.find_by(:name => attributes[:name])
-  if obj
-    obj.update_attributes!(attributes.except(:name))
-  else
-    model.create!(attributes)
-  end
+  obj ? obj.update!(attributes.except(:name)) : model.create!(attributes)
 end
 
 openshift_json_schema = {

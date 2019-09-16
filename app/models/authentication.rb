@@ -10,11 +10,7 @@ class Authentication < ActiveRecord::Base
   validates :encryption, :presence => true
 
   def secret=(secret)
-    if encryption.nil?
-      self.encryption = Encryption.new(:secret => secret)
-    else
-      encryption.update_attributes(:secret => secret)
-    end
+    encryption.nil? ? self.encryption = Encryption.new(:secret => secret) : encryption.update(:secret => secret)
   end
 
   def secret
