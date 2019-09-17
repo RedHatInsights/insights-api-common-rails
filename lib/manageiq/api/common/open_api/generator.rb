@@ -346,6 +346,38 @@ module ManageIQ
             File.write(openapi_file, JSON.pretty_generate(new_content) + "\n")
             ManageIQ::API::Common::GraphQL::Generator.generate(api_version, new_content) if graphql
           end
+
+          def openapi_schema_properties(klass_name)
+            model = klass_name.constantize
+            model.columns_hash.map do |key, value|
+              unless(generator_blacklist_allowed_attributes[key.to_sym] || []).include?(klass_name)
+                next if generator_blacklist_attributes.include?(key.to_sym)
+              end
+
+              if generator_blacklist_substitute_attributes.include?(key.to_sym)
+                generator_blacklist_substitute_attributes[key.to_sym]
+              else
+                [key, openapi_schema_properties_value(klass_name, model, key, value)]
+              end
+            end.compact.sort.to_h
+          end
+
+          def generator_blacklist_attributes
+            @generator_blacklist_attributes ||= [
+              :resource_timestamp,
+              :resource_timestamps,
+              :resource_timestamps_max,
+              :tenant_id,
+            ].to_set.freeze
+          end
+
+          def generator_blacklist_allowed_attributes
+            @generator_blacklist_allowed_attributes ||= {}
+          end
+
+          def generator_blacklist_substitute_attributes
+            @generator_blacklist_substitute_attributes ||= {}
+          end
         end
       end
     end
