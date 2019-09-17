@@ -338,7 +338,7 @@ module ManageIQ
           end
 
           def run(graphql = false)
-            new_content = openapi_contents
+            new_content = openapi_contents.dup
             new_content["paths"] = build_paths.sort.to_h
             new_content["components"] ||= {}
             new_content["components"]["schemas"]    = schemas.sort.each_with_object({})    { |(name, val), h| h[name] = val || openapi_contents["components"]["schemas"][name]    || {} }
