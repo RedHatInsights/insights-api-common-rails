@@ -293,7 +293,7 @@ module ManageIQ
               }
             elsif key.ends_with?("_id")
               properties_value = {}
-              if GENERATOR_READ_ONLY_DEFINITIONS.include?(klass_name)
+              if generator_read_only_definitions.include?(klass_name)
                 # Everything under providers data is read only for now
                 properties_value["$ref"] = "##{SCHEMAS_PATH}/ID"
               else
@@ -328,7 +328,7 @@ module ManageIQ
                 properties_value[property_key] = property_value if property_value
               end
 
-              if GENERATOR_READ_ONLY_DEFINITIONS.include?(klass_name) || GENERATOR_READ_ONLY_ATTRIBUTES.include?(key.to_sym)
+              if generator_read_only_definitions.include?(klass_name) || generator_read_only_attributes.include?(key.to_sym)
                 # Everything under providers data is read only for now
                 properties_value['readOnly'] = true
               end
@@ -377,6 +377,19 @@ module ManageIQ
 
           def generator_blacklist_substitute_attributes
             @generator_blacklist_substitute_attributes ||= {}
+          end
+
+          def generator_read_only_attributes
+            @generator_read_only_attributes ||= [
+              :archived_at,
+              :created_at,
+              :last_seen_at,
+              :updated_at,
+            ].to_set.freeze
+          end
+
+          def generator_read_only_definitions
+            @generator_read_only_definitions ||= [].to_set.freeze
           end
         end
       end
