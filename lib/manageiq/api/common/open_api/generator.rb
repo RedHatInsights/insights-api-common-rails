@@ -60,7 +60,7 @@ module ManageIQ
 
           def schemas
             @schemas ||= {
-              "CollectionLinks" => {
+              "CollectionLinks"    => {
                 "type"       => "object",
                 "properties" => {
                   "first" => {
@@ -91,11 +91,11 @@ module ManageIQ
                   }
                 }
               },
-              "ID" => {
-                "type" => "string",
+              "ID"                 => {
+                "type"        => "string",
                 "description" => "ID of the resource",
-                "pattern" => "^\\d+$",
-                "readOnly" => true,
+                "pattern"     => "^\\d+$",
+                "readOnly"    => true,
               },
             }
           end
@@ -118,7 +118,7 @@ module ManageIQ
                   "type" => "object"
                 }
               },
-              "QueryLimit" => {
+              "QueryLimit"  => {
                 "in"          => "query",
                 "name"        => "limit",
                 "description" => "The numbers of items to return per page.",
@@ -293,12 +293,12 @@ module ManageIQ
               }
             elsif key.ends_with?("_id")
               properties_value = {}
-              if generator_read_only_definitions.include?(klass_name)
-                # Everything under providers data is read only for now
-                properties_value["$ref"] = "##{SCHEMAS_PATH}/ID"
-              else
-                properties_value["$ref"] = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, "$ref") || "##{SCHEMAS_PATH}/ID"
-              end
+              properties_value["$ref"] = if generator_read_only_definitions.include?(klass_name)
+                                           # Everything under providers data is read only for now
+                                           "##{SCHEMAS_PATH}/ID"
+                                         else
+                                           openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, "$ref") || "##{SCHEMAS_PATH}/ID"
+                                         end
               properties_value
             else
               properties_value = {
@@ -318,7 +318,7 @@ module ManageIQ
                 properties_value["type"] = "object"
                 ['type', 'items', 'properties', 'additionalProperties'].each do |property_key|
                   prop = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, property_key)
-                  properties_value[property_key] = prop if !prop.nil?
+                  properties_value[property_key] = prop unless prop.nil?
                 end
               end
 
@@ -350,7 +350,7 @@ module ManageIQ
           def openapi_schema_properties(klass_name)
             model = klass_name.constantize
             model.columns_hash.map do |key, value|
-              unless(generator_blacklist_allowed_attributes[key.to_sym] || []).include?(klass_name)
+              unless (generator_blacklist_allowed_attributes[key.to_sym] || []).include?(klass_name)
                 next if generator_blacklist_attributes.include?(key.to_sym)
               end
 
@@ -403,32 +403,32 @@ module ManageIQ
               expected_paths[sub_path] ||= {}
               expected_paths[sub_path][verb] =
                 case route.action
-                  when "index"   then openapi_list_description(klass_name, primary_collection)
-                  when "show"    then openapi_show_description(klass_name)
-                  when "destroy" then openapi_destroy_description(klass_name)
-                  when "create"  then openapi_create_description(klass_name)
-                  when "update"  then openapi_update_description(klass_name, verb)
-                  else                handle_custom_route_action(route.action.camelize, verb, primary_collection)
+                when "index"   then openapi_list_description(klass_name, primary_collection)
+                when "show"    then openapi_show_description(klass_name)
+                when "destroy" then openapi_destroy_description(klass_name)
+                when "create"  then openapi_create_description(klass_name)
+                when "update"  then openapi_update_description(klass_name, verb)
+                else handle_custom_route_action(route.action.camelize, verb, primary_collection)
                 end
 
-              unless expected_paths[sub_path][verb]
-                # If it's not generic action but a custom method like e.g. `post "order", :to => "service_plans#order"`, we will
-                # try to take existing schema, because the description, summary, etc. are likely to be custom.
-                expected_paths[sub_path][verb] =
-                  case verb
-                  when "post"
-                    if sub_path == "/graphql" && route.action == "query"
-                      schemas["GraphQLResponse"] = ::ManageIQ::API::Common::GraphQL.openapi_graphql_response
-                      ::ManageIQ::API::Common::GraphQL.openapi_graphql_description
-                    else
-                      openapi_contents.dig("paths", sub_path, verb) || openapi_create_description(klass_name)
-                    end
-                  when "get"
-                    openapi_contents.dig("paths", sub_path, verb) || openapi_show_description(klass_name)
+              next if expected_paths[sub_path][verb]
+
+              # If it's not generic action but a custom method like e.g. `post "order", :to => "service_plans#order"`, we will
+              # try to take existing schema, because the description, summary, etc. are likely to be custom.
+              expected_paths[sub_path][verb] =
+                case verb
+                when "post"
+                  if sub_path == "/graphql" && route.action == "query"
+                    schemas["GraphQLResponse"] = ::ManageIQ::API::Common::GraphQL.openapi_graphql_response
+                    ::ManageIQ::API::Common::GraphQL.openapi_graphql_description
                   else
-                    openapi_contents.dig("paths", sub_path, verb)
+                    openapi_contents.dig("paths", sub_path, verb) || openapi_create_description(klass_name)
                   end
-              end
+                when "get"
+                  openapi_contents.dig("paths", sub_path, verb) || openapi_show_description(klass_name)
+                else
+                  openapi_contents.dig("paths", sub_path, verb)
+                end
             end
           end
 
