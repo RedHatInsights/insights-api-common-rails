@@ -1,6 +1,6 @@
 describe ManageIQ::API::Common::ApplicationControllerMixins::RequestPath do
   let(:test_class) do
-    Class.new do
+    Class.new(ApplicationController) do
       include ManageIQ::API::Common::ApplicationControllerMixins::RequestPath
 
       def initialize(request_uri)
@@ -27,11 +27,12 @@ describe ManageIQ::API::Common::ApplicationControllerMixins::RequestPath do
       expect(test_class.new("/v1.0/primary/1/").subcollection?).to      eq(false)
       expect(test_class.new("/v1.0/primary/1/sub").subcollection?).to   eq(true)
       expect(test_class.new("/v1.0/primary/1/sub/").subcollection?).to  eq(true)
-      expect(test_class.new("/v1.0/primary/a_b/sub").subcollection?).to eq(true)
     end
 
     it "invalid paths" do
       expect(test_class.new("/primary/abc/sub").subcollection?).to eq(false)
+      expect { test_class.new("/v1.0/primary/a_b/sub").subcollection? }.to raise_error(/ID is invalid/)
+      expect { test_class.new("/v1.0/primary/1a/sub").subcollection? }.to raise_error(/ID is invalid/)
     end
   end
 
@@ -45,11 +46,12 @@ describe ManageIQ::API::Common::ApplicationControllerMixins::RequestPath do
       expect(test_class.new("/v1.0/primary/1/").request_path_parts).to      eq("full_version_string" => "v1.0", "primary_collection_id" => "1",   "primary_collection_name" => "primary", "subcollection_name" => nil)
       expect(test_class.new("/v1.0/primary/1/sub").request_path_parts).to   eq("full_version_string" => "v1.0", "primary_collection_id" => "1",   "primary_collection_name" => "primary", "subcollection_name" => "sub")
       expect(test_class.new("/v1.0/primary/1/sub/").request_path_parts).to  eq("full_version_string" => "v1.0", "primary_collection_id" => "1",   "primary_collection_name" => "primary", "subcollection_name" => "sub")
-      expect(test_class.new("/v1.0/primary/a_b/sub").request_path_parts).to eq("full_version_string" => "v1.0", "primary_collection_id" => "a_b", "primary_collection_name" => "primary", "subcollection_name" => "sub")
     end
 
     it "invalid paths" do
       expect(test_class.new("/primary/1/sub").request_path_parts).to eq({})
+      expect { test_class.new("/v1.0/primary/a_b/sub").request_path_parts }.to raise_error(/ID is invalid/)
+      expect { test_class.new("/v1.0/primary/1a/sub").request_path_parts }.to raise_error(/ID is invalid/)
     end
   end
 end

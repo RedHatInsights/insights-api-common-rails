@@ -16,6 +16,10 @@ module Api
       def index
         render :json => {:things => "stuff"}.to_json
       end
+
+      def show
+        render :json => {:id => request_path_parts["primary_collection_id"]}.to_json
+      end
     end
   end
 end
