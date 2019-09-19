@@ -8,6 +8,7 @@ module ManageIQ
 
           def self.included(other)
             ActionController::Parameters.action_on_unpermitted_parameters = :raise
+
             other.include(OpenapiEnabled)
 
             other.before_action(:validate_request)
