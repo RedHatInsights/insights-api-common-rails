@@ -4,11 +4,10 @@ RSpec.describe "ManageIQ::API::Common::ApplicationController Body", :type => :re
   before { stub_const("ENV", "BYPASS_TENANCY" => true) }
   let(:default_params) { { "authtype" => "openshift" } }
 
-  it "empty body" do
-    post("/api/v1.0/authentications", :headers => headers, :params => "")
+  it "invalid body" do
+    post("/api/v1.0/authentications", :headers => {"CONTENT_TYPE" => "application/text"}, :params => "{")
 
     expect(response.status).to eq(400)
-    expect(response.parsed_body).to eq("errors" => [{"detail" => "Failed to parse request body, expected JSON", "status" => 400}])
   end
 
   it "unpermitted key" do
@@ -55,6 +54,13 @@ RSpec.describe "ManageIQ::API::Common::ApplicationController Body", :type => :re
 
   it "required property is missing" do
     post("/api/v1.0/authentications", :headers => headers, :params => {"username" => "abc"}.to_json)
+
+    expect(response.status).to eq(400)
+    expect(response.parsed_body).to eq("errors" => [{"detail" => "required parameters authtype not exist in #/components/schemas/Authentication", "status" => 400}])
+  end
+
+  it "empty body" do
+    post("/api/v1.0/authentications", :headers => headers, :params => "")
 
     expect(response.status).to eq(400)
     expect(response.parsed_body).to eq("errors" => [{"detail" => "required parameters authtype not exist in #/components/schemas/Authentication", "status" => 400}])
