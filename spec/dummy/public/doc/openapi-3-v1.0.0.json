@@ -500,9 +500,9 @@
       "Authentication": {
         "additionalProperties": false,
         "type": "object",
-	"required": [
-		"authtype"
-	],
+        "required": [
+          "authtype"
+        ],
         "properties": {
           "authtype": {
             "example": "openshift_default",
