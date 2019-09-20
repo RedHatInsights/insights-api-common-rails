@@ -21,5 +21,22 @@ module Api
         render :json => {:id => request_path_parts["primary_collection_id"]}.to_json
       end
     end
+
+    class PersonsController < ApplicationController
+      def create
+        params_for_create
+        render :json => "OK".to_json
+      end
+
+      def update
+        params_for_update
+        render :json => "OK".to_json
+      end
+
+      def index
+        safe_params_for_list
+        render :json => {:things => "stuff"}.to_json
+      end
+    end
   end
 end

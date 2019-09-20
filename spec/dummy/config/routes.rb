@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       post "graphql" => "graphql#query"
       resources :authentications, :only => [:create]
       resources :vms, :only => [:index, :show]
+      resources :persons, :only => [:index, :create, :show, :update]
     end
 
     namespace :v0x1, :path => "v0.1" do
