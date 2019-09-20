@@ -9,6 +9,10 @@ module ManageIQ
 
           private
 
+          def api_doc
+            self.class.send(:api_doc)
+          end
+
           def api_doc_definition
             self.class.send(:api_doc_definition)
           end
