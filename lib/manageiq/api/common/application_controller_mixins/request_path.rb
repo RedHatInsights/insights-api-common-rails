@@ -47,13 +47,22 @@ module ManageIQ
 
             def id_regexp(primary_collection_name)
               @id_regexp ||= begin
-                instance_path = "/#{primary_collection_name}/{id}"
-                id_parameter  = api_doc.paths.fetch_path(instance_path, "get", "parameters", 0)
-                reference     = id_parameter["$ref"]
-                id_parameter  = api_doc.parameters[reference.split("parameters/").last] if reference
-
-                id_parameter.fetch_path("schema", "pattern")# || /^\d+$/
+                id_parameter = id_parameter_from_api_doc(primary_collection_name)
+                id_parameter ? id_parameter.fetch_path("schema", "pattern") : /^\d+$/
               end
+            end
+
+            def id_parameter_from_api_doc(primary_collection_name)
+              # Find the id parameter in the documented route
+              id_parameter = api_doc.paths.fetch_path("/#{primary_collection_name}/{id}", "get", "parameters", 0)
+              # The route isn't documented, return nil
+              return unless id_parameter
+
+              # Return the id parameter or resolve the reference to it and return that
+              reference = id_parameter["$ref"]
+              return id_parameter unless reference
+
+              api_doc.parameters[reference.split("parameters/").last]
             end
           end
         end
