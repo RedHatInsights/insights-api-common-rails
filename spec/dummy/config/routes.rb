@@ -10,7 +10,7 @@ Rails.application.routes.draw do
       get "/openapi.json", :to => "root#openapi"
       post "graphql" => "graphql#query"
       resources :authentications, :only => [:create]
-      resources :vms, :only => [:index]
+      resources :vms, :only => [:index, :show]
     end
 
     namespace :v0x1, :path => "v0.1" do
