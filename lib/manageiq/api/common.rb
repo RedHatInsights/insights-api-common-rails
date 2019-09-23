@@ -1,3 +1,4 @@
+require "manageiq/api/common/api_error"
 require "manageiq/api/common/engine"
 require "manageiq/api/common/entitlement"
 require "manageiq/api/common/error_document"
