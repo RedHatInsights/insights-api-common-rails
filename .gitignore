@@ -8,6 +8,7 @@
 /_yardoc/
 /bundler.d/
 /config/database.yml
+/spec/dummy/db/schema.rb
 /coverage/
 /doc/
 /Gemfile.lock

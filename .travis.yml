@@ -19,6 +19,7 @@ before_script:
 - "./cc-test-reporter before-build"
 - bundle install
 - cd spec/dummy && bin/setup && cd -
-- bundle exec rake db:create db:migrate
+- bundle exec rake db:create
+- bundle exec rake db:migrate
 after_script:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
