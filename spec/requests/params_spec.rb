@@ -13,6 +13,12 @@ RSpec.describe "ManageIQ::API::Common::ApplicationController Parameters", :type 
       get("/api/v1.0/persons", :params => {'limit' => 10, 'offset' => 0})
       expect(response.status).to eq(200)
     end
+
+    it "non openapi controller fails" do
+      get("/api/v1.0/extras", :params => {'limit' => 10, 'offset' => 0, 'notneeded' => 'yes'})
+      expect(response.status).to eq(400)
+      expect(JSON.parse(response.body)['errors'][0]['detail']).to eq('Openapi not enabled')
+    end
   end
 
   context "POST" do
