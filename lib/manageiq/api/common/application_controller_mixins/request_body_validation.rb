@@ -45,12 +45,21 @@ module ManageIQ
             raw_api_version = try(:api_version) || self.class.send(:api_version)
             api_version     = raw_api_version[1..-1].sub(/x/, ".")
 
-            self.class.send(:api_doc_for_version, raw_api_version).validate!(
-              request.method,
-              request.path,
-              api_version,
-              body_params.as_json
-            )
+            if respond_to?(:api_doc)
+              api_doc.validate!(
+                request.method,
+                request.path,
+                api_version,
+                body_params.as_json
+              )
+            else
+              self.class.send(:api_doc).validate!(
+                request.method,
+                request.path,
+                api_version,
+                body_params.as_json
+              )
+            end
           rescue OpenAPIParser::OpenAPIError => exception
             error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
             render :json => error_document.to_h, :status => :bad_request

@@ -20,11 +20,6 @@ module ManageIQ
           module ClassMethods
             private
 
-            def api_doc_for_version(version)
-              api_version(version)
-              api_doc
-            end
-
             def api_doc
               @api_doc ||= ::ManageIQ::API::Common::OpenApi::Docs.instance[api_version[1..-1].sub(/x/, ".")]
             end
@@ -33,8 +28,8 @@ module ManageIQ
               @api_doc_definition ||= api_doc.definitions[model.name]
             end
 
-            def api_version(version = nil)
-              @api_version ||= (version || name.split("::")[1]).downcase
+            def api_version
+              @api_version ||= name.split("::")[1].downcase
             end
           end
         end
