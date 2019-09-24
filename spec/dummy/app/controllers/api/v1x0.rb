@@ -21,5 +21,35 @@ module Api
         render :json => {:id => request_path_parts["primary_collection_id"]}.to_json
       end
     end
+
+    class PersonsController < ApplicationController
+      def create
+        params_for_create
+        render :json => "OK".to_json
+      end
+
+      def update
+        params_for_update
+        render :json => "OK".to_json
+      end
+
+      def index
+        safe_params_for_list
+        render :json => {:things => "stuff"}.to_json
+      end
+    end
+
+    class ExtrasController < ApplicationController
+      self.openapi_enabled = false
+      rescue_from(ArgumentError) do |exception|
+        error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
+        render :json => error_document.to_h, :status => error_document.status
+      end
+
+      def index
+        safe_params_for_list
+        render :json => "OK".to_json
+      end
+    end
   end
 end
