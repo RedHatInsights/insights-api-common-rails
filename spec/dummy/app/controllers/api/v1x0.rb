@@ -51,5 +51,7 @@ module Api
         render :json => "OK".to_json
       end
     end
+
+    class GraphqlController < Api::V1::GraphqlController; end
   end
 end
