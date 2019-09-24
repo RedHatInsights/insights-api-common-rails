@@ -41,7 +41,8 @@ module ManageIQ
                       },
                       "variables"     => {
                         "type"        => "object",
-                        "description" => "Optional Query variables"
+                        "description" => "Optional Query variables",
+                        "nullable"    => true
                       }
                     },
                     "required"   => [
