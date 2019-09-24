@@ -1,4 +1,4 @@
-require "support/default_as_json"
+require_relative "default_as_json"
 
 module RequestSpecHelper
   RSpec.configure do |config|
