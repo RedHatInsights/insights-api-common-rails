@@ -2,7 +2,6 @@ require "manageiq/api/common/graphql"
 
 RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
   let!(:graphql_endpoint) { "/api/v1.0/graphql" }
-  let!(:default_as)   { :text }
 
   let!(:ext_tenant)   { rand(1000).to_s }
   let!(:tenant)       { Tenant.create!(:name => "tenant_a", :external_tenant => ext_tenant) }
@@ -42,7 +41,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             uid
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -79,7 +78,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             uid
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -104,7 +103,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             uid
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -137,7 +136,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             uid
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -161,7 +160,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           sources(filter: { name: { starts_with: "source_b"}}) {
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -186,7 +185,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           sources(filter: { name: { ends_with: "2"}}, limit: 1) {
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -205,7 +204,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
           sources(filter: { name: { starts_with: "source_b"}}, offset: 1, limit: 1) {
             name
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -232,7 +231,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             host
             port
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -293,7 +292,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             host
             port
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -332,7 +331,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             host
             port
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -370,7 +369,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
               role
             }
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -419,7 +418,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
               role
             }
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -459,7 +458,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
               }
             }
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -551,7 +550,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
               }
             }
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to eq(JSON.parse('
@@ -655,7 +654,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             username
             password
           }
-        }' }.to_json)
+        }' })
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["data"]).to be_nil
