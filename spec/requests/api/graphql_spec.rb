@@ -2,6 +2,7 @@ require "manageiq/api/common/graphql"
 
 RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
   let!(:graphql_endpoint) { "/api/v1.0/graphql" }
+  let!(:default_as)   { :text }
 
   let!(:ext_tenant)   { rand(1000).to_s }
   let!(:tenant)       { Tenant.create!(:name => "tenant_a", :external_tenant => ext_tenant) }
