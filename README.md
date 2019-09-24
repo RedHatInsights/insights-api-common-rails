@@ -1,4 +1,4 @@
-# SharedUtilities
+# ManageIQ::API::Common
 
 [![Build Status](https://travis-ci.org/ManageIQ/manageiq-api-common.svg)](https://travis-ci.org/ManageIQ/manageiq-api-common)
 [![Maintainability](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-api-common/maintainability)
@@ -14,7 +14,7 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'shared_utilities'
+gem 'manageiq-api-common'
 ```
 
 And then execute:
@@ -23,7 +23,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install shared_utilities
+    $ gem install manageiq-api-common
 
 ## Usage
 

@@ -2,6 +2,7 @@
 /.byebug_history
 /.idea/
 /.rspec_status
+/.rubocop-*
 /.ruby-gemset
 /.ruby-version
 /.yardoc
