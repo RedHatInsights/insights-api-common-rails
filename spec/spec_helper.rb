@@ -14,6 +14,7 @@ end
 require File.expand_path("../dummy/config/environment", __FILE__)
 
 require 'rspec/rails'
+require 'webmock/rspec'
 
 Dir[File.expand_path("support/**/*.rb", __dir__)].each { |f| require f }
 
@@ -35,4 +36,6 @@ RSpec.configure do |config|
   config.before(:suite) do
     FactoryBot.find_definitions
   end
+
+  config.include ServiceSpecHelper
 end

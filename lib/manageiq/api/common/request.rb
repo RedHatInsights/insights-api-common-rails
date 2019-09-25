@@ -7,6 +7,9 @@ module ManageIQ
         end
       end
 
+      class InvalidParameter < StandardError
+      end
+
       class Request
         REQUEST_ID_KEY = "x-rh-insights-request-id".freeze
         IDENTITY_KEY   = 'x-rh-identity'.freeze
