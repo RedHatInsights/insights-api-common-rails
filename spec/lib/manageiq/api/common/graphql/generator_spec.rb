@@ -7,8 +7,8 @@ RSpec.describe ManageIQ::API::Common::GraphQL::Generator do
   let!(:source_typeV) { SourceType.create(:name => "vmware", :product_name => "VmWare vCenter", :vendor => "vmware") }
 
   context "schema overlays" do
-    before { ::Api::V1x0.send(:remove_const, "GraphQL") if ::Api.const_defined?("V1x0", false) && ::Api::V1x0.const_defined?("GraphQL", false) }
-    after  { ::Api::V1x0.send(:remove_const, "GraphQL") }
+    before { ::ManageIQGraphQLApi.send(:remove_const, "V1x0") if ::ManageIQGraphQLApi.const_defined?("V1x0", false) }
+    after  { ::ManageIQGraphQLApi.send(:remove_const, "V1x0") }
 
     it "support base_query" do
       graphql_request = double

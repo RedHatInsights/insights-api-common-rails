@@ -9,7 +9,7 @@ QueryType = ::GraphQL::ObjectType.define do
     klass_names   = collection.to_s.camelize
     klass_name    = klass_names.singularize
     model_class   = klass_name.constantize
-    resource_type = "Api::#{version_namespace}::GraphQL::#{klass_name}Type".constantize
+    resource_type = "::ManageIQGraphQLApi::#{version_namespace}::#{klass_name}Type".constantize
 
     collection_schema_overlay = ::ManageIQ::API::Common::GraphQL::Generator.collection_schema_overlay(schema_overlay, collection)
     base_query                = collection_schema_overlay["base_query"]
