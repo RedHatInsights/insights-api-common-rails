@@ -263,7 +263,7 @@
         }
       }
     },
-    "/source_types/{id}/sources": {
+    "/source_types/{source_type_id}/sources": {
       "get": {
         "summary": "List Sources for SourceType",
         "operationId": "listSourceTypeSources",
@@ -386,7 +386,7 @@
         }
       }
     },
-    "/sources/{id}/endpoints": {
+    "/sources/{source_id}/endpoints": {
       "get": {
         "summary": "List Endpoints for Source",
         "operationId": "listSourceEndpoints",
