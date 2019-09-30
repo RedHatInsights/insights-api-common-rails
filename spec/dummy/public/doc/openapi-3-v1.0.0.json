@@ -236,14 +236,14 @@
         }
       }
     },
-    "/source_types/{id}": {
+    "/source_types/{source_type_id}": {
       "get": {
         "summary": "Show an existing SourceType",
         "operationId": "showSourceType",
         "description": "Returns a SourceType object",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/SourceTypeID"
           }
         ],
         "responses": {
@@ -279,7 +279,7 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/SourceTypeID"
           }
         ],
         "responses": {
@@ -386,7 +386,7 @@
         }
       }
     },
-    "/sources/{source_id}/endpoints": {
+    "/sources/{id}/endpoints": {
       "get": {
         "summary": "List Endpoints for Source",
         "operationId": "listSourceEndpoints",
@@ -715,6 +715,16 @@
           "type": "integer",
           "minimum": 0,
           "default": 0
+        }
+      },
+      "SourceTypeID": {
+        "name": "source_type_id",
+        "in": "path",
+        "description": "The Source Type ID",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       }
     },
