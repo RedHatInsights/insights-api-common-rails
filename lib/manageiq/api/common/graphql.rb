@@ -9,14 +9,12 @@ require "manageiq/api/common/graphql/types/big_int"
 require "manageiq/api/common/graphql/types/date_time"
 require "manageiq/api/common/graphql/types/query_filter"
 
-module ManageIQGraphQLApi
-end
-
 module ManageIQ
   module API
     module Common
       module GraphQL
-        include ManageIQGraphQLApi
+        module Api
+        end
 
         def self.version(request)
           /\/?\w+\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ request.original_url

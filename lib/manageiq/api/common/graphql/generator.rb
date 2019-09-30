@@ -81,10 +81,10 @@ module ManageIQ
             openapi_doc       = ::ManageIQ::API::Common::OpenApi::Docs.instance[api_version]
             openapi_content   = openapi_doc.content
 
-            graphql_namespace = if ::ManageIQGraphQLApi.const_defined?(version_namespace, false)
-                                  ::ManageIQGraphQLApi.const_get(version_namespace)
+            graphql_namespace = if ::ManageIQ::API::Common::GraphQL::Api.const_defined?(version_namespace, false)
+                                  ::ManageIQ::API::Common::GraphQL::Api.const_get(version_namespace)
                                 else
-                                  ::ManageIQGraphQLApi.const_set(version_namespace, Module.new)
+                                  ::ManageIQ::API::Common::GraphQL::Api.const_set(version_namespace, Module.new)
                                 end
 
             return graphql_namespace.const_get("Schema") if graphql_namespace.const_defined?("Schema", false)
