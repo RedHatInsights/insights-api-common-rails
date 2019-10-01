@@ -9,7 +9,7 @@ describe ManageIQ::API::Common::Entitlement do
   end
 
   context "entitlement getter methods" do
-    let(:entitlement_keys) { %w[insights openshift hybrid_cloud smart_management] }
+    let(:entitlement_keys) { %w[insights openshift hybrid_cloud smart_management ansible migrations] }
     let(:bad_entitlement)  { %w[fred barney type] }
     let(:entitlement)      { ManageIQ::API::Common::Request.current.entitlement }
     let(:other_user)       { default_user_hash }

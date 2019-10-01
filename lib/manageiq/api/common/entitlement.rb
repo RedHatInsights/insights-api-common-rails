@@ -9,8 +9,10 @@ module ManageIQ
         end
 
         %w[
+          ansible
           hybrid_cloud
           insights
+          migrations
           openshift
           smart_management
         ].each do |m|
