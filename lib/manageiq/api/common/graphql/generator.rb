@@ -105,6 +105,8 @@ module ManageIQ
 
               collection = rmatch[2]
               klass_name = collection.camelize.singularize
+              next if graphql_namespace.const_defined?("#{klass_name}Type", false)
+
               _schema_name, this_schema = openapi_schema(openapi_doc, klass_name)
               next if this_schema.nil? || this_schema["type"] != "object" || this_schema["properties"].nil?
 
