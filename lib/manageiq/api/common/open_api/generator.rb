@@ -419,6 +419,7 @@ module ManageIQ
                 case verb
                 when "post"
                   if sub_path == "/graphql" && route.action == "query"
+                    schemas["GraphQLRequest"]  = ::ManageIQ::API::Common::GraphQL.openapi_graphql_request
                     schemas["GraphQLResponse"] = ::ManageIQ::API::Common::GraphQL.openapi_graphql_response
                     ::ManageIQ::API::Common::GraphQL.openapi_graphql_description
                   else
