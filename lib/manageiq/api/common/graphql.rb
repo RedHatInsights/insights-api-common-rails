@@ -13,6 +13,9 @@ module ManageIQ
   module API
     module Common
       module GraphQL
+        module Api
+        end
+
         def self.version(request)
           /\/?\w+\/v(?<major>\d+)[x\.]?(?<minor>\d+)?\// =~ request.original_url
           [major, minor].compact.join(".")
