@@ -41,16 +41,19 @@ module ManageIQ
 
           def self.resource_associations(openapi_content, collection)
             collection_is_associated = openapi_content["paths"].keys.any? do |path|
-              path.match("^/[^/]*/{id}/#{collection}$") &&
-                openapi_content.dig("paths", path, "get")
+              path.match?("^/[^/]*/{[[a-z]*_]*id}/#{collection}$") &&
+                openapi_content.dig("paths", path, "get").present?
             end
             collection_associations = []
             openapi_content["paths"].keys.each do |path|
-              subcollection_match = path.match("^/#{collection}/{id}/([^/]*)$")
+              subcollection_match = path.match("^/#{collection}/{[[a-z]*_]*id}/([^/]*)$")
               next unless subcollection_match
 
               subcollection = subcollection_match[1]
-              next unless openapi_content.dig("paths", "/#{subcollection}/{id}", "get")
+              next unless openapi_content["paths"].keys.any? do |subcollection_path|
+                subcollection_path.match?("^/#{subcollection}/{[[a-z]*_]*id}$") &&
+                openapi_content.dig("paths", subcollection_path, "get").present?
+              end
 
               collection_associations << subcollection
             end
@@ -94,7 +97,7 @@ module ManageIQ
             resources.each do |resource|
               next unless openapi_content.dig("paths", resource, "get") # we only care for queries
 
-              rmatch = resource.match("^/(.*/)?([^/]*)/{id}$")
+              rmatch = resource.match("^/(.*/)?([^/]*)/{[[a-z]*_]*id}$")
               next unless rmatch
 
               collection = rmatch[2]

@@ -236,14 +236,14 @@
         }
       }
     },
-    "/source_types/{id}": {
+    "/source_types/{source_type_id}": {
       "get": {
         "summary": "Show an existing SourceType",
         "operationId": "showSourceType",
         "description": "Returns a SourceType object",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/SourceTypeID"
           }
         ],
         "responses": {
@@ -263,7 +263,7 @@
         }
       }
     },
-    "/source_types/{id}/sources": {
+    "/source_types/{source_type_id}/sources": {
       "get": {
         "summary": "List Sources for SourceType",
         "operationId": "listSourceTypeSources",
@@ -279,7 +279,7 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/SourceTypeID"
           }
         ],
         "responses": {
@@ -353,39 +353,6 @@
         }
       }
     },
-    "/sources/{id}/applications": {
-      "get": {
-        "summary": "List Applications for Source",
-        "operationId": "listSourceApplications",
-        "description": "Returns an array of Application objects",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/QueryLimit"
-          },
-          {
-            "$ref": "#/components/parameters/QueryOffset"
-          },
-          {
-            "$ref": "#/components/parameters/QueryFilter"
-          },
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Applications collection",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationsCollection"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/sources/{id}/endpoints": {
       "get": {
         "summary": "List Endpoints for Source",
@@ -415,63 +382,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/vms": {
-      "get": {
-        "summary": "List Vms",
-        "operationId": "listVms",
-        "description": "Returns an array of Vm objects",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/QueryLimit"
-          },
-          {
-            "$ref": "#/components/parameters/QueryOffset"
-          },
-          {
-            "$ref": "#/components/parameters/QueryFilter"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Vms collection",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VmsCollection"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/vms/{id}": {
-      "get": {
-        "summary": "Show an existing Vm",
-        "operationId": "showVm",
-        "description": "Returns a Vm object",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Vm info",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Vm"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
           }
         }
       }
@@ -716,6 +626,16 @@
           "minimum": 0,
           "default": 0
         }
+      },
+      "SourceTypeID": {
+        "name": "source_type_id",
+        "in": "path",
+        "description": "The Source Type ID",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
       }
     },
     "securitySchemes": {
@@ -771,7 +691,10 @@
             "type": "object"
           },
           "array": {
-            "type": "array"
+            "type": "array",
+            "items": {
+              "type" : "integer"
+            }
           }
         }
       },
