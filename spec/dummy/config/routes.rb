@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     namespace :v1x0, :path => "v1.0" do
       get "/openapi.json", :to => "root#openapi"
       post "graphql" => "graphql#query"
+      get '/error', :to => "errors#error"
+      get '/nested_error', :to => "errors#nested_error"
       resources :authentications, :only => [:create]
       resources :vms, :only => [:index, :show]
       resources :persons, :only => [:index, :create, :show, :update]

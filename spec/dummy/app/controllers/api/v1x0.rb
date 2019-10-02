@@ -52,6 +52,20 @@ module Api
       end
     end
 
+    class ErrorsController < ApplicationController
+      class SomethingHappened < StandardError; end
+
+      def error
+        raise StandardError, "something happened"
+      end
+
+      def nested_error
+        raise ArgumentError, "something happened"
+      rescue ArgumentError
+        raise SomethingHappened, "something else happened"
+      end
+    end
+
     class GraphqlController < Api::V1::GraphqlController; end
     class SourcesController < Api::V1::SourcesController; end
   end
