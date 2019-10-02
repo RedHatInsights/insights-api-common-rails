@@ -30,27 +30,6 @@ module ManageIQ
               "content"     => {
                 "application/json" => {
                   "schema" => {
-                    "type"       => "object",
-                    "properties" => {
-                      "query"         => {
-                        "type"        => "string",
-                        "description" => "The GraphQL query",
-                        "default"     => "{}"
-                      },
-                      "operationName" => {
-                        "type"        => "string",
-                        "description" => "If the Query contains several named operations, the operationName controls which one should be executed",
-                        "default"     => ""
-                      },
-                      "variables"     => {
-                        "type"        => "object",
-                        "description" => "Optional Query variables",
-                        "nullable"    => true
-                      }
-                    },
-                    "required"   => [
-                      "query"
-                    ]
                   }
                 }
               },
@@ -69,6 +48,32 @@ module ManageIQ
                 }
               }
             }
+          }
+        end
+
+        def self.openapi_graphql_request
+          {
+            "type"       => "object",
+            "properties" => {
+              "query"         => {
+                "type"        => "string",
+                "description" => "The GraphQL query",
+                "default"     => "{}"
+              },
+              "operationName" => {
+                "type"        => "string",
+                "description" => "If the Query contains several named operations, the operationName controls which one should be executed",
+                "default"     => ""
+              },
+              "variables"     => {
+                "type"        => "object",
+                "description" => "Optional Query variables",
+                "nullable"    => true
+              }
+            },
+            "required"   => [
+              "query"
+            ]
           }
         end
 
