@@ -10,7 +10,8 @@ module ManageIQ
       class Request
         REQUEST_ID_KEY = "x-rh-insights-request-id".freeze
         IDENTITY_KEY   = 'x-rh-identity'.freeze
-        FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY].freeze
+        PERSONA_KEY    = 'x-rh-persona'.freeze
+        FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY, PERSONA_KEY].freeze
         OPTIONAL_AUTH_PATHS = [
           %r{\A/api/v[0-9]+(\.[0-9]+)?/openapi.json\z},
           %r{\A/api/[^/]+/v[0-9]+(\.[0-9]+)?/openapi.json\z}
