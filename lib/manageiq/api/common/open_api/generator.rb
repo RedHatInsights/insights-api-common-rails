@@ -105,6 +105,34 @@ module ManageIQ
             "##{SCHEMAS_PATH}/#{klass_name}"
           end
 
+          def build_schema_error_not_found
+            klass_name = "ErrorNotFound"
+
+            schemas[klass_name] = {
+              "type" => "object",
+              "properties" => {
+                "errors" => {
+                  "type" => "array",
+                  "items" => {
+                    "type" => "object",
+                    "properties" => {
+                      "status" => {
+                        "type" => "integer",
+                        "example" => 404
+                      },
+                      "detail" => {
+                        "type" => "string",
+                        "example" => "Record not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            "##{SCHEMAS_PATH}/#{klass_name}"
+          end
+
           def parameters
             @parameters ||= {
               "QueryFilter" => {
@@ -176,6 +204,14 @@ module ManageIQ
                       "schema" => { "$ref" => build_collection_schema(klass_name) }
                     }
                   }
+                },
+                "404" => {
+                  "description" => "Not found",
+                  "content" => {
+                    "application/json" => {
+                        "schema" => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
                 }
               }
             }.tap do |h|
@@ -215,7 +251,14 @@ module ManageIQ
                     }
                   }
                 },
-                "404" => {"description" => "Not found"}
+                "404" => {
+                  "description" => "Not found",
+                  "content" => {
+                    "application/json" => {
+                        "schema" => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
+                }
               }
             }
           end
@@ -228,7 +271,14 @@ module ManageIQ
               "parameters"  => [{ "$ref" => build_parameter("ID") }],
               "responses"   => {
                 "204" => { "description" => "#{klass_name} deleted" },
-                "404" => { "description" => "Not found"             }
+                "404" => {
+                  "description" => "Not found",
+                  "content" => {
+                    "application/json" => {
+                        "schema" => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
+                }
               }
             }
           end
@@ -281,7 +331,14 @@ module ManageIQ
               "responses"   => {
                 "204" => { "description" => "Updated, no content" },
                 "400" => { "description" => "Bad request"         },
-                "404" => { "description" => "Not found"           }
+                "404" => {
+                  "description" => "Not found",
+                  "content" => {
+                    "application/json" => {
+                        "schema" => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
+                }
               }
             }
           end
