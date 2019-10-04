@@ -75,10 +75,6 @@ module ManageIQ
           @request_uri ||= URI.parse(@request.original_url)
         end
 
-        def current_limit_multiplier
-          @current_limit_multiplier ||= offset / limit
-        end
-
         def max_limit_multiplier
           @max_limit_multiplier ||= ((count - 1) / limit)
         end
