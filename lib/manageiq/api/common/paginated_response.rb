@@ -53,10 +53,10 @@ module ManageIQ
         end
 
         def link_to_next
-          next_limit_multiplier = current_limit_multiplier + 1
-          return if next_limit_multiplier > max_limit_multiplier
+          next_offset = limit + offset
+          return if next_offset >= count
 
-          link_with_new_offset(next_limit_multiplier * limit)
+          link_with_new_offset(next_offset)
         end
 
         def link_with_new_offset(offset)
