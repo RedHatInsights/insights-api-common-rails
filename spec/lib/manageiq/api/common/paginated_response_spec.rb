@@ -108,5 +108,30 @@ describe ManageIQ::API::Common::PaginatedResponse do
         )
       end
     end
+
+    context "limit is greater than the offset (uneven boundries)" do
+      let(:count) { 6 }
+      let(:limit) { 3 }
+      let(:first_url) { url_with_offset(0) }
+      let(:last_url)  { url_with_offset(3) }
+
+      it "first page" do
+        expect(described_class.new(base_query: base_query, request: request, limit: limit).send(:links_hash)).to eq(
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(3)
+        )
+      end
+
+      it "second page" do
+        expect(described_class.new(base_query: base_query, request: request, limit: limit, offset: 2).send(:links_hash)).to eq(
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(5), "prev" => first_url
+        )
+      end
+
+      it "third page" do
+        expect(described_class.new(base_query: base_query, request: request, limit: limit, offset: 5).send(:links_hash)).to eq(
+          "first" => first_url, "last" => last_url, "prev" => url_with_offset(2)
+        )
+      end
+    end
   end
 end
