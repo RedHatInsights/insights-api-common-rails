@@ -8,7 +8,7 @@ module ManageIQ
           end
 
           def add_policy(policy_name, description, group_name, role_uuid)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
+            Service.call(RBACApiClient::PolicyApi) do |api_instance|
               policy_in = RBACApiClient::PolicyIn.new
               policy_in.name = policy_name
               policy_in.description = description
@@ -20,8 +20,8 @@ module ManageIQ
 
           # delete all policies that contains the role.
           def delete_policy(role)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
-              ManageIQ::API::Common::RBAC::Service.paginate(api_instance, :list_policies, :name => @prefix).each do |policy|
+            Service.call(RBACApiClient::PolicyApi) do |api_instance|
+              Service.paginate(api_instance, :list_policies, :name => @prefix).each do |policy|
                 api_instance.delete_policy(policy.uuid) if policy.roles.map(&:uuid).include?(role.uuid)
               end
             end

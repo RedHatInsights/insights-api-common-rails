@@ -8,14 +8,13 @@ module ManageIQ
           def initialize(resource, verb)
             @resource = resource
             @verb     = verb
-            @regexp   = Regexp.new(":(#{@resource}|\\*):(#{@verb}|\\*)")
+            @regexp   = Regexp.new(":(#{Regexp.escape(@resource)}|\\*):(#{Regexp.escape(@verb)}|\\*)")
             @app_name = ENV["APP_NAME"]
           end
 
           def process
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::AccessApi) do |api|
-              Rails.logger.info("Fetch access list for #{@app_name}")
-              @acl = ManageIQ::API::Common::RBAC::Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).select do |item|
+            Service.call(RBACApiClient::AccessApi) do |api|
+              @acl = Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).select do |item|
                 Rails.logger.info("Found ACL: #{item}")
                 @regexp.match(item.permission)
               end
@@ -24,19 +23,16 @@ module ManageIQ
           end
 
           def accessible?
-            Rails.logger.info("ACL for #{@app_name} #{@acl}")
             @acl.any?
           end
 
           def id_list
-            generate_ids
-            Rails.logger.info("IDS for #{@app_name} #{@ids}")
-            @ids.include?('*') ? [] : @ids
+            Rails.logger.info("IDS for #{@app_name} #{ids}")
+            ids.include?('*') ? [] : ids
           end
 
           def owner_scoped?
-            generate_ids
-            @ids.include?('*') ? false : owner_scope_filter?
+            ids.include?('*') ? false : owner_scope_filter?
           end
 
           def self.enabled?
@@ -45,7 +41,7 @@ module ManageIQ
 
           private
 
-          def generate_ids
+          def ids
             @ids ||= @acl.each_with_object([]) do |item, ids|
               item.resource_definitions.each do |rd|
                 next unless rd.attribute_filter.key == 'id'

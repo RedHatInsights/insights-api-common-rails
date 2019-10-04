@@ -4,9 +4,9 @@ module ManageIQ
       module RBAC
         module Utilities
           def validate_groups
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+            Service.call(RBACApiClient::GroupApi) do |api|
               uuids = SortedSet.new
-              ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups, {}).each { |group| uuids << group.uuid }
+              Service.paginate(api, :list_groups, {}).each { |group| uuids << group.uuid }
               missing = @group_uuids - uuids
               raise ManageIQ::API::Common::InvalidParameter, "The following group uuids are missing #{missing.to_a.join(",")}" unless missing.empty?
             end

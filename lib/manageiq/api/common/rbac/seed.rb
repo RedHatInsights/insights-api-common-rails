@@ -24,7 +24,7 @@ module ManageIQ
             names = current.collect(&:name)
             group = RBACApiClient::Group.new
             begin
-              ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
+              Service.call(RBACApiClient::GroupApi) do |api_instance|
                 @acl_data['groups'].each do |grp|
                   next if names.include?(grp['name'])
 
@@ -41,8 +41,8 @@ module ManageIQ
           end
 
           def current_groups
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-              ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups,  {}).to_a
+            Service.call(RBACApiClient::GroupApi) do |api|
+              Service.paginate(api, :list_groups,  {}).to_a
             end
           end
 
@@ -51,7 +51,7 @@ module ManageIQ
             names = current.collect(&:name)
             role_in = RBACApiClient::RoleIn.new
             begin
-              ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
+              Service.call(RBACApiClient::RoleApi) do |api_instance|
                 @acl_data['roles'].each do |role|
                   next if names.include?(role['name'])
 
@@ -85,8 +85,8 @@ module ManageIQ
           end
 
           def current_roles
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
-              ManageIQ::API::Common::RBAC::Service.paginate(api, :list_roles, {}).to_a
+            Service.call(RBACApiClient::RoleApi) do |api|
+              Service.paginate(api, :list_roles, {}).to_a
             end
           end
 
@@ -96,7 +96,7 @@ module ManageIQ
             roles = current_roles
             policy_in = RBACApiClient::PolicyIn.new
             begin
-              ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
+              Service.call(RBACApiClient::PolicyApi) do |api_instance|
                 @acl_data['policies'].each do |policy|
                   next if names.include?(policy['name'])
 
@@ -114,8 +114,8 @@ module ManageIQ
           end
 
           def current_policies
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api|
-              ManageIQ::API::Common::RBAC::Service.paginate(api, :list_policies, {}).to_a
+            Service.call(RBACApiClient::PolicyApi) do |api|
+              Service.paginate(api, :list_policies, {}).to_a
             end
           end
 

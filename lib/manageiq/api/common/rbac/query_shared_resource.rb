@@ -33,7 +33,7 @@ module ManageIQ
           end
 
           def get_group(uuid)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
+            Service.call(RBACApiClient::GroupApi) do |api_instance|
               api_instance.get_group(uuid)
             end
           end

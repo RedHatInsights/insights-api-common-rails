@@ -44,7 +44,7 @@ module ManageIQ
           end
 
           def add_policy(name, group_uuid, role_uuid)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
+            Service.call(RBACApiClient::PolicyApi) do |api_instance|
               policy_in = RBACApiClient::PolicyIn.new
               policy_in.name = name
               policy_in.description = 'Shared Policy'

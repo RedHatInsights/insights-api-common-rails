@@ -22,7 +22,7 @@ module ManageIQ
           end
 
           def add(name, acls)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
               role_in = RBACApiClient::RoleIn.new
               role_in.name = name
               role_in.access = acls
@@ -33,14 +33,14 @@ module ManageIQ
           end
 
           def update(role)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
               api_instance.update_role(role.uuid, role)
             end
           end
 
           def delete(role)
             @roles.delete(role.name)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
               api_instance.delete_role(role.uuid)
             end
           end
@@ -49,8 +49,8 @@ module ManageIQ
             opts = { :name  => role_name,
                      :scope => 'principal' }
 
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
-              ManageIQ::API::Common::RBAC::Service.paginate(api_instance, :list_roles, opts).count.positive?
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
+              Service.paginate(api_instance, :list_roles, opts).count.positive?
             end
           end
 
@@ -58,15 +58,15 @@ module ManageIQ
 
           def load(prefix, scope)
             opts = { :scope => scope, :name => prefix, :limit => 500 }
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
-              ManageIQ::API::Common::RBAC::Service.paginate(api_instance, :list_roles, opts).each do |role|
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
+              Service.paginate(api_instance, :list_roles, opts).each do |role|
                 @roles[role.name] = role.uuid
               end
             end
           end
 
           def get(uuid)
-            ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
               api_instance.get_role(uuid)
             end
           end
