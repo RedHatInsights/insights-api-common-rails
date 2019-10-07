@@ -47,16 +47,16 @@ module ManageIQ
         end
 
         def link_to_prev
-          return if current_limit_multiplier == 0
+          prev_offset = offset - limit
 
-          link_with_new_offset((current_limit_multiplier - 1) * limit)
+          link_with_new_offset(prev_offset.clamp(0, Float::INFINITY))
         end
 
         def link_to_next
-          next_limit_multiplier = current_limit_multiplier + 1
-          return if next_limit_multiplier > max_limit_multiplier
+          next_offset = limit + offset
+          return if next_offset >= count
 
-          link_with_new_offset(next_limit_multiplier * limit)
+          link_with_new_offset(next_offset)
         end
 
         def link_with_new_offset(offset)
@@ -73,10 +73,6 @@ module ManageIQ
 
         def request_uri
           @request_uri ||= URI.parse(@request.original_url)
-        end
-
-        def current_limit_multiplier
-          @current_limit_multiplier ||= offset / limit
         end
 
         def max_limit_multiplier
