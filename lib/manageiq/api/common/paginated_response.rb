@@ -47,6 +47,7 @@ module ManageIQ
         end
 
         def link_to_prev
+          return if offset == 0
           prev_offset = offset - limit
 
           link_with_new_offset(prev_offset.clamp(0, Float::INFINITY))
