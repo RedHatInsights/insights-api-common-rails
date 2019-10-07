@@ -30,6 +30,7 @@ module ManageIQ
               "content"     => {
                 "application/json" => {
                   "schema" => {
+                    "$ref" => "#/components/schemas/GraphQLRequest"
                   }
                 }
               },
