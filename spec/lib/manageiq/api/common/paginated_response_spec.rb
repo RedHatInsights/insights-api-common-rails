@@ -61,7 +61,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "first page" do
         expect(described_class.new(base_query: base_query, request: request, limit: 2).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => url_with_offset(2), "prev" => first_url
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(2)
         )
       end
 
@@ -86,7 +86,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "first page" do
         expect(described_class.new(base_query: base_query, request: request, limit: 10).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => url_with_offset(10), "prev" => first_url
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(10)
         )
       end
 
@@ -117,7 +117,7 @@ describe ManageIQ::API::Common::PaginatedResponse do
 
       it "first page" do
         expect(described_class.new(base_query: base_query, request: request, limit: limit).send(:links_hash)).to eq(
-          "first" => first_url, "last" => last_url, "next" => url_with_offset(3), "prev" => first_url
+          "first" => first_url, "last" => last_url, "next" => url_with_offset(3)
         )
       end
 
