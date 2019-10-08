@@ -5,12 +5,11 @@ describe ManageIQ::API::Common::RBAC::Roles do
   end
 
   around do |example|
-    with_modified_env(:RBAC_URL => "http://localhost") do
-      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
-    end
+    ManageIQ::API::Common::Request.with_request(default_request) { example.call }
   end
 
   before do
+    stub_const("ENV", "RBAC_URL" => "http://localhost")
     stub_request(:get, "http://localhost/api/rbac/v1/roles/?limit=10&name=Catalog%20Administrator&offset=0&scope=principal")
       .to_return(:status  => 200,
                  :body    => catalog_admin.to_json,

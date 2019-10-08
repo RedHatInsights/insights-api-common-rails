@@ -2,7 +2,7 @@ module ManageIQ
   module API
     module Common
       module RBAC
-        class ACLS
+        class ACL
           def create(resource_id, permissions)
             permissions.collect do |permission|
               create_acl(permission, resource_id)
@@ -21,7 +21,7 @@ module ManageIQ
 
               as << create_acl(permission, resource_id)
             end
-            new_acls.empty? ? acls : new_acls + acls
+            new_acls + acls
           end
 
           def resource_defintions_empty?(acls, permission)

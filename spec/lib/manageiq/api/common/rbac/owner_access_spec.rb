@@ -7,18 +7,17 @@ describe ManageIQ::API::Common::RBAC::Access do
   let(:opts) { { :limit => ManageIQ::API::Common::RBAC::Access::DEFAULT_LIMIT } }
 
   before do
+    stub_const("ENV", "APP_NAME" => app_name)
     allow(rs_class).to receive(:call).with(RBACApiClient::AccessApi).and_yield(api_instance)
   end
 
   shared_examples_for "#owner_scoped?" do
     it "validate scope" do
-      with_modified_env :APP_NAME => app_name do
-        allow(ManageIQ::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return(acls)
-        svc_obj = rbac_access.process
-        expect(svc_obj.acl.count).to eq(acl_count)
-        expect(svc_obj.accessible?).to be_truthy
-        expect(svc_obj.owner_scoped?).to eq(result)
-      end
+      allow(ManageIQ::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return(acls)
+      svc_obj = rbac_access.process
+      expect(svc_obj.acl.count).to eq(acl_count)
+      expect(svc_obj.accessible?).to be_truthy
+      expect(svc_obj.owner_scoped?).to eq(result)
     end
   end
 

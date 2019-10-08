@@ -12,23 +12,21 @@ describe ManageIQ::API::Common::RBAC::Access do
   end
 
   it "fetches the array of plans" do
-    with_modified_env :APP_NAME => app_name do
-      allow(ManageIQ::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([access1])
-      svc_obj = rbac_access.process
-      expect(svc_obj.acl.count).to eq(1)
-      expect(svc_obj.accessible?).to be_truthy
-      expect(svc_obj.id_list).to match_array([resource_id1])
-    end
+    stub_const("ENV", "APP_NAME" => app_name)
+    allow(ManageIQ::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([access1])
+    svc_obj = rbac_access.process
+    expect(svc_obj.acl.count).to eq(1)
+    expect(svc_obj.accessible?).to be_truthy
+    expect(svc_obj.id_list).to match_array([resource_id1])
   end
 
   it "* in id gives access to all instances" do
-    with_modified_env :APP_NAME => app_name do
-      allow(ManageIQ::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([admin_access])
-      svc_obj = rbac_access.process
-      expect(svc_obj.acl.count).to eq(1)
-      expect(svc_obj.accessible?).to be_truthy
-      expect(svc_obj.id_list).to match_array([])
-    end
+    stub_const("ENV", "APP_NAME" => app_name)
+    allow(ManageIQ::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([admin_access])
+    svc_obj = rbac_access.process
+    expect(svc_obj.acl.count).to eq(1)
+    expect(svc_obj.accessible?).to be_truthy
+    expect(svc_obj.id_list).to match_array([])
   end
 
   it "rbac is enabled by default" do
@@ -36,8 +34,7 @@ describe ManageIQ::API::Common::RBAC::Access do
   end
 
   it "rbac is enabled by default" do
-    with_modified_env :BYPASS_RBAC => "1" do
-      expect(described_class.enabled?).to be_falsey
-    end
+    stub_const("ENV", "BYPASS_RBAC" => "1")
+    expect(described_class.enabled?).to be_falsey
   end
 end

@@ -9,7 +9,6 @@ require File.join(Bundler::Plugin.index.load_paths("bundler-inject")[0], "bundle
 gem 'rbac-api-client', :git => "https://github.com/RedHatInsights/insights-rbac-api-client-ruby", :branch => "master"
 
 group :development, :test do
-  gem 'climate_control'
   gem 'webmock'
 end
 

@@ -1,8 +1,9 @@
-require 'rbac-api-client'
 module ManageIQ
   module API
     module Common
       module RBAC
+        require 'rbac-api-client'
+
         class Service
           def self.call(klass)
             setup
@@ -55,8 +56,8 @@ module ManageIQ
           private_class_method def self.dev_credentials(config)
             # Set up user/pass for basic auth if we're in dev and they exist.
             if Rails.env.development?
-              config.username = ENV['DEV_USERNAME'] || raise("Empty ENV variable: DEV_USERNAME")
-              config.password = ENV['DEV_PASSWORD'] || raise("Empty ENV variable: DEV_PASSWORD")
+              config.username = ENV.fetch('DEV_USERNAME')
+              config.password = ENV.fetch('DEV_PASSWORD')
             end
           end
         end

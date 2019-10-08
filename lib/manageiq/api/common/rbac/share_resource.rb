@@ -1,18 +1,18 @@
-# load the gem
-require 'rbac-api-client'
 module ManageIQ
   module API
     module Common
       module RBAC
         class ShareResource
+          require 'rbac-api-client'
           include Utilities
+
           def initialize(options)
             @app_name = options[:app_name]
             @resource_name = options[:resource_name]
             @permissions = options[:permissions]
             @resource_ids = options[:resource_ids]
             @group_uuids = SortedSet.new(options[:group_uuids])
-            @acls = RBAC::ACLS.new
+            @acls = RBAC::ACL.new
           end
 
           def process

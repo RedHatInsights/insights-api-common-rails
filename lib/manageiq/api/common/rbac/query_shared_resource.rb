@@ -1,9 +1,10 @@
-require 'rbac-api-client'
 module ManageIQ
   module API
     module Common
       module RBAC
         class QuerySharedResource
+          require 'rbac-api-client'
+
           include Utilities
           attr_accessor :share_info
 

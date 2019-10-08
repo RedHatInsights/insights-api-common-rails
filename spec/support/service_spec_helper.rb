@@ -11,18 +11,13 @@ module ServiceSpecHelper
     end
   end
 
-  def with_modified_env(options, &block)
-    Thread.current[:api_instance] = nil
-    ClimateControl.modify(options, &block)
-  end
-
   def default_headers
     { 'x-rh-identity'            => encoded_user_hash,
       'x-rh-insights-request-id' => 'gobbledygook' }
   end
 
   def original_url
-    "http://whatever.com"
+    "http://example.com"
   end
 
   def default_request

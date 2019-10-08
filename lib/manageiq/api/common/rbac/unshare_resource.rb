@@ -1,10 +1,12 @@
-require 'rbac-api-client'
 module ManageIQ
   module API
     module Common
       module RBAC
+        require 'rbac-api-client'
+
         class UnshareResource < ShareResource
           attr_accessor :count
+
           def initialize(options)
             @count = 0
             super

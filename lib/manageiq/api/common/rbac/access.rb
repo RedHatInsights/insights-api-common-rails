@@ -14,9 +14,8 @@ module ManageIQ
 
           def process
             Service.call(RBACApiClient::AccessApi) do |api|
-              @acl = Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).select do |item|
-                Rails.logger.info("Found ACL: #{item}")
-                @regexp.match(item.permission)
+              @acl ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).select do |item|
+                @regexp.match?(item.permission)
               end
             end
             self
@@ -27,7 +26,6 @@ module ManageIQ
           end
 
           def id_list
-            Rails.logger.info("IDS for #{@app_name} #{ids}")
             ids.include?('*') ? [] : ids
           end
 

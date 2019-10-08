@@ -1,8 +1,9 @@
-require 'rbac-api-client'
 module ManageIQ
   module API
     module Common
       module RBAC
+        require 'rbac-api-client'
+
         class Seed
           def initialize(seed_file, user_file)
             @acl_data = YAML.load_file(seed_file)
