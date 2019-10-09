@@ -7,26 +7,24 @@ module ManageIQ
 
           def self.included(other)
             other.rescue_from(StandardError, RuntimeError) do |exception|
-              errors, status = collected_errors(exception)
+              errors = ManageIQ::API::Common::ErrorDocument.new.tap do |error_document|
+                exception_list_from(exception).each do |exc|
+                  code = exc.respond_to?(:code) ? exc.code : error_code_from_class(exc)
+                  error_document.add(code, "#{exc.class}: #{exc.message}")
+                end
+              end
 
-              render :json => errors, :status => status
+              render :json => errors.to_h, :status => error_code_from_class(exception)
             end
           end
 
-          def collected_errors(exception)
-            errors = []
-            top_level_exception = exception
-
-            until exception.nil?
-              code = exception.respond_to?(:code) ? exception.code : error_code_from_class(exception)
-              errors << {:status => code, :detail => "#{exception.class}: #{exception.message}"}
-              exception = exception.cause
+          def exception_list_from(exception)
+            [].tap do |arr|
+              until exception.nil?
+                arr << exception
+                exception = exception.cause
+              end
             end
-
-            # Overwrite the first error since that one most likely doen't have a code
-            errors.first[:status] = error_code_from_class(top_level_exception)
-
-            [{:errors => errors}, error_code_from_class(top_level_exception)]
           end
 
           def error_code_from_class(exception)
