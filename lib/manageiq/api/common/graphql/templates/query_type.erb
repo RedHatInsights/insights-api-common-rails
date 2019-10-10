@@ -18,10 +18,12 @@ QueryType = ::GraphQL::ObjectType.define do
       description "List available #{collection}"
       type types[resource_type]
 
-      argument :id, types.ID
-      argument :offset, types.Int, "The number of #{collection} to skip before starting to collect the result set"
-      argument :limit,  types.Int, "The number of #{collection} to return"
-      argument :filter, ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
+      argument :id,      types.ID
+      argument :offset,  types.Int, "The number of #{collection} to skip before starting to collect the result set"
+      argument :limit,   types.Int, "The number of #{collection} to return"
+      argument :filter,  ::ManageIQ::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
+      argument :sort_by, ::ManageIQ::API::Common::GraphQL::Types::QuerySortBy, "The optional attributes to sort by. Provided as an array of attr[:asc] and attr:desc values"
+
       resolve lambda { |_obj, args, ctx|
         if base_query.present?
           scope = base_query.call(model_class, ctx)
@@ -39,7 +41,7 @@ QueryType = ::GraphQL::ObjectType.define do
         end
         scope = ::ManageIQ::API::Common::GraphQL.search_options(scope, args)
         ::ManageIQ::API::Common::PaginatedResponse.new(
-          base_query: scope, request: nil, limit: args[:limit], offset: args[:offset]
+          base_query: scope, request: nil, limit: args[:limit], offset: args[:offset], sort_by: args[:sort_by]
         ).records
       }
     end
