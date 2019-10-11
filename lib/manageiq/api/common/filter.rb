@@ -147,7 +147,9 @@ module ManageIQ
         end
 
         def comparator_eq_i(key, value)
-          self.query = query.where(arel_table[key].lower.eq(value.downcase))
+          values = Array(value).map { |v| query.sanitize_sql_like(v.downcase) }
+
+          self.query = query.where(arel_table[key].lower.matches_any(values))
         end
 
         def comparator_gt(key, value)

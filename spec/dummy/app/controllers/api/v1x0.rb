@@ -53,5 +53,6 @@ module Api
     end
 
     class GraphqlController < Api::V1::GraphqlController; end
+    class SourcesController < Api::V1::SourcesController; end
   end
 end

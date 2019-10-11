@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :authentications, :only => [:create]
       resources :vms, :only => [:index, :show]
       resources :persons, :only => [:index, :create, :show, :update]
+      resources :sources, :only => [:index]
       resources :extras, :only => [:index]
     end
 
