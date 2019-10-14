@@ -29,6 +29,26 @@ Or install it yourself as:
 
 #### ManageIQ::Api::Common::Filter
 
+| Supported Comparators     | Comparator    |
+| ---------------------     | ----------    |
+| Integer                   | eq            |
+|                           | gt            |
+|                           | gte           |
+|                           | lt            |
+|                           | lte           |
+|                           | nil           |
+|                           | not_nil       |
+| String                    | eq            |
+|                           | contains      |
+|                           | starts_with   |
+|                           | ends_with     |
+|                           | nil           |
+|                           | not_nil       |
+| String (case insensitive) | eq_i          |
+|                           | contains_i    |
+|                           | starts_with_i |
+|                           | ends_with_i   |
+
 After implementing filtering in your application, this is the way to filter via parameters on index functions:
 
 | Query Parameter | Ruby Client Parameter <br> **GraphQL filter: Parameter** |
