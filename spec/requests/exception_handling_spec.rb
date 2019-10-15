@@ -17,7 +17,7 @@ RSpec.describe "ManageIQ::API::Common::ApplicationController Exception Handling"
 
   context "when there are multiple exceptions" do
     before do
-      get("/api/v1.0/nested_error", :headers => headers)
+      get("/api/v1.0/error_nested", :headers => headers)
     end
 
     it "returns a properly formatted error doc" do

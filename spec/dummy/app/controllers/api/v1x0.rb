@@ -59,7 +59,7 @@ module Api
         raise StandardError, "something happened"
       end
 
-      def nested_error
+      def error_nested
         raise ArgumentError, "something happened"
       rescue ArgumentError
         raise SomethingHappened, "something else happened"

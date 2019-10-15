@@ -7,10 +7,10 @@ Rails.application.routes.draw do
     routing_helper.redirect_major_version("v0.1", "api")
 
     namespace :v1x0, :path => "v1.0" do
+      get "/error",        :to => "errors#error"
+      get "/error_nested", :to => "errors#error_nested"
       get "/openapi.json", :to => "root#openapi"
       post "graphql" => "graphql#query"
-      get '/error', :to => "errors#error"
-      get '/nested_error', :to => "errors#nested_error"
       resources :authentications, :only => [:create]
       resources :vms, :only => [:index, :show]
       resources :persons, :only => [:index, :create, :show, :update]
