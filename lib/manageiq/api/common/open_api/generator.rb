@@ -105,6 +105,34 @@ module ManageIQ
             "##{SCHEMAS_PATH}/#{klass_name}"
           end
 
+          def build_schema_error_not_found
+            klass_name = "ErrorNotFound"
+
+            schemas[klass_name] = {
+              "type"       => "object",
+              "properties" => {
+                "errors"  => {
+                  "type"  => "array",
+                  "items" => {
+                    "type"        => "object",
+                    "properties"  => {
+                      "status"    => {
+                        "type"    => "integer",
+                        "example" => 404
+                      },
+                      "detail"    => {
+                        "type"    => "string",
+                        "example" => "Record not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            "##{SCHEMAS_PATH}/#{klass_name}"
+          end
+
           def parameters
             @parameters ||= {
               "QueryFilter" => {
@@ -158,10 +186,10 @@ module ManageIQ
           end
 
           def openapi_list_description(klass_name, primary_collection)
-            primary_collection = nil if primary_collection == klass_name
+            sub_collection = (primary_collection != klass_name)
             {
-              "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if primary_collection}",
-              "operationId" => "list#{primary_collection}#{klass_name.pluralize}",
+              "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if sub_collection}",
+              "operationId" => "list#{primary_collection if sub_collection}#{klass_name.pluralize}",
               "description" => "Returns an array of #{klass_name} objects",
               "parameters"  => [
                 { "$ref" => "##{PARAMETERS_PATH}/QueryLimit"  },
@@ -179,7 +207,18 @@ module ManageIQ
                 }
               }
             }.tap do |h|
-              h["parameters"] << { "$ref" => build_parameter("ID") } if primary_collection
+              h["parameters"] << { "$ref" => build_parameter("ID") } if sub_collection
+
+              next unless sub_collection
+
+              h["responses"]["404"] = {
+                "description" => "Not found",
+                "content"     => {
+                  "application/json" => {
+                    "schema"         => { "$ref" => build_schema_error_not_found }
+                  }
+                }
+              }
             end
           end
 
@@ -215,7 +254,14 @@ module ManageIQ
                     }
                   }
                 },
-                "404" => {"description" => "Not found"}
+                "404" => {
+                  "description" => "Not found",
+                  "content"     => {
+                    "application/json" => {
+                      "schema"         => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
+                }
               }
             }
           end
@@ -228,7 +274,14 @@ module ManageIQ
               "parameters"  => [{ "$ref" => build_parameter("ID") }],
               "responses"   => {
                 "204" => { "description" => "#{klass_name} deleted" },
-                "404" => { "description" => "Not found"             }
+                "404" => {
+                  "description" => "Not found",
+                  "content"     => {
+                    "application/json" => {
+                      "schema"         => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
+                }
               }
             }
           end
@@ -281,7 +334,14 @@ module ManageIQ
               "responses"   => {
                 "204" => { "description" => "Updated, no content" },
                 "400" => { "description" => "Bad request"         },
-                "404" => { "description" => "Not found"           }
+                "404" => {
+                  "description" => "Not found",
+                  "content"     => {
+                    "application/json" => {
+                      "schema"         => { "$ref" => build_schema_error_not_found }
+                    }
+                  }
+                }
               }
             }
           end
