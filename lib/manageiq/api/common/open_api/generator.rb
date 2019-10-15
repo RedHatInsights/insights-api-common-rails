@@ -186,10 +186,10 @@ module ManageIQ
           end
 
           def openapi_list_description(klass_name, primary_collection)
-            primary_collection = nil if primary_collection == klass_name
+            sub_collection = (primary_collection != klass_name)
             {
-              "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if primary_collection}",
-              "operationId" => "list#{primary_collection}#{klass_name.pluralize}",
+              "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if sub_collection}",
+              "operationId" => "list#{primary_collection if sub_collection}#{klass_name.pluralize}",
               "description" => "Returns an array of #{klass_name} objects",
               "parameters"  => [
                 { "$ref" => "##{PARAMETERS_PATH}/QueryLimit"  },
@@ -204,18 +204,21 @@ module ManageIQ
                       "schema" => { "$ref" => build_collection_schema(klass_name) }
                     }
                   }
-                },
-                "404" => {
-                  "description" => "Not found",
-                  "content" => {
-                    "application/json" => {
-                        "schema" => { "$ref" => build_schema_error_not_found }
-                    }
-                  }
                 }
               }
             }.tap do |h|
-              h["parameters"] << { "$ref" => build_parameter("ID") } if primary_collection
+              h["parameters"] << { "$ref" => build_parameter("ID") } if sub_collection
+
+              next unless sub_collection
+
+              h["responses"]["404"] = {
+                "description" => "Not found",
+                "content" => {
+                  "application/json" => {
+                    "schema" => { "$ref" => build_schema_error_not_found }
+                  }
+                }
+              }
             end
           end
 
