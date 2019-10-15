@@ -41,10 +41,6 @@ module Api
 
     class ExtrasController < ApplicationController
       self.openapi_enabled = false
-      rescue_from(ArgumentError) do |exception|
-        error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
-        render :json => error_document.to_h, :status => error_document.status
-      end
 
       def index
         safe_params_for_list

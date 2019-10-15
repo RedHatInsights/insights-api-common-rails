@@ -12,16 +12,6 @@ module ManageIQ
             other.include(OpenapiEnabled)
 
             other.before_action(:validate_request)
-
-            other.rescue_from(ActionController::UnpermittedParameters) do |exception|
-              error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
-              render :json => error_document.to_h, :status => error_document.status
-            end
-
-            other.rescue_from(ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation::BodyParseError) do |_exception|
-              error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, "Failed to parse request body, expected JSON")
-              render :json => error_document.to_h, :status => error_document.status
-            end
           end
 
           private
@@ -32,7 +22,7 @@ module ManageIQ
               parsed_body = raw_body.blank? ? {} : JSON.parse(raw_body)
               ActionController::Parameters.new(parsed_body).permit!
             rescue JSON::ParserError
-              raise ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation::BodyParseError
+              raise ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation::BodyParseError, "Failed to parse request body, expected JSON"
             end
           end
 
@@ -50,9 +40,6 @@ module ManageIQ
               api_version,
               body_params.as_json
             )
-          rescue OpenAPIParser::OpenAPIError => exception
-            error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
-            render :json => error_document.to_h, :status => :bad_request
           end
         end
       end
