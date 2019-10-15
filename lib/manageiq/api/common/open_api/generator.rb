@@ -109,19 +109,19 @@ module ManageIQ
             klass_name = "ErrorNotFound"
 
             schemas[klass_name] = {
-              "type" => "object",
+              "type"       => "object",
               "properties" => {
-                "errors" => {
-                  "type" => "array",
+                "errors"  => {
+                  "type"  => "array",
                   "items" => {
-                    "type" => "object",
-                    "properties" => {
-                      "status" => {
-                        "type" => "integer",
+                    "type"        => "object",
+                    "properties"  => {
+                      "status"    => {
+                        "type"    => "integer",
                         "example" => 404
                       },
-                      "detail" => {
-                        "type" => "string",
+                      "detail"    => {
+                        "type"    => "string",
                         "example" => "Record not found"
                       }
                     }
@@ -213,9 +213,9 @@ module ManageIQ
 
               h["responses"]["404"] = {
                 "description" => "Not found",
-                "content" => {
+                "content"     => {
                   "application/json" => {
-                    "schema" => { "$ref" => build_schema_error_not_found }
+                    "schema"         => { "$ref" => build_schema_error_not_found }
                   }
                 }
               }
@@ -256,9 +256,9 @@ module ManageIQ
                 },
                 "404" => {
                   "description" => "Not found",
-                  "content" => {
+                  "content"     => {
                     "application/json" => {
-                        "schema" => { "$ref" => build_schema_error_not_found }
+                      "schema"         => { "$ref" => build_schema_error_not_found }
                     }
                   }
                 }
@@ -276,9 +276,9 @@ module ManageIQ
                 "204" => { "description" => "#{klass_name} deleted" },
                 "404" => {
                   "description" => "Not found",
-                  "content" => {
+                  "content"     => {
                     "application/json" => {
-                        "schema" => { "$ref" => build_schema_error_not_found }
+                      "schema"         => { "$ref" => build_schema_error_not_found }
                     }
                   }
                 }
@@ -336,9 +336,9 @@ module ManageIQ
                 "400" => { "description" => "Bad request"         },
                 "404" => {
                   "description" => "Not found",
-                  "content" => {
+                  "content"     => {
                     "application/json" => {
-                        "schema" => { "$ref" => build_schema_error_not_found }
+                      "schema"         => { "$ref" => build_schema_error_not_found }
                     }
                   }
                 }
