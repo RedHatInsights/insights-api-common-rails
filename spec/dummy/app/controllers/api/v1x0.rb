@@ -41,14 +41,24 @@ module Api
 
     class ExtrasController < ApplicationController
       self.openapi_enabled = false
-      rescue_from(ArgumentError) do |exception|
-        error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
-        render :json => error_document.to_h, :status => error_document.status
-      end
 
       def index
         safe_params_for_list
         render :json => "OK".to_json
+      end
+    end
+
+    class ErrorsController < ApplicationController
+      class SomethingHappened < StandardError; end
+
+      def error
+        raise StandardError, "something happened"
+      end
+
+      def error_nested
+        raise ArgumentError, "something happened"
+      rescue ArgumentError
+        raise SomethingHappened, "something else happened"
       end
     end
 

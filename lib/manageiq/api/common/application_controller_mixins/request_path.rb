@@ -10,11 +10,6 @@ module ManageIQ
             other.extend(self::ClassMethods)
 
             other.before_action(:validate_primary_collection_id)
-
-            other.rescue_from(ManageIQ::API::Common::ApplicationControllerMixins::RequestPath::RequestPathError) do |exception|
-              error_document = ManageIQ::API::Common::ErrorDocument.new.add(400, exception.message)
-              render :json => error_document.to_h, :status => error_document.status
-            end
           end
 
           def request_path
