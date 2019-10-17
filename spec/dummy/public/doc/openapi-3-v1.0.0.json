@@ -34,6 +34,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -119,6 +122,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -178,6 +184,9 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
             "$ref": "#/components/parameters/ID"
           }
         ],
@@ -220,6 +229,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -279,6 +291,9 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
             "$ref": "#/components/parameters/SourceTypeID"
           }
         ],
@@ -310,6 +325,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -369,6 +387,9 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
             "$ref": "#/components/parameters/ID"
           }
         ],
@@ -400,6 +421,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -605,6 +629,18 @@
           "type": "integer",
           "minimum": 0,
           "default": 0
+        }
+      },
+      "QuerySortBy": {
+        "in": "query",
+        "name": "sort_by",
+        "description": "The list of attribute and order to sort the result set by.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/SortByAttribute" },
+            { "type": "array", "items": { "$ref": "#/components/schemas/SortByAttribute" } }
+          ]
         }
       },
       "SourceTypeID": {
@@ -854,6 +890,11 @@
             "description": "The provider specific parameters needed to provision this service. This might include namespaces, special keys"
           }
         }
+      },
+      "SortByAttribute": {
+        "type": "string",
+        "description": "Attribute with optional order to sort the result set by.",
+        "pattern": "^[a-z-_]+(:asc|:desc)?$"
       },
       "Source": {
         "type": "object",

@@ -97,6 +97,11 @@ module ManageIQ
                 "pattern"     => "^\\d+$",
                 "readOnly"    => true,
               },
+              "SortByAttribute"    => {
+                "type"        => "string",
+                "description" => "Attribute with optional order to sort the result set by.",
+                "pattern"     => "^[a-z-_]+(:asc|:desc)?$"
+              }
             }
           end
 
@@ -169,6 +174,18 @@ module ManageIQ
                   "default" => 0
                 }
               },
+              "QuerySortBy" => {
+                "in"          => "query",
+                "name"        => "sort_by",
+                "description" => "The list of attribute and order to sort the result set by.",
+                "required"    => false,
+                "schema"      => {
+                  "oneOf" => [
+                    { "$ref" => "##{SCHEMAS_PATH}/SortByAttribute" },
+                    { "type" => "array", "items" => { "$ref" => "##{SCHEMAS_PATH}/SortByAttribute" } }
+                  ]
+                }
+              }
             }
           end
 
@@ -194,7 +211,8 @@ module ManageIQ
               "parameters"  => [
                 { "$ref" => "##{PARAMETERS_PATH}/QueryLimit"  },
                 { "$ref" => "##{PARAMETERS_PATH}/QueryOffset" },
-                { "$ref" => "##{PARAMETERS_PATH}/QueryFilter" }
+                { "$ref" => "##{PARAMETERS_PATH}/QueryFilter" },
+                { "$ref" => "##{PARAMETERS_PATH}/QuerySortBy" }
               ],
               "responses"   => {
                 "200" => {
