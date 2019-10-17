@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2019-10-17
+### Breaking Changes
+- Add ExceptionHandling mixin and consolidate ApiError rescue_from #114
+
+### Changed
+- Update to openapi_parser v0.6.1 (will break tests due to changed error messages) #124
+
+### Added
+- Import shared RBAC code #106
+- Add 404 responses to the openapi generator #117
+
 ## [1.1.0] - 2019-10-15
 ### Added
 - Add support for case insensitive filtering #123
@@ -38,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ManageIQ/manageiq-api-common/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.0.0...v1.0.1
