@@ -10,6 +10,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
 
   let!(:source_typeR) { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
   let!(:source_typeV) { SourceType.create(:name => "vmware", :product_name => "VmWare vCenter", :vendor => "vmware") }
+  let!(:source_typeO) { SourceType.create(:name => "openstack", :product_name => "OpenStack", :vendor => "redhat") }
 
   let!(:source_a1)    { Source.create!(:tenant => tenant, :uid => "1", :name => "source_a1", :source_type => source_typeR) }
   let!(:source_a2)    { Source.create!(:tenant => tenant, :uid => "2", :name => "source_a2", :source_type => source_typeR) }
@@ -215,6 +216,50 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
             }
           ]
         }'))
+    end
+  end
+
+  context "supports result sorting" do
+    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
+
+    it "via sort_by with a single attribute" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          source_types(sort_by: "vendor") {
+            vendor
+          }
+        }' })
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]["source_types"].collect { |st| st["vendor"] })
+        .to eq(%w[redhat redhat vmware])
+    end
+
+    it "via sort_by with a single attribute in descending order" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          source_types(sort_by: "vendor:desc") {
+            vendor
+          }
+        }' })
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]["source_types"].collect { |st| st["vendor"] })
+        .to eq(%w[vmware redhat redhat])
+    end
+
+    it "via sort_by with a multiple attributes in mixed order" do
+      post(graphql_endpoint, :headers => headers, :params => { "query" => '
+        {
+          source_types(sort_by: ["vendor", "product_name:desc"]) {
+            vendor
+            product_name
+          }
+        }' })
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]["source_types"].collect { |st| [st["vendor"], st["product_name"]] })
+        .to eq([["redhat", "RedHat Virtualization"], ["redhat", "OpenStack"], ["vmware", "VmWare vCenter"]])
     end
   end
 
@@ -637,6 +682,11 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
                   "endpoints": []
                 }
               ]
+            },
+            {
+              "vendor": "redhat",
+              "product_name": "OpenStack",
+              "sources": []
             }
           ]
         }'))
