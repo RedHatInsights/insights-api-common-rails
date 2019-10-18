@@ -1,7 +1,7 @@
 RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
   let(:external_tenant) { rand(1000).to_s }
   let(:tenant)          { Tenant.create!(:name => "default", :external_tenant => external_tenant) }
-  let(:source_type)     { SourceType.create(:name => "rhex", :product_name => "RedHat Virtualization", :vendor => "redhat") }
+  let(:source_type)     { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
 
   def create_source(attrs = {})
     Source.create!(attrs.merge(:tenant => tenant, :source_type => source_type))
@@ -16,6 +16,16 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
         :status      => 200
       )
     )
+  end
+
+  def expect_success_ordered_objects(query, results)
+    get(URI.escape("/api/v1.0/source_types?#{query}"))
+
+    expect(response.status).to(eq(200))
+
+    response.parsed_body["data"].each do |object|
+      expect(object).to(include(results.shift.deep_stringify_keys))
+    end
   end
 
   context "case insensitive strings" do
@@ -58,5 +68,56 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
     it("key:lt")                 { expect_success("filter[id][lt]=#{source_8.id}", *Source.where(Source.arel_table[:id].lt(source_8.id))) }
 
     it("key:lte")                { expect_success("filter[id][lte]=#{source_8.id}", *Source.where(Source.arel_table[:id].lteq(source_8.id))) }
+  end
+
+  context "sorted results via sort_by" do
+    let!(:rhev)      { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
+    let!(:openstack) { SourceType.create(:name => "openstack", :product_name => "OpenStack", :vendor => "redhat") }
+    let!(:vmware)    { SourceType.create(:name => "vmware", :product_name => "OpenStack", :vendor => "vmware") }
+
+    it("with single attribute and default order") do
+      expect_success_ordered_objects("sort_by[]=vendor",
+                                     [
+                                       {:vendor => "redhat"},
+                                       {:vendor => "redhat"},
+                                       {:vendor => "vmware"}
+                                     ])
+    end
+
+    it("with single attribute and order") do
+      expect_success_ordered_objects("sort_by[]=vendor:desc",
+                                     [
+                                       {:vendor => "vmware"},
+                                       {:vendor => "redhat"},
+                                       {:vendor => "redhat"}
+                                     ])
+    end
+
+    it("with multiple attributes and default order") do
+      expect_success_ordered_objects("sort_by[]=vendor&sort_by[]=name",
+                                     [
+                                       {:vendor => "redhat", :name => "openstack"},
+                                       {:vendor => "redhat", :name => "rhev"},
+                                       {:vendor => "vmware", :name => "vmware"}
+                                     ])
+    end
+
+    it("with multiple attributes and only some with order") do
+      expect_success_ordered_objects("sort_by[]=vendor:desc&sort_by[]=name",
+                                     [
+                                       {:vendor => "vmware", :name => "vmware"},
+                                       {:vendor => "redhat", :name => "openstack"},
+                                       {:vendor => "redhat", :name => "rhev"},
+                                     ])
+    end
+
+    it("with multiple attributes and all with order") do
+      expect_success_ordered_objects("sort_by[]=vendor:asc&sort_by[]=name:desc",
+                                     [
+                                       {:vendor => "redhat", :name => "rhev"},
+                                       {:vendor => "redhat", :name => "openstack"},
+                                       {:vendor => "vmware", :name => "vmware"}
+                                     ])
+    end
   end
 end
