@@ -39,5 +39,7 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
 
     it("key:starts_with_i %")    { expect_success("filter[name][starts_with_i]=%s", source_5, source_6) }
     it("key:ends_with_i %")      { expect_success("filter[name][ends_with_i]=f%", source_7, source_8) }
+
+    it("key:eq array") { expect_success("filter[id][]=#{source_7.id}&filter[id][]=#{source_8.id}", source_7, source_8) }
   end
 end
