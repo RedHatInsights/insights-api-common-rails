@@ -14,6 +14,34 @@ module ManageIQ
           @api_doc_definition = api_doc_definition
         end
 
+        def array_of_integers?(values)
+          return false if values.blank?
+
+          values.all? do |v|
+            begin
+              Integer(v)
+            rescue StandardError
+              nil
+            end.present?
+          end
+        end
+
+        def handle_arrays_in_params_with_comparators(hash_params)
+          hash_params.to_h.each_with_object(hash_params).each do |(key, value), return_hash|
+            return_hash[key] = array_of_integers?(value.try(:keys)) ? value.values : value
+          end
+        end
+
+        def normalize_arrays_in_params(hash_params)
+          indexes_or_comparators = hash_params.try(:keys)
+          return hash_params unless indexes_or_comparators
+
+          are_indexes = array_of_integers?(indexes_or_comparators)
+          return hash_params.values if are_indexes
+
+          handle_arrays_in_params_with_comparators(hash_params)
+        end
+
         def apply
           return query if @raw_filter.blank?
           @raw_filter.each do |k, v|
@@ -21,6 +49,7 @@ module ManageIQ
 
             if attribute["type"] == "string"
               type = determine_string_attribute_type(attribute)
+              v = normalize_arrays_in_params(v)
               send(type, k, v)
             else
               errors.add("unsupported attribute type for: #{k}")

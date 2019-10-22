@@ -28,11 +28,13 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
     let!(:source_7) { create_source(:name => "Source_f%") }
     let!(:source_8) { create_source(:name => "Source_F%") }
 
-    it("key:eq_i single")        { expect_success("filter[name][eq_i]=#{source_1.name}", source_1, source_2) }
-    it("key:eq_i array")         { expect_success("filter[name][eq_i][]=#{source_1.name}&filter[name][eq_i][]=#{source_3.name}", source_1, source_2, source_3, source_4) }
+    it("key:eq_i single") { expect_success("filter[name][eq_i]=#{source_1.name}", source_1, source_2) }
+    it("key:eq_i array")  { expect_success("filter[name][eq_i][]=#{source_1.name}&filter[name][eq_i][]=#{source_3.name}", source_1, source_2, source_3, source_4) }
+    it("key:eq_i array with explicit indexes") { expect_success("filter[name][eq_i][0]=#{source_1.name}&filter[name][eq_i][1]=#{source_3.name}", source_1, source_2, source_3, source_4) }
 
     it("key:contains_i single")  { expect_success("filter[name][contains_i]=a", source_1, source_2) }
     it("key:contains_i array")   { expect_success("filter[name][contains_i][]=s&filter[name][contains_i][]=a", source_1, source_2) }
+    it("key:contains_i array with explicit indexes") { expect_success("filter[name][contains_i][0]=s&filter[name][contains_i][1]=a", source_1, source_2) }
 
     it("key:starts_with_i")      { expect_success("filter[name][starts_with_i]=s", source_1, source_2, source_3, source_4, source_7, source_8) }
     it("key:ends_with_i")        { expect_success("filter[name][ends_with_i]=b", source_3, source_4) }
@@ -41,5 +43,9 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
     it("key:ends_with_i %")      { expect_success("filter[name][ends_with_i]=f%", source_7, source_8) }
 
     it("key:eq array") { expect_success("filter[id][]=#{source_7.id}&filter[id][]=#{source_8.id}", source_7, source_8) }
+    it("key:eq array with explicit indexes") { expect_success("filter[id][0]=#{source_7.id}&filter[id][1]=#{source_8.id}", source_7, source_8) }
+
+    it("key:eq array with explicit eq comparator") { expect_success("filter[id][eq][]=#{source_7.id}&filter[id][eq][]=#{source_8.id}", source_7, source_8) }
+    it("key:eq array with explicit indexes explicit eq comparator") { expect_success("filter[id][eq][0]=#{source_7.id}&filter[id][eq][1]=#{source_8.id}", source_7, source_8) }
   end
 end
