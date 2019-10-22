@@ -22,7 +22,7 @@ module ManageIQ
 
           def permitted_params
             check_if_openapi_enabled
-            api_doc_definition.all_attributes + [:limit, :offset] + [subcollection_foreign_key]
+            api_doc_definition.all_attributes + [:limit, :offset, :sort_by] + [subcollection_foreign_key]
           end
 
           def subcollection_foreign_key

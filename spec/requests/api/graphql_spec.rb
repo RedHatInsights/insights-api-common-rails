@@ -8,9 +8,9 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
   let!(:identity)     { Base64.encode64({'identity' => { 'account_number' => ext_tenant }}.to_json) }
   let!(:headers)      { { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity } }
 
-  let!(:source_typeR) { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
-  let!(:source_typeV) { SourceType.create(:name => "vmware", :product_name => "VmWare vCenter", :vendor => "vmware") }
-  let!(:source_typeO) { SourceType.create(:name => "openstack", :product_name => "OpenStack", :vendor => "redhat") }
+  let!(:source_typeR) { SourceType.create(:name => "rhev_sample", :product_name => "RedHat Virtualization", :vendor => "redhat") }
+  let!(:source_typeV) { SourceType.create(:name => "vmware_sample", :product_name => "VmWare vCenter", :vendor => "vmware") }
+  let!(:source_typeO) { SourceType.create(:name => "openstack_sample", :product_name => "OpenStack", :vendor => "redhat") }
 
   let!(:source_a1)    { Source.create!(:tenant => tenant, :uid => "1", :name => "source_a1", :source_type => source_typeR) }
   let!(:source_a2)    { Source.create!(:tenant => tenant, :uid => "2", :name => "source_a2", :source_type => source_typeR) }
@@ -225,7 +225,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     it "via sort_by with a single attribute" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
-          source_types(sort_by: "vendor") {
+          source_types(filter: { name: { ends_with: "sample" } }, sort_by: "vendor") {
             vendor
           }
         }' })
@@ -238,7 +238,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     it "via sort_by with a single attribute in descending order" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
-          source_types(sort_by: "vendor:desc") {
+          source_types(filter: { name: { ends_with: "sample" } }, sort_by: "vendor:desc") {
             vendor
           }
         }' })
@@ -251,7 +251,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     it "via sort_by with a multiple attributes in mixed order" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
-          source_types(sort_by: ["vendor", "product_name:desc"]) {
+          source_types(filter: { name: { ends_with: "sample" } }, sort_by: ["vendor", "product_name:desc"]) {
             vendor
             product_name
           }
@@ -491,7 +491,7 @@ RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
     it "honors 2-level associations" do
       post(graphql_endpoint, :headers => headers, :params => { "query" => '
         {
-          source_types(filter: {name: {eq: ["rhev", "vmware"]}}) {
+          source_types(filter: {name: {eq: ["rhev_sample", "vmware_sample"]}}) {
             vendor
             product_name
             sources {

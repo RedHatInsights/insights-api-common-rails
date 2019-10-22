@@ -71,12 +71,12 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
   end
 
   context "sorted results via sort_by" do
-    let!(:rhev)      { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
-    let!(:openstack) { SourceType.create(:name => "openstack", :product_name => "OpenStack", :vendor => "redhat") }
-    let!(:vmware)    { SourceType.create(:name => "vmware", :product_name => "OpenStack", :vendor => "vmware") }
+    let!(:rhev)      { SourceType.create(:name => "rhev_sample", :product_name => "RedHat Virtualization", :vendor => "redhat") }
+    let!(:openstack) { SourceType.create(:name => "openstack_sample", :product_name => "OpenStack", :vendor => "redhat") }
+    let!(:vmware)    { SourceType.create(:name => "vmware_sample", :product_name => "OpenStack", :vendor => "vmware") }
 
     it("with single attribute and default order") do
-      expect_success_ordered_objects("sort_by[]=vendor",
+      expect_success_ordered_objects("filter[name][ends_with]=sample&sort_by=vendor",
                                      [
                                        {:vendor => "redhat"},
                                        {:vendor => "redhat"},
@@ -85,7 +85,7 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
     end
 
     it("with single attribute and order") do
-      expect_success_ordered_objects("sort_by[]=vendor:desc",
+      expect_success_ordered_objects("filter[name][ends_with]=sample&sort_by=vendor:desc",
                                      [
                                        {:vendor => "vmware"},
                                        {:vendor => "redhat"},
@@ -94,29 +94,29 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
     end
 
     it("with multiple attributes and default order") do
-      expect_success_ordered_objects("sort_by[]=vendor&sort_by[]=name",
+      expect_success_ordered_objects("filter[name][ends_with]=sample&sort_by[]=vendor&sort_by[]=name",
                                      [
-                                       {:vendor => "redhat", :name => "openstack"},
-                                       {:vendor => "redhat", :name => "rhev"},
-                                       {:vendor => "vmware", :name => "vmware"}
+                                       {:vendor => "redhat", :name => "openstack_sample"},
+                                       {:vendor => "redhat", :name => "rhev_sample"},
+                                       {:vendor => "vmware", :name => "vmware_sample"}
                                      ])
     end
 
     it("with multiple attributes and only some with order") do
-      expect_success_ordered_objects("sort_by[]=vendor:desc&sort_by[]=name",
+      expect_success_ordered_objects("filter[name][ends_with]=sample&sort_by[]=vendor:desc&sort_by[]=name",
                                      [
-                                       {:vendor => "vmware", :name => "vmware"},
-                                       {:vendor => "redhat", :name => "openstack"},
-                                       {:vendor => "redhat", :name => "rhev"},
+                                       {:vendor => "vmware", :name => "vmware_sample"},
+                                       {:vendor => "redhat", :name => "openstack_sample"},
+                                       {:vendor => "redhat", :name => "rhev_sample"},
                                      ])
     end
 
     it("with multiple attributes and all with order") do
-      expect_success_ordered_objects("sort_by[]=vendor:asc&sort_by[]=name:desc",
+      expect_success_ordered_objects("filter[name][ends_with]=sample&sort_by[]=vendor:asc&sort_by[]=name:desc",
                                      [
-                                       {:vendor => "redhat", :name => "rhev"},
-                                       {:vendor => "redhat", :name => "openstack"},
-                                       {:vendor => "vmware", :name => "vmware"}
+                                       {:vendor => "redhat", :name => "rhev_sample"},
+                                       {:vendor => "redhat", :name => "openstack_sample"},
+                                       {:vendor => "vmware", :name => "vmware_sample"}
                                      ])
     end
   end
