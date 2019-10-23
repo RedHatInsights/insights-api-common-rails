@@ -5,7 +5,7 @@ module ManageIQ
         class Docs
           class ObjectDefinition < Hash
             def all_attributes
-              properties.keys
+              properties.map { |key, val| all_attributes_recursive(key, val) }
             end
 
             def read_only_attributes
@@ -18,6 +18,18 @@ module ManageIQ
 
             def properties
               self["properties"]
+            end
+
+            private
+
+            def all_attributes_recursive(key, value)
+              if value["properties"]
+                {
+                  key => value["properties"].map { |k, v| all_attributes_recursive(k, v) }
+                }
+              else
+                key
+              end
             end
           end
         end

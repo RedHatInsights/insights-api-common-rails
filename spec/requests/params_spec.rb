@@ -47,5 +47,11 @@ RSpec.describe "ManageIQ::API::Common::ApplicationController Parameters", :type 
       patch("/api/v1.0/persons/10", :headers => headers, :params => body)
       expect(response.status).to eq(400)
     end
+
+    it "valid nested parameters" do
+      body = { 'name' => 'fred', 'zip' => '07825', 'age' => 45, 'nested' => {'props' => 'abcd'} }
+      patch("/api/v1.0/persons/10", :headers => headers, :params => body)
+      expect(response.status).to eq(200)
+    end
   end
 end
