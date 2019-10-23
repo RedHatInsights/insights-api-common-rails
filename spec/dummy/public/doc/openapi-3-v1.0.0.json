@@ -986,6 +986,15 @@
           },
           "zip": {
             "type": "string"
+          },
+          "nested": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "props": {
+                "type": "string"
+              }
+            }
           }
         }
       },
