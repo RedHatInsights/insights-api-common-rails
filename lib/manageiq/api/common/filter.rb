@@ -23,11 +23,11 @@ module ManageIQ
               type = determine_string_attribute_type(attribute)
               send(type, k, v)
             else
-              errors.add("unsupported attribute type for: #{k}")
+              errors << "unsupported attribute type for: #{k}"
             end
           end
 
-          raise ManageIQ::API::Common::Filter::Error.new(:error_document => errors) unless errors.blank?
+          raise(ManageIQ::API::Common::Filter::Error, errors.join(", ")) unless errors.blank?
           query
         end
 
@@ -35,18 +35,12 @@ module ManageIQ
 
         attr_accessor :query
 
-        class Error < ArgumentError
-          attr_reader :error_document
-
-          def initialize(attrs)
-            @error_document = attrs[:error_document]
-          end
-        end
+        class Error < ArgumentError; end
 
         def attribute_for_key(key)
           attribute = api_doc_definition.properties[key.to_s]
           return attribute if attribute
-          errors.add("found unpermitted parameter: #{key}")
+          errors << "found unpermitted parameter: #{key}"
           nil
         end
 
@@ -57,7 +51,7 @@ module ManageIQ
         end
 
         def errors
-          @errors ||= ManageIQ::API::Common::ErrorDocument.new
+          @errors ||= []
         end
 
         def string(k, val)
@@ -81,7 +75,7 @@ module ManageIQ
             return if value.nil?
             send("comparator_#{requested_comparator}", key, value)
           else
-            errors.add("unsupported #{type} comparator: #{requested_comparator}")
+            errors << "unsupported #{type} comparator: #{requested_comparator}"
           end
         end
 
@@ -100,7 +94,7 @@ module ManageIQ
 
           DateTime.parse(value)
         rescue ArgumentError
-          errors.add("invalid timestamp: #{value}")
+          errors << "invalid timestamp: #{value}"
           return nil
         end
 
