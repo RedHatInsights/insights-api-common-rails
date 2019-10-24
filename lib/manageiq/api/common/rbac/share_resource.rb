@@ -17,7 +17,7 @@ module ManageIQ
 
           def process
             validate_groups
-            @roles = RBAC::Roles.new("#{@app_name}-#{@resource_name}-")
+            @roles = RBAC::Roles.new("#{@app_name}-#{@resource_name}-", 'account')
             @group_uuids.each { |uuid| manage_roles_for_group(uuid) }
             self
           end

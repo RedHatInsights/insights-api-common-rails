@@ -9,7 +9,7 @@ describe ManageIQ::API::Common::RBAC::ShareResource do
       :resource_name => resource }
   end
   let(:subject) { described_class.new(options) }
-  let(:pagination_options) { { :limit => 500, :name => "catalog-portfolios-", :scope => "principal" } }
+  let(:pagination_options) { { :limit => 500, :name => "catalog-portfolios-", :scope => "account" } }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
