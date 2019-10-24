@@ -13,7 +13,7 @@ module ManageIQ
             @resource_id = options[:resource_id]
             @resource_name = options[:resource_name]
             @share_info = []
-            @roles = RBAC::Roles.new("#{@app_name}-#{@resource_name}-#{@resource_id}")
+            @roles = RBAC::Roles.new("#{@app_name}-#{@resource_name}-#{@resource_id}", 'account')
           end
 
           def process
