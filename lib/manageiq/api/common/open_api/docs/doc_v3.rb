@@ -34,6 +34,16 @@ module ManageIQ
               request_operation.validate_request_body(payload_content_type, payload)
             end
 
+            def validate_parameters!(http_method, request_path, api_version, params)
+              path = request_path.split(api_version)[1]
+              raise "API version not found in request_path" if path.nil?
+
+              request_operation = validator_doc.request_operation(http_method.to_s.downcase, path)
+              return unless request_operation
+
+              request_operation.validate_request_parameter(params, {})
+            end
+
             def version
               @version ||= Gem::Version.new(content.fetch_path("info", "version"))
             end

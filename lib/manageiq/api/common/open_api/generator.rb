@@ -100,7 +100,7 @@ module ManageIQ
               "SortByAttribute"    => {
                 "type"        => "string",
                 "description" => "Attribute with optional order to sort the result set by.",
-                "pattern"     => "^[a-z-_]+(:asc|:desc)?$"
+                "pattern"     => "^[a-z\\-_]+(:asc|:desc)?$"
               }
             }
           end
