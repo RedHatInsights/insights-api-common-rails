@@ -67,6 +67,28 @@ After implementing filtering in your application, this is the way to filter via 
 |"?filter[id][]=5&filter[id][]=10&filter[id][]=15&filter[id][]=20"|`{:filter => { :id => ["5", "10", "15", "20"]}}` <br> **`filter: { id: ["5", "10", "15", "20"] }`**|
 |"?filter[id][eq][]=5&filter[id][eq][]=10&filter[id][eq][]=15&filter[id][eq][]=20"|`{:filter => { :id => { :eq => ["5", "10", "15", "20"]}}}` <br> **`filter: { id: { eq: ["5", "10", "15", "20"] }`**|
 
+#### Sorting Results
+
+Sorting query results is controlled via the _sort_by_ query parameter. The _sort_by_ parameter is available for both REST API and GraphQL requests.
+
+The syntax for the _sort_by_ parameter supports:
+
+- a single string representing the attribute name to sort by which may be followed by :asc or :desc
+  - **attribute**   (_default order is ascending_)
+  - **attribute:asc** (_ascending order_)
+  - **attribute:desc** (_descending order_)
+- an array of strings of the above syntax
+
+##### Sort_by Examples:
+
+- GET /api/v1.0/sources?sort_by=name
+- GET /api/v1.0/vms?sort_by[]=power_state\&sort_by[]=memory:desc
+
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?sort_by=name" | { :sort_by => "name" } | sort_by: "name" |
+| "?sort_by[]=power_state\&sort_by[]=memory:desc" | { :sort_by => ["power_state", "memory:desc"] } |  sort_by: ["power_state, "memory:desc"] |
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
