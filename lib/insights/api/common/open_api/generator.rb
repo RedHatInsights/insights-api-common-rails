@@ -438,6 +438,8 @@ module Insights
                 [key, openapi_schema_properties_value(klass_name, model, key, value)]
               end
             end.compact.sort.to_h
+          rescue NameError
+            openapi_contents["components"]["schemas"][klass_name]["properties"]
           end
 
           def generator_blacklist_attributes
