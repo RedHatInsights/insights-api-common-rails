@@ -14,7 +14,7 @@ module ManageIQ
           def validate_request_parameters
             api_version = self.class.send(:api_version)[1..-1].sub(/x/, ".")
 
-            self.class.send(:api_doc).try(
+            api_doc.try(
               :validate_parameters!,
               request.method,
               request.path,

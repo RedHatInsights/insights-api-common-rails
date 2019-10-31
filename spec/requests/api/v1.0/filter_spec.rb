@@ -36,9 +36,10 @@ RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
 
     expect(response.status).to(eq(200))
 
-    response.parsed_body["data"].each do |object|
-      expect(object).to(include(results.shift.deep_stringify_keys))
-    end
+    results = results.collect(&:stringify_keys)
+    attrs = results.first.keys
+
+    expect(response.parsed_body["data"].collect { |res| res.slice(*attrs) }).to(eq(results))
   end
 
   context "case insensitive strings" do
