@@ -25,7 +25,7 @@ module Insights
             end
 
             def api_doc_definition
-              @api_doc_definition ||= api_doc.definitions[model.name]
+              @api_doc_definition ||= api_doc.definitions[name.split("::").last[0..-11].singularize]
             end
 
             def api_version
