@@ -9,7 +9,8 @@ module Insights
             encryption_filtered = previous.except(*encrypted_columns_set)
             return encryption_filtered unless arg.key?(:prefixes)
             version = api_version_from_prefix(arg[:prefixes].first)
-            schema  = ::Insights::API::Common::OpenApi::Docs.instance[version].definitions[self.class.name]
+            presentation_name = self.class.try(:presentation_name) || self.class.name
+            schema  = ::Insights::API::Common::OpenApi::Docs.instance[version].definitions[presentation_name]
             attrs   = encryption_filtered.slice(*schema["properties"].keys)
             schema["properties"].keys.each do |name|
               next if attrs[name].nil?
