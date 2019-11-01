@@ -6,5 +6,6 @@ class ApplicationController < ActionController::Base
   include ManageIQ::API::Common::ApplicationControllerMixins::ExceptionHandling
   include ManageIQ::API::Common::ApplicationControllerMixins::Parameters
   include ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation
+  include ManageIQ::API::Common::ApplicationControllerMixins::RequestParameterValidation
   include ManageIQ::API::Common::ApplicationControllerMixins::RequestPath
 end

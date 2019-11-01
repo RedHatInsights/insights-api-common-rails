@@ -8,7 +8,8 @@ module Api
             :base_query => scoped(filtered.where(params_for_list)),
             :request    => request,
             :limit      => pagination_limit,
-            :offset     => pagination_offset
+            :offset     => pagination_offset,
+            :sort_by    => query_sort_by
           ).response
         end
 

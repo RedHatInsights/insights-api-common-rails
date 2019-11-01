@@ -2,17 +2,23 @@ module ManageIQ
   module API
     module Common
       class PaginatedResponse
-        attr_reader :limit, :offset
+        attr_reader :limit, :offset, :sort_by
 
-        def initialize(base_query:, request:, limit: nil, offset: nil)
+        def initialize(base_query:, request:, limit: nil, offset: nil, sort_by: nil)
           @base_query = base_query
           @request    = request
           @limit      = (limit || 100).to_i.clamp(1, 1000)
           @offset     = (offset || 0).to_i.clamp(0, Float::INFINITY)
+          @sort_by    = sort_by
         end
 
         def records
-          @records ||= @base_query.order(:id).limit(limit).offset(offset)
+          @records ||= begin
+            res = @base_query.order(:id).limit(limit).offset(offset)
+            order_options = sort_by_options(res.klass)
+            res = res.reorder(order_options) if order_options.present?
+            res
+          end
         end
 
         def response
@@ -82,6 +88,19 @@ module ManageIQ
 
         def count
           @count ||= @base_query.count
+        end
+
+        def sort_by_options(model)
+          @sort_by_options ||= begin
+            Array(sort_by).collect do |selection|
+              sort_attr, sort_order = selection.split(':')
+              sort_order ||= "asc"
+              arel = model.arel_attribute(sort_attr)
+              arel = arel.asc  if sort_order == "asc"
+              arel = arel.desc if sort_order == "desc"
+              arel
+            end
+          end
         end
       end
     end
