@@ -3,7 +3,7 @@ require_relative 'boot'
 require 'rails/all'
 
 Bundler.require(*Rails.groups)
-require "manageiq/api/common"
+require "insights/api/common"
 
 module Dummy
   class Application < Rails::Application

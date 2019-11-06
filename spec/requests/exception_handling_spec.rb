@@ -1,4 +1,4 @@
-RSpec.describe "ManageIQ::API::Common::ApplicationController Exception Handling", :type => :request do
+RSpec.describe "Insights::API::Common::ApplicationController Exception Handling", :type => :request do
   let(:headers) { {"CONTENT_TYPE" => "application/json"} }
   let(:error) { JSON.parse(response.body)["errors"] }
 

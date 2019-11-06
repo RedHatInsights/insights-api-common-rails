@@ -1,4 +1,4 @@
-RSpec.describe("::ManageIQ::API::Common::Filter", :type => :request) do
+RSpec.describe("Insights::API::Common::Filter", :type => :request) do
   let(:external_tenant) { rand(1000).to_s }
   let(:tenant)          { Tenant.create!(:name => "default", :external_tenant => external_tenant) }
   let(:source_type)     { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }

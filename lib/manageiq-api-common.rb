@@ -1,1 +1,0 @@
-require 'manageiq/api/common'
