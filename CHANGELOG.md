@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2019-11-07
+### Added
+- Add support for sorting result collections #122
+
+### Changed
+- Change RBAC sharing/unsharing to be account based #130
+
 ## [2.0.1] - 2019-10-23
 ### Fixed
 - Fix permitted params for nested objects #129
@@ -56,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/ManageIQ/manageiq-api-common/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/ManageIQ/manageiq-api-common/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/ManageIQ/manageiq-api-common/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/ManageIQ/manageiq-api-common/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/ManageIQ/manageiq-api-common/compare/v1.0.2...v1.1.0
