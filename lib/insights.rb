@@ -1,0 +1,1 @@
+require 'insights/api/common'

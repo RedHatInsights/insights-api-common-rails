@@ -1,11 +1,11 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery :with => :null_session
 
-  include ManageIQ::API::Common::ApplicationControllerMixins::ApiDoc
-  include ManageIQ::API::Common::ApplicationControllerMixins::Common
-  include ManageIQ::API::Common::ApplicationControllerMixins::ExceptionHandling
-  include ManageIQ::API::Common::ApplicationControllerMixins::Parameters
-  include ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation
-  include ManageIQ::API::Common::ApplicationControllerMixins::RequestParameterValidation
-  include ManageIQ::API::Common::ApplicationControllerMixins::RequestPath
+  include Insights::API::Common::ApplicationControllerMixins::ApiDoc
+  include Insights::API::Common::ApplicationControllerMixins::Common
+  include Insights::API::Common::ApplicationControllerMixins::ExceptionHandling
+  include Insights::API::Common::ApplicationControllerMixins::Parameters
+  include Insights::API::Common::ApplicationControllerMixins::RequestBodyValidation
+  include Insights::API::Common::ApplicationControllerMixins::RequestParameterValidation
+  include Insights::API::Common::ApplicationControllerMixins::RequestPath
 end
