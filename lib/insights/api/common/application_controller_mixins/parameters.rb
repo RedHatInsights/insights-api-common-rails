@@ -111,7 +111,7 @@ module Insights
 
           def hashes_and_arrays(api_doc_definition, attributes)
             api_doc_definition['properties'].each_with_object([]) do |(k, v), memo|
-              next unless attributes.include?(k)
+              next unless attributes.each { |attr| attr.include?(k) }
 
               memo << if v['type'] == 'array'
                         { k => [] }
