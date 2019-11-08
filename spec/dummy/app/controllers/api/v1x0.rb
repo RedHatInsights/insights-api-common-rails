@@ -2,6 +2,12 @@ module Api
   module V1x0
     class AuthenticationsController < ApplicationController
       def create
+        params_for_create
+        render :json => "OK".to_json
+      end
+
+      def update
+        params_for_update
         render :json => "OK".to_json
       end
     end

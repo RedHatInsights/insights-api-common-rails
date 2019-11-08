@@ -3,7 +3,6 @@ module ManageIQ
     module Common
       module ApplicationControllerMixins
         module Parameters
-
           def self.included(other)
             other.include(OpenapiEnabled)
           end
@@ -33,6 +32,7 @@ module ManageIQ
             return {} unless subcollection?
             return {} unless reflection = primary_collection_model&.reflect_on_association(request_path_parts["subcollection_name"])
             return {} unless as = reflection.options[:as]
+
             {"#{as}_type" => primary_collection_model.name, "#{as}_id" => request_path_parts["primary_collection_id"]}
           end
 
@@ -104,7 +104,23 @@ module ManageIQ
 
           def params_for_update
             check_if_openapi_enabled
-            body_params.permit(*api_doc_definition.all_attributes - api_doc_definition.read_only_attributes)
+            attr_list = *api_doc_definition.all_attributes - api_doc_definition.read_only_attributes
+            strong_params_hash = hashes_and_arrays(api_doc_definition, attr_list)
+            body_params.permit(strong_params_hash)
+          end
+
+          def hashes_and_arrays(api_doc_definition, attributes)
+            api_doc_definition['properties'].each_with_object([]) do |(k, v), memo|
+              next unless attributes.include?(k)
+
+              memo << if v['type'] == 'array'
+                        { k => [] }
+                      elsif v['type'] == 'object'
+                        { k => {} }
+                      else
+                        k
+                      end
+            end
           end
 
           def check_if_openapi_enabled

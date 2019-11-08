@@ -11,7 +11,7 @@ Rails.application.routes.draw do
       get "/error_nested", :to => "errors#error_nested"
       get "/openapi.json", :to => "root#openapi"
       post "graphql" => "graphql#query"
-      resources :authentications, :only => [:create]
+      resources :authentications, :only => [:create, :update]
       resources :vms, :only => [:index, :show]
       resources :persons, :only => [:index, :create, :show, :update]
       resources :sources, :only => [:index]
