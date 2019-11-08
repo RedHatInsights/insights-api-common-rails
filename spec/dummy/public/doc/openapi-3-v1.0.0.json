@@ -106,6 +106,42 @@
             "description": "Not found"
           }
         }
+      },
+      "patch": {
+        "summary": "Update an existing Authentication",
+        "operationId": "updateAuthentication",
+        "description": "Returns updated Authentication object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Authentication"
+              }
+            }
+          },
+          "description": "Attributes to update an Authentication object",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Authentication"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
       }
     },
     "/endpoints": {

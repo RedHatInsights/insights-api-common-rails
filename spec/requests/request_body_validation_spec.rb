@@ -35,14 +35,30 @@ RSpec.describe "Insights::API::Common::ApplicationController Body", :type => :re
     expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::ValidateError: #/components/schemas/Authentication/properties/username expected string, but received Integer: 1", "status" => 400}])
   end
 
-  it "permitted key, array" do
+  it "patch, permitted key, array" do
+    body = { 'authtype' => 'openshift', 'array' => [1] }
+    patch("/api/v1.0/authentications/10", :headers => headers, :params => body)
+
+    expect(response.status).to eq(200)
+    expect(response.parsed_body).to eq("OK")
+  end
+
+  it "patch, permitted key, hash" do
+    body = { 'authtype' => 'openshift', 'hash' => {"a" => 1} }
+    patch("/api/v1.0/authentications/10", :headers => headers, :params => body)
+
+    expect(response.status).to eq(200)
+    expect(response.parsed_body).to eq("OK")
+  end
+
+  it "post, permitted key, array" do
     post("/api/v1.0/authentications", :headers => headers, :params => default_params.merge("array" => [1]))
 
     expect(response.status).to eq(200)
     expect(response.parsed_body).to eq("OK")
   end
 
-  it "permitted key, hash" do
+  it "post, permitted key, hash" do
     post("/api/v1.0/authentications", :headers => headers, :params => default_params.merge("hash" => {"a" => 1}))
 
     expect(response.status).to eq(200)

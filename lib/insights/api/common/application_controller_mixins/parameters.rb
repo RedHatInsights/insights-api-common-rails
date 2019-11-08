@@ -3,7 +3,6 @@ module Insights
     module Common
       module ApplicationControllerMixins
         module Parameters
-
           def self.included(other)
             other.include(OpenapiEnabled)
           end
@@ -33,6 +32,7 @@ module Insights
             return {} unless subcollection?
             return {} unless reflection = primary_collection_model&.reflect_on_association(request_path_parts["subcollection_name"])
             return {} unless as = reflection.options[:as]
+
             {"#{as}_type" => primary_collection_model.name, "#{as}_id" => request_path_parts["primary_collection_id"]}
           end
 
@@ -104,7 +104,24 @@ module Insights
 
           def params_for_update
             check_if_openapi_enabled
-            body_params.permit(*api_doc_definition.all_attributes - api_doc_definition.read_only_attributes)
+            # We already validate this with OpenAPI validator, here only to satisfy the strong parameters check
+            attr_list = *api_doc_definition.all_attributes - api_doc_definition.read_only_attributes
+            strong_params_hash = sanctified_permit_param(api_doc_definition, attr_list)
+            body_params.permit(strong_params_hash)
+          end
+
+          def sanctified_permit_param(api_doc_definition, attributes)
+            api_doc_definition['properties'].each_with_object([]) do |(k, v), memo|
+              next unless attributes.each { |attr| attr.include?(k) }
+
+              memo << if v['type'] == 'array'
+                        { k => [] }
+                      elsif v['type'] == 'object'
+                        { k => {} }
+                      else
+                        k
+                      end
+            end
           end
 
           def check_if_openapi_enabled
