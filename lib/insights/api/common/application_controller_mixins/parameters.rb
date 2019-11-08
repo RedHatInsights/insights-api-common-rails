@@ -104,12 +104,13 @@ module Insights
 
           def params_for_update
             check_if_openapi_enabled
+            # We already validate this with OpenAPI validator, here only to satisfy the strong parameters check
             attr_list = *api_doc_definition.all_attributes - api_doc_definition.read_only_attributes
-            strong_params_hash = hashes_and_arrays(api_doc_definition, attr_list)
+            strong_params_hash = sanctified_permit_param(api_doc_definition, attr_list)
             body_params.permit(strong_params_hash)
           end
 
-          def hashes_and_arrays(api_doc_definition, attributes)
+          def sanctified_permit_param(api_doc_definition, attributes)
             api_doc_definition['properties'].each_with_object([]) do |(k, v), memo|
               next unless attributes.each { |attr| attr.include?(k) }
 
