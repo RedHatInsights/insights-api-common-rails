@@ -1,4 +1,4 @@
-RSpec.describe "ManageIQ::API::Common::ApplicationController Body", :type => :request do
+RSpec.describe "Insights::API::Common::ApplicationController Body", :type => :request do
   let(:headers) { {"CONTENT_TYPE" => "application/json"} }
 
   before { stub_const("ENV", "BYPASS_TENANCY" => true) }

@@ -30,7 +30,7 @@ RSpec.shared_context "rbac_objects" do
   let(:admin_access) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def4]) }
   let(:group_uuids) { [group1.uuid, group2.uuid, group3.uuid] }
   let(:api_instance) { double }
-  let(:rs_class) { class_double("ManageIQ::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:current_user) { '{{username}}' }
   let(:id_value) { '*' }
   let(:owner_filter) { instance_double(RBACApiClient::ResourceDefinitionFilter, :key => 'owner', :operation => 'equal', :value => current_user) }

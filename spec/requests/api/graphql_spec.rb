@@ -1,6 +1,6 @@
-require "manageiq/api/common/graphql"
+require "insights/api/common/graphql"
 
-RSpec.describe ManageIQ::API::Common::GraphQL, :type => :request do
+RSpec.describe Insights::API::Common::GraphQL, :type => :request do
   let!(:graphql_endpoint) { "/api/v1.0/graphql" }
 
   let!(:ext_tenant)   { rand(1000).to_s }

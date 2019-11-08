@@ -1,0 +1,35 @@
+<%= klass_name %>Type = ::GraphQL::ObjectType.define do
+  name "<%= klass_name %>"
+  description "A <%= klass_name %>"
+
+<% model_properties.each do |property| %>
+<%   property_name, property_type, property_description = property %>
+<%   field_description = property_description.nil? ? "" : ", \"#{property_description}\"" %>
+<%   field_resolver = "" %>
+<%   if field_resolvers[property_name].present? %>
+<%     field_resolver = "do\n    resolve ->(obj, args, ctx) #{field_resolvers[property_name].strip}\n  end"%>
+<%   end%>
+  field :<%= property_name %>, <%=property_type%> <%=field_description%> <%=field_resolver%>
+<% end %>
+<% if model_associations.present? %>
+<%   model_associations.each do |association| %>
+<%     associations = association.pluralize %>
+<%     association_class_name  = association.camelize.singularize %>
+
+  field :<%= associations %> do
+    description "The <%= associations %> associated with this <%= klass_name %>"
+    type types[<%= "#{association_class_name}Type" %>]
+
+    argument :id, types.ID
+    argument :offset, types.Int, "The number of <%= associations %> to skip before starting to collect the result set"
+    argument :limit,  types.Int, "The number of <%= associations %> to return"
+
+    preload :<%= associations %>
+
+    resolve lambda { |obj, args, _ctx|
+      ::Insights::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", args).load(obj)
+    }
+  end
+<%   end %>
+<% end %>
+end

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  mount ManageIQ::API::Common::Engine => "/manageiq-api-common"
+  mount Insights::API::Common::Engine => "/insights-api-common"
 
-  routing_helper = ManageIQ::API::Common::Routing.new(self)
+  routing_helper = Insights::API::Common::Routing.new(self)
 
   scope :as => :api, :module => "api", :path => "api" do
     routing_helper.redirect_major_version("v0.1", "api")

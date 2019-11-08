@@ -1,20 +1,18 @@
-# ManageIQ::API::Common
+# Insights::API::Common
 
-[![Build Status](https://travis-ci.org/ManageIQ/manageiq-api-common.svg)](https://travis-ci.org/ManageIQ/manageiq-api-common)
-[![Maintainability](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-api-common/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-api-common/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/manageiq-api-common/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-api-common/master)
+[![Build Status](https://travis-ci.org/RedHatInsights/insights-api-common-rails.svg)](https://travis-ci.org/RedHatInsights/insights-api-common-rails)
+[![Maintainability](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/maintainability)](https://codeclimate.com/github/RedHatInsights/insights-api-common-rails/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/test_coverage)](https://codeclimate.com/github/RedHatInsights/insights-api-common-rails/test_coverage)
+[![Security](https://hakiri.io/github/RedHatInsights/insights-api-common-rails/master.svg)](https://hakiri.io/github/RedHatInsights/insights-api-common-rails/master)
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/shared/micro/utilities`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Header, Encryption, RBAC, Serialization, Pagination and other common behavior for Insights microservices built with Rails
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'manageiq-api-common'
+gem 'insights-api-common'
 ```
 
 And then execute:
@@ -23,11 +21,11 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install manageiq-api-common
+    $ gem install insights-api-common
 
 ## Usage
 
-#### ManageIQ::Api::Common::Filter
+#### Insights::Api::Common::Filter
 
 | Supported Comparators     | Comparator    |
 | ---------------------     | ----------    |
@@ -97,7 +95,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/shared-micro-utilities. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/RedHatInsights/insights-api-common-rails. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 

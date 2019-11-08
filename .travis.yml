@@ -8,7 +8,7 @@ addons:
   postgresql: '10'
 env:
   global:
-  - DATABASE_URL="postgresql://postgres:@localhost:5432/manageiq_api_common_test?encoding=utf8&pool=5&wait_timeout=5"
+  - DATABASE_URL="postgresql://postgres:@localhost:5432/insights_api_common_test?encoding=utf8&pool=5&wait_timeout=5"
 before_install:
 - gem install bundler
 before_script:
