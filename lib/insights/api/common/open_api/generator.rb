@@ -474,10 +474,12 @@ module Insights
 
           def build_paths
             applicable_rails_routes.each_with_object({}) do |route, expected_paths|
-              without_format = route.path.split("(.:format)").first
-              sub_path = without_format.split(base_path).last.sub(/:[_a-z]*id/, "{id}")
-              klass_name = route.controller.split("/").last.camelize.singularize
-              verb = route.verb.downcase
+              without_format     = route.path.split("(.:format)").first
+              sub_path           = without_format.split(base_path).last.sub(/:[_a-z]*id/, "{id}")
+              route_destination  = route.controller.split("/").last.camelize
+              controller         = "Api::V#{api_version.sub(".", "x")}::#{route_destination}Controller".safe_constantize
+              klass_name         = controller.try(:presentation_name) || route_destination.singularize
+              verb               = route.verb.downcase
               primary_collection = sub_path.split("/")[1].camelize.singularize
 
               expected_paths[sub_path] ||= {}
