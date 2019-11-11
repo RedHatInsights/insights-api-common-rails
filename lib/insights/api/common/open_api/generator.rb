@@ -419,7 +419,7 @@ module Insights
             new_content = openapi_contents.dup
             new_content["paths"] = build_paths.sort.to_h
             new_content["components"] ||= {}
-            new_content["components"]["schemas"]    = schemas.sort.each_with_object({})    { |(name, val), h| h[name] = val || openapi_contents["components"]["schemas"][name]    || {} }
+            new_content["components"]["schemas"]    = schemas.merge(schema_overrides).sort.each_with_object({}) { |(name, val), h| h[name] = val || openapi_contents["components"]["schemas"][name] || {} }
             new_content["components"]["parameters"] = parameters.sort.each_with_object({}) { |(name, val), h| h[name] = val || openapi_contents["components"]["parameters"][name] || {} }
             File.write(openapi_file, JSON.pretty_generate(new_content) + "\n")
             Insights::API::Common::GraphQL::Generator.generate(api_version, new_content) if graphql
@@ -514,6 +514,10 @@ module Insights
           end
 
           def handle_custom_route_action(_route_action, _verb, _primary_collection)
+          end
+
+          def schema_overrides
+            {}
           end
         end
       end
