@@ -419,7 +419,7 @@ module Insights
             new_content = openapi_contents.dup
             new_content["paths"] = build_paths.sort.to_h
             new_content["components"] ||= {}
-            new_content["components"]["schemas"]    = schemas.sort.each_with_object({})    { |(name, val), h| h[name] = val || openapi_contents["components"]["schemas"][name]    || {} }
+            new_content["components"]["schemas"]    = schemas.merge(schema_overrides).sort.each_with_object({}) { |(name, val), h| h[name] = val || openapi_contents["components"]["schemas"][name] || {} }
             new_content["components"]["parameters"] = parameters.sort.each_with_object({}) { |(name, val), h| h[name] = val || openapi_contents["components"]["parameters"][name] || {} }
             File.write(openapi_file, JSON.pretty_generate(new_content) + "\n")
             Insights::API::Common::GraphQL::Generator.generate(api_version, new_content) if graphql
@@ -438,6 +438,8 @@ module Insights
                 [key, openapi_schema_properties_value(klass_name, model, key, value)]
               end
             end.compact.sort.to_h
+          rescue NameError
+            openapi_contents["components"]["schemas"][klass_name]["properties"]
           end
 
           def generator_blacklist_attributes
@@ -472,10 +474,12 @@ module Insights
 
           def build_paths
             applicable_rails_routes.each_with_object({}) do |route, expected_paths|
-              without_format = route.path.split("(.:format)").first
-              sub_path = without_format.split(base_path).last.sub(/:[_a-z]*id/, "{id}")
-              klass_name = route.controller.split("/").last.camelize.singularize
-              verb = route.verb.downcase
+              without_format     = route.path.split("(.:format)").first
+              sub_path           = without_format.split(base_path).last.sub(/:[_a-z]*id/, "{id}")
+              route_destination  = route.controller.split("/").last.camelize
+              controller         = "Api::V#{api_version.sub(".", "x")}::#{route_destination}Controller".safe_constantize
+              klass_name         = controller.try(:presentation_name) || route_destination.singularize
+              verb               = route.verb.downcase
               primary_collection = sub_path.split("/")[1].camelize.singularize
 
               expected_paths[sub_path] ||= {}
@@ -512,6 +516,10 @@ module Insights
           end
 
           def handle_custom_route_action(_route_action, _verb, _primary_collection)
+          end
+
+          def schema_overrides
+            {}
           end
         end
       end
