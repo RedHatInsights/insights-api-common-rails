@@ -4,16 +4,6 @@ RSpec.describe "Insights::API::Common::ApplicationController Body", :type => :re
   before { stub_const("ENV", "BYPASS_TENANCY" => true) }
   let(:default_params) { { "authtype" => "openshift" } }
 
-  context "when there is an invalid body" do
-    let(:default_as) { :text }
-
-    it "returns a 400" do
-      post("/api/v1.0/authentications", :headers => {"CONTENT_TYPE" => "application/text"}, :params => "{")
-
-      expect(response.status).to eq(400)
-    end
-  end
-
   it "unpermitted key" do
     post("/api/v1.0/authentications", :headers => headers, :params => default_params.merge("garbage" => "abc"))
 

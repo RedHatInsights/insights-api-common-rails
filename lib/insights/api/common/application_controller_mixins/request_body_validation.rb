@@ -18,11 +18,9 @@ module Insights
 
           def body_params
             @body_params ||= begin
-              raw_body    = request.body.read
-              parsed_body = raw_body.blank? ? {} : JSON.parse(raw_body)
-              ActionController::Parameters.new(parsed_body).permit!
-            rescue JSON::ParserError
-              raise Insights::API::Common::ApplicationControllerMixins::RequestBodyValidation::BodyParseError, "Failed to parse request body, expected JSON"
+                hash = params.permit!.to_h
+                request.path_parameters.keys.each { |key| hash.delete(key) }
+                ActionController::Parameters.new(hash).permit!
             end
           end
 
@@ -38,7 +36,8 @@ module Insights
               request.method,
               request.path,
               api_version,
-              body_params.as_json
+              body_params.to_h,
+              request.content_type
             )
           end
         end
