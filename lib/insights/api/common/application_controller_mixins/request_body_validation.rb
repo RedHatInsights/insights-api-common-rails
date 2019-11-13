@@ -18,9 +18,9 @@ module Insights
 
           def body_params
             @body_params ||= begin
-              hash = params.permit!.to_h
-              request.path_parameters.keys.each { |key| hash.delete(key) }
-              ActionController::Parameters.new(hash).permit!
+              ActionController::Parameters.new(
+                params.permit!.to_h.except(*request.path_parameters.keys)
+              ).permit!
             end
           end
 
