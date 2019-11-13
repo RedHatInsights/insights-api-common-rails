@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       resources :sources, :only => [:index]
       resources :source_types, :only => [:index]
       resources :extras, :only => [:index]
+      resources :users, :only => [:create, :update]
     end
 
     namespace :v0x1, :path => "v0.1" do

@@ -45,6 +45,20 @@ module Api
       end
     end
 
+    class UsersController < ApplicationController
+      include Api::V1::Mixins::IndexMixin
+
+      def create
+        params_for_create(:writeable => true)
+        render :json => "OK".to_json
+      end
+
+      def update
+        params_for_update
+        render :json => "OK".to_json
+      end
+    end
+
     class ExtrasController < ApplicationController
       self.openapi_enabled = false
 

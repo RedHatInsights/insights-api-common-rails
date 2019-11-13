@@ -27,6 +27,18 @@ module Api
           klass = request_path_parts["primary_collection_name"].singularize.camelize.safe_constantize
           klass.find(request_path_parts["primary_collection_id"].to_i)
         end
+
+        def api_version
+          @api_version ||= name.split("::")[1].downcase.delete("v").sub("x", ".")
+        end
+
+        def model_name
+          @model_name ||= controller_name.classify
+        end
+
+        def name
+          self.class.to_s
+        end
       end
     end
   end

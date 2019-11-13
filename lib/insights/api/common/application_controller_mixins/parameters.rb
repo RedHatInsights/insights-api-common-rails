@@ -7,10 +7,25 @@ module Insights
             other.include(OpenapiEnabled)
           end
 
-          def params_for_create
+          def params_for_create(opts = {})
             check_if_openapi_enabled
             # We already validate this with OpenAPI validator, that validates every request, so we shouldn't do it again here.
-            body_params.permit!
+            if opts[:writeable] == true
+              attr_list = api_doc_definition.all_attributes - api_doc_definition.read_only_attributes
+              body_params.permit(*request_body_schema_keys + attr_list)
+            else
+              body_params.permit!
+            end
+          end
+
+          def request_body_schema_keys
+            Insights::API::Common::OpenApi::Docs.instance[api_version].content.dig("components", "schemas", request_body_schema_name, "properties").keys
+          rescue StandardError
+            []
+          end
+
+          def request_body_schema_name
+            Insights::API::Common::OpenApi::Docs.instance[api_version].content.dig("paths", "/#{controller_name}", "post", "requestBody", "content", "application/json", "schema", "$ref").split("/").last
           end
 
           def safe_params_for_list

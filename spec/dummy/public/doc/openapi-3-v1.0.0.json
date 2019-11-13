@@ -567,6 +567,36 @@
         }
       }
     },
+    "/users": {
+      "post":{    
+        "summary": "Create a new User object with only writeable params",
+        "operationId": "createUserWriteable",
+        "description": "Creates a User object with only writeable params",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUser"
+              }
+            }
+          },
+          "description": "Attributes to create a User object",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User Object creation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/graphql": {
       "post": {
         "summary": "Perform a GraphQL Query",
@@ -1075,6 +1105,21 @@
           }
         }
       },
+      "User": {
+        "properties": {
+          "name": {
+            "example": "fred",
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/ID"
+          },
+          "active": {
+            "type": "string",
+            "readOnly": true
+          }
+        }
+      },
       "PersonsCollection": {
         "type": "object",
         "properties": {
@@ -1089,6 +1134,14 @@
             "items": {
               "$ref": "#/components/schemas/Person"
             }
+          }
+        }
+      },
+      "CreateUser": {
+        "type": "object",
+        "properties": {
+          "reference_number": {
+            "type": "string"
           }
         }
       }

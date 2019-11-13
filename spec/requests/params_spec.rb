@@ -35,6 +35,20 @@ RSpec.describe "Insights::API::Common::ApplicationController Parameters", :type 
     end
   end
 
+  context "POST with writeonly set" do
+    it "readOnly parameters fail" do
+      body = { "active" => "yes" }
+      post("/api/v1.0/users?writeonly=true", :headers => headers, :params => body)
+      expect(response.status).to eq(400)
+    end
+
+    it "looks up requestBody schema parameters" do
+      body = { "reference_number" => "123" }
+      post("/api/v1.0/users?writeonly=true", :headers => headers, :params => body)
+      expect(response.status).to eq(200)
+    end
+  end
+
   context "PATCH" do
     it "valid parameters" do
       body = { 'name' => 'fred', 'zip' => '07825', 'age' => 45 }
@@ -52,6 +66,12 @@ RSpec.describe "Insights::API::Common::ApplicationController Parameters", :type 
       body = { 'name' => 'fred', 'zip' => '07825', 'age' => 45, 'nested' => {'props' => 'abcd'} }
       patch("/api/v1.0/persons/10", :headers => headers, :params => body)
       expect(response.status).to eq(200)
+    end
+
+    it "readOnly parameters fail" do
+      body = { "active" => "yes" }
+      patch("/api/v1.0/users/10", :headers => headers, :params => body)
+      expect(response.status).to eq(400)
     end
   end
 end
