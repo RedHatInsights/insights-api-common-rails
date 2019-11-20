@@ -284,7 +284,7 @@ module Insights
             }
           end
 
-          def openapi_destroy_description(klass_name)
+          def openapi_destroy_description(klass_name, sub_path)
             {
               "summary"     => "Delete an existing #{klass_name}",
               "operationId" => "delete#{klass_name}",
@@ -301,7 +301,10 @@ module Insights
                   }
                 }
               }
-            }
+            }.tap do |description|
+              # A request body is required for DELETE on a (sub)collection
+              description["request_body"] = request_body(klass_name, "delete") unless sub_path.ends_with?("/{id}")
+            end
           end
 
           def openapi_create_description(klass_name)
@@ -309,15 +312,7 @@ module Insights
               "summary"     => "Create a new #{klass_name}",
               "operationId" => "create#{klass_name}",
               "description" => "Creates a #{klass_name} object",
-              "requestBody" => {
-                "content"     => {
-                  "application/json" => {
-                    "schema" => { "$ref" => build_schema(klass_name) }
-                  }
-                },
-                "description" => "#{klass_name} attributes to create",
-                "required"    => true
-              },
+              "requestBody" => request_body(klass_name, "create"),
               "responses"   => {
                 "201" => {
                   "description" => "#{klass_name} creation successful",
@@ -331,6 +326,18 @@ module Insights
             }
           end
 
+          def request_body(klass_name, action)
+            {
+              "content"     => {
+                "application/json" => {
+                  "schema" => { "$ref" => build_schema(klass_name) }
+                }
+              },
+              "description" => "#{klass_name} attributes to #{action}",
+              "required"    => true
+            }
+          end
+
           def openapi_update_description(klass_name, verb)
             action = verb == "patch" ? "Update" : "Replace"
             {
@@ -340,15 +347,7 @@ module Insights
               "parameters"  => [
                 { "$ref" => build_parameter("ID") }
               ],
-              "requestBody" => {
-                "content"     => {
-                  "application/json" => {
-                    "schema" => { "$ref" => build_schema(klass_name) }
-                  }
-                },
-                "description" => "#{klass_name} attributes to update",
-                "required"    => true
-              },
+              "requestBody" => request_body(klass_name, "update"),
               "responses"   => {
                 "204" => { "description" => "Updated, no content" },
                 "400" => { "description" => "Bad request"         },
@@ -487,7 +486,7 @@ module Insights
                 case route.action
                 when "index"   then openapi_list_description(klass_name, primary_collection)
                 when "show"    then openapi_show_description(klass_name)
-                when "destroy" then openapi_destroy_description(klass_name)
+                when "destroy" then openapi_destroy_description(klass_name, sub_path)
                 when "create"  then openapi_create_description(klass_name)
                 when "update"  then openapi_update_description(klass_name, verb)
                 else handle_custom_route_action(route.action.camelize, verb, primary_collection)
