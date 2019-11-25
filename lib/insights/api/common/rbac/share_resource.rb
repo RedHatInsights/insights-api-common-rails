@@ -40,17 +40,14 @@ module Insights
           def add_new_role(name, group_uuid, resource_id)
             acls = @acls.create(resource_id, @permissions)
             role = @roles.add(name, acls)
-            add_policy(name, group_uuid, role.uuid)
+            add_role_to_group(group_uuid, role.uuid)
           end
 
-          def add_policy(name, group_uuid, role_uuid)
-            Service.call(RBACApiClient::PolicyApi) do |api_instance|
-              policy_in = RBACApiClient::PolicyIn.new
-              policy_in.name = name
-              policy_in.description = 'Shared Policy'
-              policy_in.group = group_uuid
-              policy_in.roles = [role_uuid]
-              api_instance.create_policies(policy_in)
+          def add_role_to_group(group_uuid, role_uuid)
+            Service.call(RBACApiClient::GroupApi) do |api_instance|
+              role_in = RBACApiClient::GroupRoleIn.new
+              role_in.roles = [role_uuid]
+              api_instance.add_role_to_group(group_uuid, role_in)
             end
           end
         end

@@ -21,8 +21,19 @@ module Insights
               next unless role
 
               role.access = @acls.remove(role.access, resource_id, @permissions)
-              role.access.present? ? @roles.update(role) : @roles.delete(role)
+              role.access.present? ? @roles.update(role) : cleanup_shares(group_uuid, role)
               @count += 1
+            end
+          end
+
+          def cleanup_shares(group_uuid, role)
+             @roles.delete(role)
+             delete_role_from_group(group_uuid, role)
+          end
+
+          def delete_role_from_group(group_uuid, role)
+            Service.call(RBACApiClient::GroupApi) do |api_instance|
+              api_instance.delete_role_from_group(group_uuid, role.uuid)
             end
           end
         end

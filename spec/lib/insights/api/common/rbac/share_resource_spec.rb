@@ -14,7 +14,6 @@ describe Insights::API::Common::RBAC::ShareResource do
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(rs_class).to receive(:call).with(RBACApiClient::RoleApi).and_yield(api_instance)
-    allow(rs_class).to receive(:call).with(RBACApiClient::PolicyApi).and_yield(api_instance)
   end
 
   context "invalid group uuid" do
@@ -34,7 +33,7 @@ describe Insights::API::Common::RBAC::ShareResource do
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return(roles)
       allow(api_instance).to receive(:create_roles).and_return(role1)
 
-      expect(api_instance).to receive(:create_policies).exactly(6).times
+      expect(api_instance).to receive(:add_role_to_group).exactly(6).times
 
       subject.process
     end
@@ -50,7 +49,7 @@ describe Insights::API::Common::RBAC::ShareResource do
       allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)
       expect(role1_detail).to receive(:access=).exactly(1).times
       allow(api_instance).to receive(:update_role).exactly(1).times
-      expect(api_instance).to receive(:create_policies).exactly(5).times
+      expect(api_instance).to receive(:add_role_to_group).exactly(5).times
       subject.process
     end
   end

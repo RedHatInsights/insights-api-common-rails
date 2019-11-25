@@ -12,9 +12,14 @@ module Insights
 
           def process
             Insights::API::Common::Request.with_request(@request) do
-              create_groups
-              create_roles
-              create_policies
+              begin
+                create_groups
+                create_roles
+                add_roles_to_groups
+              rescue RBACApiClient::ApiError => e
+                Rails.logger.error("Exception when RBACApiClient::ApiError : #{e}")
+                raise
+              end
             end
           end
 
@@ -24,20 +29,14 @@ module Insights
             current = current_groups
             names = current.collect(&:name)
             group = RBACApiClient::Group.new
-            begin
-              Service.call(RBACApiClient::GroupApi) do |api_instance|
-                @acl_data['groups'].each do |grp|
-                  next if names.include?(grp['name'])
+            Service.call(RBACApiClient::GroupApi) do |api_instance|
+              @acl_data['groups'].each do |grp|
+                next if names.include?(grp['name'])
 
-                  Rails.logger.info("Creating #{grp['name']}")
-                  group.name = grp['name']
-                  group.description = grp['description']
-                  api_instance.create_group(group)
-                end
+                group.name = grp['name']
+                group.description = grp['description']
+                api_instance.create_group(group)
               end
-            rescue RBACApiClient::ApiError => e
-              Rails.logger.error("Exception when calling GroupApi->create_group: #{e}")
-              raise
             end
           end
 
@@ -51,25 +50,20 @@ module Insights
             current = current_roles
             names = current.collect(&:name)
             role_in = RBACApiClient::RoleIn.new
-            begin
-              Service.call(RBACApiClient::RoleApi) do |api_instance|
-                @acl_data['roles'].each do |role|
-                  next if names.include?(role['name'])
+            Service.call(RBACApiClient::RoleApi) do |api_instance|
+              @acl_data['roles'].each do |role|
+                next if names.include?(role['name'])
 
-                  role_in.name = role['name']
-                  role_in.access = []
-                  role['access'].each do |obj|
-                    access = RBACApiClient::Access.new
-                    access.permission = obj['permission']
-                    access.resource_definitions = create_rds(obj)
-                    role_in.access << access
-                  end
-                  api_instance.create_roles(role_in)
+                role_in.name = role['name']
+                role_in.access = []
+                role['access'].each do |obj|
+                  access = RBACApiClient::Access.new
+                  access.permission = obj['permission']
+                  access.resource_definitions = create_rds(obj)
+                  role_in.access << access
                 end
+                api_instance.create_roles(role_in)
               end
-            rescue RBACApiClient::ApiError => e
-              Rails.logger.error("Exception when calling RoleApi->create_roles: #{e}")
-              raise
             end
           end
 
@@ -85,38 +79,34 @@ module Insights
             end
           end
 
+          def add_new_role_to_group(api_instance, group_uuid, role_uuid)
+            role_in = RBACApiClient::GroupRoleIn.new
+            role_in.roles = [role_uuid]
+            api_instance.add_role_to_group(group_uuid, role_in)
+          end
+
+          def role_exists_in_group?(api_instance, group_uuid, role_uuid)
+            api_instance.list_roles_for_group(group_uuid).any? do |role|
+              role.uuid == role_uuid
+            end
+          end
+
           def current_roles
             Service.call(RBACApiClient::RoleApi) do |api|
               Service.paginate(api, :list_roles, {}).to_a
             end
           end
 
-          def create_policies
-            names = current_policies.collect(&:name)
+          def add_roles_to_groups
             groups = current_groups
             roles = current_roles
-            policy_in = RBACApiClient::PolicyIn.new
-            begin
-              Service.call(RBACApiClient::PolicyApi) do |api_instance|
-                @acl_data['policies'].each do |policy|
-                  next if names.include?(policy['name'])
-
-                  policy_in.name = policy['name']
-                  policy_in.description = policy['description']
-                  policy_in.group = find_uuid('Group', groups, policy['group']['name'])
-                  policy_in.roles = [find_uuid('Role', roles, policy['role']['name'])]
-                  api_instance.create_policies(policy_in)
-                end
+            Service.call(RBACApiClient::GroupApi) do |api_instance|
+              @acl_data['policies'].each do |link|
+                group_uuid = find_uuid('Group', groups, link['group']['name'])
+                role_uuid = find_uuid('Role', roles, link['role']['name'])
+                next if role_exists_in_group?(api_instance, group_uuid, role_uuid)
+                add_new_role_to_group(api_instance, group_uuid, role_uuid)
               end
-            rescue RBACApiClient::ApiError => e
-              Rails.logger.error("Exception when calling PolicyApi->create_policies: #{e}")
-              raise
-            end
-          end
-
-          def current_policies
-            Service.call(RBACApiClient::PolicyApi) do |api|
-              Service.paginate(api, :list_policies, {}).to_a
             end
           end
 

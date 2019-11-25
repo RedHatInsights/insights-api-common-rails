@@ -19,13 +19,11 @@ describe Insights::API::Common::RBAC::QuerySharedResource do
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(rs_class).to receive(:call).with(RBACApiClient::RoleApi).and_yield(api_instance)
-    allow(rs_class).to receive(:call).with(RBACApiClient::PolicyApi).and_yield(api_instance)
   end
 
   shared_examples_for "#share_info" do
     it "query resource definitions" do
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_policies, {}).and_return(policies)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return([role1, role2])
       allow(api_instance).to receive(:get_group).with(group1.uuid).and_return(group1)
       allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)
