@@ -12,12 +12,14 @@ module Insights
 
           def process
             Insights::API::Common::Request.with_request(@request) do
-              create_groups
-              create_roles
-              add_roles_to_groups
-            rescue RBACApiClient::ApiError => e
-              Rails.logger.error("Exception when RBACApiClient::ApiError : #{e}")
-              raise
+              begin
+                create_groups
+                create_roles
+                add_roles_to_groups
+              rescue RBACApiClient::ApiError => e
+                Rails.logger.error("Exception when RBACApiClient::ApiError : #{e}")
+                raise
+              end
             end
           end
 
