@@ -28,12 +28,13 @@ describe Insights::API::Common::RBAC::ShareResource do
 
   context "valid groups" do
     let(:resource_ids) { %w[4 5] }
+    let(:required) { resource_ids.count * groups.count }
     it "new roles" do
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return(roles)
       allow(api_instance).to receive(:create_roles).and_return(role1)
 
-      expect(api_instance).to receive(:add_role_to_group).exactly(6).times
+      expect(api_instance).to receive(:add_role_to_group).exactly(required).times
 
       subject.process
     end
@@ -41,6 +42,8 @@ describe Insights::API::Common::RBAC::ShareResource do
 
   context "valid groups" do
     let(:resource_ids) { [resource_id1, "2"] }
+    let(:new_role_count) { 5 }
+    let(:update_role_count) { 1 }
     let(:permissions) { ["#{app_name}:#{resource}:order", "#{app_name}:#{resource}:read"] }
     it "update roles" do
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
@@ -48,8 +51,8 @@ describe Insights::API::Common::RBAC::ShareResource do
       allow(api_instance).to receive(:create_roles).and_return(role2)
       allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)
       expect(role1_detail).to receive(:access=).exactly(1).times
-      allow(api_instance).to receive(:update_role).exactly(1).times
-      expect(api_instance).to receive(:add_role_to_group).exactly(5).times
+      allow(api_instance).to receive(:update_role).exactly(update_role_count).times
+      expect(api_instance).to receive(:add_role_to_group).exactly(new_role_count).times
       subject.process
     end
   end

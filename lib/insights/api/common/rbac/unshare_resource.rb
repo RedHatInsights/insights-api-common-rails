@@ -27,8 +27,8 @@ module Insights
           end
 
           def cleanup_shares(group_uuid, role)
-             @roles.delete(role)
-             delete_role_from_group(group_uuid, role)
+            @roles.delete(role)
+            delete_role_from_group(group_uuid, role)
           end
 
           def delete_role_from_group(group_uuid, role)

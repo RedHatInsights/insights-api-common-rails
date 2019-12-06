@@ -12,14 +12,12 @@ module Insights
 
           def process
             Insights::API::Common::Request.with_request(@request) do
-              begin
-                create_groups
-                create_roles
-                add_roles_to_groups
-              rescue RBACApiClient::ApiError => e
-                Rails.logger.error("Exception when RBACApiClient::ApiError : #{e}")
-                raise
-              end
+              create_groups
+              create_roles
+              add_roles_to_groups
+            rescue RBACApiClient::ApiError => e
+              Rails.logger.error("Exception when RBACApiClient::ApiError : #{e}")
+              raise
             end
           end
 
@@ -105,6 +103,7 @@ module Insights
                 group_uuid = find_uuid('Group', groups, link['group']['name'])
                 role_uuid = find_uuid('Role', roles, link['role']['name'])
                 next if role_exists_in_group?(api_instance, group_uuid, role_uuid)
+
                 add_new_role_to_group(api_instance, group_uuid, role_uuid)
               end
             end

@@ -6,31 +6,39 @@ describe Insights::API::Common::RBAC::Seed do
   let(:request) { nil }
 
   shared_examples_for "#process" do
-    it "nothing exists" do
-      Insights::API::Common::Request.with_request(request) do
+    context "nothing exists" do
+      before do
         allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([], [group1])
         allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, {}).and_return([], [role1])
 
         allow(api_instance).to receive(:create_roles).and_return(role1)
         allow(api_instance).to receive(:create_group).and_return(group1)
         allow(RBACApiClient::GroupRoleIn).to receive(:new).and_return(role1_in)
+      end
 
-        expect(api_instance).to receive(:add_role_to_group).with(group1.uuid, role1_in).and_return([role1_detail])
-        expect(api_instance).to receive(:list_roles_for_group).with(group1.uuid).and_return([])
+      it "makes an API request to #list_roles_for_group to return empty roles" do
+        Insights::API::Common::Request.with_request(request) do
+          expect(api_instance).to receive(:add_role_to_group).with(group1.uuid, role1_in).and_return([role1_detail])
+          expect(api_instance).to receive(:list_roles_for_group).with(group1.uuid).and_return([])
 
-        subject.process
+          subject.process
+        end
       end
     end
 
-    it "all data exists" do
-      Insights::API::Common::Request.with_request(request) do
+    context "all data exists" do
+      before do
         allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
         allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, {}).and_return(roles)
         allow(api_instance).to receive(:create_roles).and_return(role1)
+      end
 
-        expect(api_instance).to receive(:list_roles_for_group).with(group1.uuid).and_return([role1_detail])
+      it "makes an API request to #list_roles_for_group to return the correct role" do
+        Insights::API::Common::Request.with_request(request) do
+          expect(api_instance).to receive(:list_roles_for_group).with(group1.uuid).and_return([role1_detail])
 
-        subject.process
+          subject.process
+        end
       end
     end
   end
