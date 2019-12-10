@@ -1,0 +1,29 @@
+---
+resource_definition1: &test_rd
+  attribute_filter:
+    value: '99'
+    key: id
+    operator: equal
+access1: &test_access1
+  permission: catalog:portfolios:read
+  resource_definitions:
+          - *test_rd
+role1: &TestRole
+  name: Test Role
+  description: A test role
+  access:
+    - *test_access1
+group1: &TestGroup
+  name: Test Group
+  description: A test group
+policy1: &TestPolicy
+  name: Test Policy
+  group: *TestGroup
+  role: *TestRole
+  description: A test policy
+roles:
+  - *TestRole
+groups:
+  - *TestGroup
+policies:
+  - *TestPolicy
