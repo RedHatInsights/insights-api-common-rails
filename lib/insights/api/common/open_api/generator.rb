@@ -284,7 +284,7 @@ module Insights
             }
           end
 
-          def openapi_destroy_description(klass_name, sub_path)
+          def openapi_destroy_description(klass_name)
             {
               "summary"     => "Delete an existing #{klass_name}",
               "operationId" => "delete#{klass_name}",
@@ -301,10 +301,7 @@ module Insights
                   }
                 }
               }
-            }.tap do |description|
-              # A request body is required for DELETE on a (sub)collection
-              description["request_body"] = request_body(klass_name, "delete") unless sub_path.ends_with?("/{id}")
-            end
+            }
           end
 
           def openapi_create_description(klass_name)
@@ -486,7 +483,7 @@ module Insights
                 case route.action
                 when "index"   then openapi_list_description(klass_name, primary_collection)
                 when "show"    then openapi_show_description(klass_name)
-                when "destroy" then openapi_destroy_description(klass_name, sub_path)
+                when "destroy" then openapi_destroy_description(klass_name)
                 when "create"  then openapi_create_description(klass_name)
                 when "update"  then openapi_update_description(klass_name, verb)
                 else handle_custom_route_action(route.action.camelize, verb, primary_collection)
