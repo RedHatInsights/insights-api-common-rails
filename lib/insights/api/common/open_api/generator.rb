@@ -284,7 +284,7 @@ module Insights
             }
           end
 
-          def openapi_destroy_description(klass_name, sub_path)
+          def openapi_destroy_description(klass_name)
             {
               "summary"     => "Delete an existing #{klass_name}",
               "operationId" => "delete#{klass_name}",
@@ -301,10 +301,49 @@ module Insights
                   }
                 }
               }
-            }.tap do |description|
-              # A request body is required for DELETE on a (sub)collection
-              description["request_body"] = request_body(klass_name, "delete") unless sub_path.ends_with?("/{id}")
-            end
+            }
+          end
+
+          def openapi_tag_description(klass_name)
+            {
+              "summary"     => "Tag a #{klass_name}",
+              "operationId" => "tag#{klass_name}",
+              "description" => "Tags a #{klass_name} object",
+              "parameters"  => [
+                { "$ref" => build_parameter("ID") }
+              ],
+              "requestBody" => request_body("Tag", "add"),
+              "responses"   => {
+                "201" => {
+                  "description" => "#{klass_name} tagged successful",
+                  "content"     => {
+                    "application/json" => {
+                      "schema" => { "$ref" => build_schema("Tag") }
+                    }
+                  }
+                },
+                "304" => {
+                  "description" => "Not modified"
+                }
+              }
+            }
+          end
+
+          def openapi_untag_description(klass_name)
+            {
+              "summary"     => "Untag a #{klass_name}",
+              "operationId" => "untag#{klass_name}",
+              "description" => "Untags a #{klass_name} object",
+              "parameters"  => [
+                { "$ref" => build_parameter("ID") }
+              ],
+              "requestBody" => request_body("Tag", "removed"),
+              "responses"   => {
+                "204" => {
+                  "description" => "#{klass_name} untagged successfully",
+                }
+              }
+            }
           end
 
           def openapi_create_description(klass_name)
@@ -486,9 +525,11 @@ module Insights
                 case route.action
                 when "index"   then openapi_list_description(klass_name, primary_collection)
                 when "show"    then openapi_show_description(klass_name)
-                when "destroy" then openapi_destroy_description(klass_name, sub_path)
+                when "destroy" then openapi_destroy_description(klass_name)
                 when "create"  then openapi_create_description(klass_name)
                 when "update"  then openapi_update_description(klass_name, verb)
+                when "tag"     then openapi_tag_description(primary_collection)
+                when "untag"   then openapi_untag_description(primary_collection)
                 else handle_custom_route_action(route.action.camelize, verb, primary_collection)
                 end
 
