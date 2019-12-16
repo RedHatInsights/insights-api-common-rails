@@ -15,8 +15,17 @@ module Insights
         def records
           @records ||= begin
             res = @base_query.order(:id).limit(limit).offset(offset)
+            sort_by_association.collect do |selection|
+              association = selection.split('.').first
+              res = res.joins(association.to_sym)
+            end
             order_options = sort_by_options(res.klass)
             res = res.reorder(order_options) if order_options.present?
+            sort_by_association.each do |selection|
+              sort_attr, sort_order = selection.split(':')
+              sort_order ||= "asc"
+              res = res.reorder(sort_attr => sort_order)
+            end
             res
           end
         end
@@ -92,7 +101,7 @@ module Insights
 
         def sort_by_options(model)
           @sort_by_options ||= begin
-            Array(sort_by).collect do |selection|
+            sort_by_direct.collect do |selection|
               sort_attr, sort_order = selection.split(':')
               sort_order ||= "asc"
               arel = model.arel_attribute(sort_attr)
@@ -101,6 +110,22 @@ module Insights
               arel
             end
           end
+        end
+
+        def sort_by_direct
+          Array(sort_by).collect do |selection|
+            next if selection.split(':').first.include?('.')
+
+            selection
+          end.compact
+        end
+
+        def sort_by_association
+          Array(sort_by).collect do |selection|
+            next unless selection.split(':').first.include?('.')
+
+            selection
+          end.compact
         end
       end
     end
