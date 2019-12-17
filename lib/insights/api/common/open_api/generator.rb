@@ -312,13 +312,18 @@ module Insights
               "parameters"  => [
                 { "$ref" => build_parameter("ID") }
               ],
-              "requestBody" => request_body("Tag", "add"),
+              "requestBody" => request_body("Tag", "add", :single => false),
               "responses"   => {
                 "201" => {
                   "description" => "#{klass_name} tagged successful",
                   "content"     => {
                     "application/json" => {
-                      "schema" => { "$ref" => build_schema("Tag") }
+                      "schema" => {
+                        "type"  => "array",
+                        "items" => {
+                          "$ref" => build_schema("Tag")
+                        }
+                      }
                     }
                   }
                 },
@@ -337,7 +342,7 @@ module Insights
               "parameters"  => [
                 { "$ref" => build_parameter("ID") }
               ],
-              "requestBody" => request_body("Tag", "removed"),
+              "requestBody" => request_body("Tag", "removed", :single => false),
               "responses"   => {
                 "204" => {
                   "description" => "#{klass_name} untagged successfully",
@@ -365,11 +370,13 @@ module Insights
             }
           end
 
-          def request_body(klass_name, action)
+          def request_body(klass_name, action, single: true)
+            schema = single ? { "$ref" => build_schema(klass_name) } : {"type" => "array", "items" => {"$ref" => build_schema(klass_name)}}
+
             {
               "content"     => {
                 "application/json" => {
-                  "schema" => { "$ref" => build_schema(klass_name) }
+                  "schema" => schema
                 }
               },
               "description" => "#{klass_name} attributes to #{action}",

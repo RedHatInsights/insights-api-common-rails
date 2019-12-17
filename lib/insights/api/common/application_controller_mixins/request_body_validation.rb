@@ -41,7 +41,7 @@ module Insights
               request.method,
               request.path,
               api_version,
-              body_params.as_json
+              parsed_body
             )
           end
         end
