@@ -17,10 +17,13 @@ module Insights
           private
 
           def body_params
-            @body_params ||= begin
-              raw_body    = request.body.read
-              parsed_body = raw_body.blank? ? {} : JSON.parse(raw_body)
-              ActionController::Parameters.new(parsed_body).permit!
+            @body_params ||= ActionController::Parameters.new(parsed_body).permit!
+          end
+
+          def parsed_body
+            @parsed_body ||= begin
+              request_body = request.body.read
+              request_body.blank? ? {} : JSON.parse(request_body)
             rescue JSON::ParserError
               raise Insights::API::Common::ApplicationControllerMixins::RequestBodyValidation::BodyParseError, "Failed to parse request body, expected JSON"
             end
