@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2019-12-18
+### Added
+- Add support for instance/tag and instance/untag with an Array request body #136, #139, #140
+
 ## [3.1.0] - 2019-11-13
 ### Changed
 - Loosen ties between controllers and models. Allow schema overrides #131
@@ -74,7 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.2.0...HEAD
+[3.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v2.0.1...v2.1.0
