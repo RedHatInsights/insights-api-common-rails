@@ -17,7 +17,7 @@ module Insights
             res = @base_query.order(:id).limit(limit).offset(offset)
             sort_by_association.collect do |selection|
               association = selection.split('.').first
-              res = res.joins(association.to_sym)
+              res = res.left_outer_joins(association.to_sym)
             end
             order_options = sort_by_options(res.klass)
             res = res.reorder(order_options) if order_options.present?
