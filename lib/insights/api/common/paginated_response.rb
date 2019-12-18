@@ -15,10 +15,8 @@ module Insights
         def records
           @records ||= begin
             res = @base_query.order(:id).limit(limit).offset(offset)
-            sort_by_association.collect do |selection|
-              association = selection.split('.').first
-              res = res.left_outer_joins(association.to_sym)
-            end
+            associations = sort_by_association.collect { |selection| selection.split('.').first.to_sym }.uniq
+            res = res.left_outer_joins(*associations) if associations.present?
             order_options = sort_by_options(res.klass)
             res = res.reorder(order_options) if order_options.present?
             sort_by_association.each do |selection|
