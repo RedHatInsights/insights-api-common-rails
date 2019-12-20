@@ -15,15 +15,9 @@ module Insights
         def records
           @records ||= begin
             res = @base_query.order(:id).limit(limit).offset(offset)
-            associations = sort_by_association.collect { |selection| selection.split('.').first.to_sym }.uniq
-            res = res.left_outer_joins(*associations) if associations.present?
+            res = res.left_outer_joins(*sort_by_associations) if sort_by_associations.present?
             order_options = sort_by_options(res.klass)
             res = res.reorder(order_options) if order_options.present?
-            sort_by_association.each do |selection|
-              sort_attr, sort_order = selection.split(':')
-              sort_order ||= "asc"
-              res = res.reorder(sort_attr => sort_order)
-            end
             res
           end
         end
@@ -99,10 +93,15 @@ module Insights
 
         def sort_by_options(model)
           @sort_by_options ||= begin
-            sort_by_direct.collect do |selection|
+            Array(sort_by).collect do |selection|
               sort_attr, sort_order = selection.split(':')
               sort_order ||= "asc"
-              arel = model.arel_attribute(sort_attr)
+              if sort_attr.include?('.')
+                association, sort_attr = sort_attr.split('.')
+                arel = association.classify.constantize.arel_attribute(sort_attr)
+              else
+                arel = model.arel_attribute(sort_attr)
+              end
               arel = arel.asc  if sort_order == "asc"
               arel = arel.desc if sort_order == "desc"
               arel
@@ -110,20 +109,15 @@ module Insights
           end
         end
 
-        def sort_by_direct
-          Array(sort_by).collect do |selection|
-            next if selection.split(':').first.include?('.')
+        def sort_by_associations
+          @sort_by_associations ||= begin
+            Array(sort_by).collect do |selection|
+              sort_attr, _sort_order = selection.split(':')
+              next unless sort_attr.include?('.')
 
-            selection
-          end.compact
-        end
-
-        def sort_by_association
-          Array(sort_by).collect do |selection|
-            next unless selection.split(':').first.include?('.')
-
-            selection
-          end.compact
+              sort_attr.split('.').first.to_sym
+            end.compact.uniq
+          end
         end
       end
     end
