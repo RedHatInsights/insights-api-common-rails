@@ -47,7 +47,6 @@ module Insights
 
           private_class_method def self.init(klass)
             headers = Insights::API::Common::Request.current_forwardable
-            Rails.logger.info("Sending Headers to RBAC #{headers}")
             klass.new.tap do |api|
               api.api_client.default_headers = api.api_client.default_headers.merge(headers)
             end
