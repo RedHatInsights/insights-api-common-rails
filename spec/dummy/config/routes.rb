@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   routing_helper = Insights::API::Common::Routing.new(self)
 
+  get "/health", :to => "status#health"
+
   scope :as => :api, :module => "api", :path => "api" do
     routing_helper.redirect_major_version("v0.1", "api")
 
