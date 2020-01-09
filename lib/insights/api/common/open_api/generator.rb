@@ -34,7 +34,7 @@ module Insights
           end
 
           def openapi_file
-            @openapi_file ||= Rails.root.join("public", "doc", "openapi-3-v#{api_version}.0.json").to_s
+            @openapi_file ||= Rails.root.join("public", "doc", "openapi-3-v#{api_version}.json").to_s
           end
 
           def openapi_contents
