@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2020-01-09
+### Changed
+- Switched from semver to simver (only x.y) versioning for the OpenAPI doc #144
+- Removed RBAC log message #142
+
 ## [3.2.0] - 2019-12-18
 ### Added
 - Add support for instance/tag and instance/untag with an Array request body #136, #139, #140
@@ -78,8 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.2.0...HEAD
-[3.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.1.0...v3.2.0
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.2.0...v3.3.0
+[3.2.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v2.0.1...v2.1.0
