@@ -7,6 +7,7 @@ module Insights
 
           def self.included(other)
             other.rescue_from(StandardError, RuntimeError) do |exception|
+              logger.error("#{exception.class.name}: #{exception.message}\n#{exception.backtrace.join("\n")}")
               errors = Insights::API::Common::ErrorDocument.new.tap do |error_document|
                 exception_list_from(exception).each do |exc|
                   code = exc.respond_to?(:code) ? exc.code : error_code_from_class(exc)
