@@ -5,13 +5,14 @@ module Insights
         INTEGER_COMPARISON_KEYWORDS = ["eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
         STRING_COMPARISON_KEYWORDS  = ["contains", "contains_i", "eq", "eq_i", "starts_with", "starts_with_i", "ends_with", "ends_with_i", "nil", "not_nil"].freeze
 
-        attr_reader :apply, :arel_table, :api_doc_definition
+        attr_reader :apply, :arel_table, :api_doc_definition, :model
 
         def initialize(model, raw_filter, api_doc_definition)
           self.query          = model
-          @arel_table         = model.arel_table
-          @raw_filter         = raw_filter
           @api_doc_definition = api_doc_definition
+          @arel_table         = model.arel_table
+          @model              = model
+          @raw_filter         = raw_filter
         end
 
         def apply
@@ -34,6 +35,7 @@ module Insights
         private
 
         attr_accessor :query
+        delegate(:arel_attribute, :to => :model)
 
         class Error < ArgumentError; end
 
@@ -108,66 +110,70 @@ module Insights
           end
         end
 
+        def arel_lower(key)
+          Arel::Nodes::NamedFunction.new("LOWER", [arel_attribute(key)])
+        end
+
         def comparator_contains(key, value)
           return value.each { |v| comparator_contains(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(arel_table[key].matches("%#{query.sanitize_sql_like(value)}%", nil, true))
+          self.query = query.where(arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}%", nil, true))
         end
 
         def comparator_contains_i(key, value)
           return value.each { |v| comparator_contains_i(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(arel_table[key].lower.matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true))
+          self.query = query.where(arel_table.grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
         end
 
         def comparator_starts_with(key, value)
-          self.query = query.where(arel_table[key].matches("#{query.sanitize_sql_like(value)}%", nil, true))
+          self.query = query.where(arel_attribute(key).matches("#{query.sanitize_sql_like(value)}%", nil, true))
         end
 
         def comparator_starts_with_i(key, value)
-          self.query = query.where(arel_table[key].lower.matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true))
+          self.query = query.where(arel_table.grouping(arel_lower(key).matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
         end
 
         def comparator_ends_with(key, value)
-          self.query = query.where(arel_table[key].matches("%#{query.sanitize_sql_like(value)}", nil, true))
+          self.query = query.where(arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}", nil, true))
         end
 
         def comparator_ends_with_i(key, value)
-          self.query = query.where(arel_table[key].lower.matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true))
+          self.query = query.where(arel_table.grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true)))
         end
 
         def comparator_eq(key, value)
-          self.query = query.where(key => value)
+          self.query = query.where(arel_attribute(key).eq_any(Array(value)))
         end
 
         def comparator_eq_i(key, value)
           values = Array(value).map { |v| query.sanitize_sql_like(v.downcase) }
 
-          self.query = query.where(arel_table[key].lower.matches_any(values))
+          self.query = query.where(arel_table.grouping(arel_lower(key).matches_any(values)))
         end
 
         def comparator_gt(key, value)
-          self.query = query.where(arel_table[key].gt(value))
+          self.query = query.where(arel_attribute(key).gt(value))
         end
 
         def comparator_gte(key, value)
-          self.query = query.where(arel_table[key].gteq(value))
+          self.query = query.where(arel_attribute(key).gteq(value))
         end
 
         def comparator_lt(key, value)
-          self.query = query.where(arel_table[key].lt(value))
+          self.query = query.where(arel_attribute(key).lt(value))
         end
 
         def comparator_lte(key, value)
-          self.query = query.where(arel_table[key].lteq(value))
+          self.query = query.where(arel_attribute(key).lteq(value))
         end
 
         def comparator_nil(key, _value = nil)
-          self.query = query.where(key => nil)
+          self.query = query.where(arel_attribute(key).eq(nil))
         end
 
         def comparator_not_nil(key, _value = nil)
-          self.query = query.where.not(key => nil)
+          self.query = query.where.not(arel_attribute(key).eq(nil))
         end
       end
     end
