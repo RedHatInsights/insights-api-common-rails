@@ -103,10 +103,10 @@ module Insights
                 association, sort_attr = sort_attr.split('.')
                 association_class = association.classify.constantize
                 arel = if sort_attr == ASSOCIATION_COUNT_ATTR
-                  Arel.sql("COUNT (#{association_class.table_name})")
-                else
-                  association_class.arel_attribute(sort_attr)
-                end
+                         Arel.sql("COUNT (#{association_class.table_name})")
+                       else
+                         association_class.arel_attribute(sort_attr)
+                       end
               else
                 arel = model.arel_attribute(sort_attr)
               end
@@ -136,12 +136,10 @@ module Insights
               next unless sort_attr.include?('.')
 
               association, attr = sort_attr.split('.')
-              if attr == ASSOCIATION_COUNT_ATTR
-                group_attrs << @base_query.arel_attribute(:id) if group_attrs.empty?
+              next unless attr == ASSOCIATION_COUNT_ATTR
 
-                association_class = association.classify.constantize
-                group_attrs << association_class.arel_attribute(:id)
-              end
+              group_attrs << @base_query.arel_attribute(:id) if group_attrs.empty?
+              group_attrs << association.classify.constantize.arel_attribute(:id)
             end
             group_attrs.compact.uniq
           end
