@@ -2,6 +2,8 @@ module Insights
   module API
     module Common
       class PaginatedResponse
+        ASSOCIATION_COUNT_ATTR = "count".freeze
+
         attr_reader :limit, :offset, :sort_by
 
         def initialize(base_query:, request:, limit: nil, offset: nil, sort_by: nil)
@@ -16,6 +18,7 @@ module Insights
           @records ||= begin
             res = @base_query.order(:id).limit(limit).offset(offset)
             res = res.left_outer_joins(*sort_by_associations) if sort_by_associations.present?
+            res = res.group(group_associations) if group_associations.present?
             order_options = sort_by_options(res.klass)
             res = res.reorder(order_options) if order_options.present?
             res
@@ -98,7 +101,12 @@ module Insights
               sort_order ||= "asc"
               if sort_attr.include?('.')
                 association, sort_attr = sort_attr.split('.')
-                arel = association.classify.constantize.arel_attribute(sort_attr)
+                association_class = association.classify.constantize
+                arel = if sort_attr == ASSOCIATION_COUNT_ATTR
+                  Arel.sql("COUNT (#{association_class.table_name})")
+                else
+                  association_class.arel_attribute(sort_attr)
+                end
               else
                 arel = model.arel_attribute(sort_attr)
               end
@@ -117,6 +125,25 @@ module Insights
 
               sort_attr.split('.').first.to_sym
             end.compact.uniq
+          end
+        end
+
+        def group_associations
+          @group_associations ||= begin
+            group_attrs = []
+            Array(sort_by).each do |selection|
+              sort_attr, _sort_order = selection.split(':')
+              next unless sort_attr.include?('.')
+
+              association, attr = sort_attr.split('.')
+              if attr == ASSOCIATION_COUNT_ATTR
+                group_attrs << @base_query.arel_attribute(:id) if group_attrs.empty?
+
+                association_class = association.classify.constantize
+                group_attrs << association_class.arel_attribute(:id)
+              end
+            end
+            group_attrs.compact.uniq
           end
         end
       end
