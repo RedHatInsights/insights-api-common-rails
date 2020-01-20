@@ -84,6 +84,23 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     it("key:lte")                { expect_success("sources", "filter[id][lte]=#{source_8.id}", *Source.where(Source.arel_table[:id].lteq(source_8.id))) }
   end
 
+  context "allows filtering on extra (undocumented) attributes listed in the controller" do
+    let!(:source_1) { create_source(:name => "source_a", :undocumented => "abc")  }
+    let!(:source_2) { create_source(:name => "Source_A", :undocumented => "xyz")  }
+    let!(:source_3) { create_source(:name => "source_b", :undocumented => "abc")  }
+    let!(:source_4) { create_source(:name => "Source_B", :undocumented => "xyz")  }
+    let!(:source_5) { create_source(:name => "%source_d") }
+    let!(:source_6) { create_source(:name => "%Source_D") }
+    let!(:source_7) { create_source(:name => "Source_f%") }
+    let!(:source_8) { create_source(:name => "Source_F%") }
+
+    it("key:eq single")   { expect_success("sources", "filter[undocumented][eq]=#{source_1.undocumented}", source_1, source_3) }
+    it("key:eq array")    { expect_success("sources", "filter[undocumented][eq][]=#{source_1.undocumented}&filter[undocumented][eq][]=#{source_2.undocumented}", source_1, source_2, source_3, source_4) }
+
+    it("key:eq_i single") { expect_success("sources", "filter[undocumented][eq_i]=ABC", source_1, source_3) }
+    it("key:eq_i array")  { expect_success("sources", "filter[undocumented][eq_i][]=ABC&filter[undocumented][eq_i][]=XYZ", source_1, source_2, source_3, source_4) }
+  end
+
   context "sorted results via sort_by" do
     let!(:rhev)      { SourceType.create(:name => "rhev_sample", :product_name => "RedHat Virtualization", :vendor => "redhat") }
     let!(:openstack) { SourceType.create(:name => "openstack_sample", :product_name => "OpenStack", :vendor => "redhat") }
