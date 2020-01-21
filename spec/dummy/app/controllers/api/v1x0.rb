@@ -68,8 +68,10 @@ module Api
       end
     end
 
-    class GraphqlController < Api::V1::GraphqlController; end
-    class SourcesController < Api::V1::SourcesController; end
-    class SourceTypesController < Api::V1::SourceTypesController; end
+    class GraphqlController           < Api::V1::GraphqlController; end
+    class ApplicationsController      < Api::V1::ApplicationsController; end
+    class ApplicationTypesController  < Api::V1::ApplicationTypesController; end
+    class SourcesController           < Api::V1::SourcesController; end
+    class SourceTypesController       < Api::V1::SourceTypesController; end
   end
 end
