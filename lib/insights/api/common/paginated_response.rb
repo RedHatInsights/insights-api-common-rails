@@ -2,7 +2,7 @@ module Insights
   module API
     module Common
       class PaginatedResponse
-        ASSOCIATION_COUNT_ATTR = "count".freeze
+        ASSOCIATION_COUNT_ATTR = "@count".freeze
 
         attr_reader :limit, :offset, :sort_by
 
