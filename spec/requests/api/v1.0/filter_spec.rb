@@ -199,7 +199,7 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     it "succeeds with an association attribute and direct attribute in mixed order" do
       Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
       Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
-      Application.create(:application_type => cost_apptype ,   :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
 
       expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=name:desc&sort_by[]=application_types.display_name:asc",
                                      [
@@ -212,7 +212,7 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     it "succeeds based on an association count" do
       Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
       Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
-      Application.create(:application_type => topo_apptype ,   :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
 
       expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=application_types.@count&sort_by[]=application_types.display_name",
                                      [
@@ -225,7 +225,7 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     it "succeeds based on an association count in reverse order" do
       Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
       Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
-      Application.create(:application_type => topo_apptype ,   :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
 
       expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=application_types.@count:desc",
                                      [

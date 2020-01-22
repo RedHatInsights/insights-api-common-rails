@@ -371,7 +371,7 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
       expect(response.parsed_body["data"]).to eq(JSON.parse('
         {
           "sources": [
-            { 
+            {
               "name": "source_b3",
               "application_types": [
               ]
