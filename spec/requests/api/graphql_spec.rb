@@ -32,6 +32,10 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
   let!(:auth_b221)    { Authentication.create!(:tenant => tenant, :resource => endpoint_b22, :authtype => "userpassword", :username => "admin", :password => "secret") }
   let!(:auth_b222)    { Authentication.create!(:tenant => tenant, :resource => endpoint_b22, :authtype => "token") }
 
+  let!(:catalog_apptype) { ApplicationType.create(:name => "/insights/platform/catalog", :display_name => "Catalog") }
+  let!(:cost_apptype)    { ApplicationType.create(:name => "/insights/platform/cost-management", :display_name => "Cost Management") }
+  let!(:topo_apptype)    { ApplicationType.create(:name => "/insights/platform/topological-inventory", :display_name => "Topological Inventory") }
+
   context "querying sources" do
     before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
 
@@ -264,18 +268,12 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
   end
 
   context "supports sort_by with association attributes" do
-    before {
-      stub_const("ENV", "BYPASS_TENANCY" => nil)
-
-      @catalog_at  = ApplicationType.create(:name => "/insights/platform/catalog", :display_name => "Catalog")
-      @cost_at     = ApplicationType.create(:name => "/insights/platform/cost-management", :display_name => "Cost Management")
-      @topo_at     = ApplicationType.create(:name => "/insights/platform/topological-inventory", :display_name => "Topological Inventory")
-    }
+    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
 
     it "sorting with an association attribute" do
-      Application.create(:application_type => @catalog_at, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => @cost_at,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => @topo_at,    :source => source_b3, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => source_b3, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
@@ -314,9 +312,9 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting with an association attribute in descending order" do
-      Application.create(:application_type => @catalog_at, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => @cost_at,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => @topo_at,    :source => source_b3, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => source_b3, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
@@ -355,9 +353,9 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting with an association attribute and direct attribute in mixed order" do
-      Application.create(:application_type => @catalog_at, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => @catalog_at, :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => @cost_at,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
@@ -396,9 +394,9 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting based on an association count" do
-      Application.create(:application_type => @catalog_at, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => @cost_at,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => @topo_at,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => source_b2, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
@@ -437,9 +435,9 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting based on an association count in reverse order" do
-      Application.create(:application_type => @catalog_at, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => @cost_at,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => @topo_at,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => source_b2, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
