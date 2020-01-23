@@ -17,7 +17,8 @@ module Insights
         FORWARDABLE_HEADER_KEYS = [REQUEST_ID_KEY, IDENTITY_KEY, PERSONA_KEY].freeze
         OPTIONAL_AUTH_PATHS = [
           %r{\A/api/v[0-9]+(\.[0-9]+)?/openapi.json\z},
-          %r{\A/api/[^/]+/v[0-9]+(\.[0-9]+)?/openapi.json\z}
+          %r{\A/api/[^/]+/v[0-9]+(\.[0-9]+)?/openapi.json\z},
+          %r{\A/health\z}
         ].freeze
 
         def self.current
