@@ -15,7 +15,7 @@ module Insights
 
           def self.paginate(obj, method, pagination_options, *method_args)
             Enumerator.new do |enum|
-              opts = { :limit => 10, :offset => 0 }.merge(pagination_options)
+              opts = { :limit => 1000, :offset => 0 }.merge(pagination_options)
               count = nil
               fetched = 0
               begin

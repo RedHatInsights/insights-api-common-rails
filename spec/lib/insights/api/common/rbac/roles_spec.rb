@@ -10,7 +10,7 @@ describe Insights::API::Common::RBAC::Roles do
 
   before do
     stub_const("ENV", "RBAC_URL" => "http://localhost")
-    stub_request(:get, "http://localhost/api/rbac/v1/roles/?limit=10&name=Catalog%20Administrator&offset=0&scope=principal")
+    stub_request(:get, "http://localhost/api/rbac/v1/roles/?limit=1000&name=Catalog%20Administrator&offset=0&scope=principal")
       .to_return(:status  => 200,
                  :body    => catalog_admin.to_json,
                  :headers => response_headers)
