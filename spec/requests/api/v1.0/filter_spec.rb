@@ -197,14 +197,14 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     end
 
     it "succeeds with an association attribute and direct attribute in mixed order" do
-      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s1, :tenant => tenant)
       Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s3, :tenant => tenant)
 
-      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=name:desc&sort_by[]=application_types.display_name:asc",
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=application_types.display_name:asc&sort_by[]=name:desc",
                                      [
-                                       {:name => "source_s3"},
                                        {:name => "source_s2"},
+                                       {:name => "source_s3"},
                                        {:name => "source_s1"}
                                      ])
     end
@@ -214,7 +214,7 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
       Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
       Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
 
-      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=application_types.@count&sort_by[]=application_types.display_name",
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[]=application_types.@count&sort_by[]=name",
                                      [
                                        {:name => "source_s3"},
                                        {:name => "source_s1"},

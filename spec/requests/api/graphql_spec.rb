@@ -355,7 +355,7 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     it "sorting with an association attribute and direct attribute in mixed order" do
       Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
       Application.create(:application_type => catalog_apptype, :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => source_b3, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
@@ -374,13 +374,13 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
             {
               "name": "source_b3",
               "application_types": [
+                { "display_name": "Cost Management" }
               ]
             },
             {
               "name": "source_b2",
               "application_types": [
-                { "display_name": "Catalog" },
-                { "display_name": "Cost Management" }
+                { "display_name": "Catalog" }
               ]
             },
             {
@@ -400,7 +400,7 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
-          sources(filter: { name: { starts_with: "source_b"}}, sort_by: ["application_types.@count", "application_types.display_name"]) {
+          sources(filter: { name: { starts_with: "source_b"}}, sort_by: ["application_types.@count", "name"]) {
             name
             application_types {
               display_name
