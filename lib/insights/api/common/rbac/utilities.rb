@@ -5,7 +5,7 @@ module Insights
         module Utilities
           MAX_GROUPS_LIMIT = 500
           def validate_groups
-            options = { :limit => MAX_GROUPS_LIMIT }
+            options = {:limit => MAX_GROUPS_LIMIT}
             Service.call(RBACApiClient::GroupApi) do |api|
               uuids = SortedSet.new
               Service.paginate(api, :list_groups, options).each { |group| uuids << group.uuid }
