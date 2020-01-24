@@ -3,10 +3,12 @@ module Insights
     module Common
       module RBAC
         module Utilities
+          MAX_GROUPS_LIMIT = 500
           def validate_groups
+            options = { :limit => MAX_GROUPS_LIMIT }
             Service.call(RBACApiClient::GroupApi) do |api|
               uuids = SortedSet.new
-              Service.paginate(api, :list_groups, {}).each { |group| uuids << group.uuid }
+              Service.paginate(api, :list_groups, options).each { |group| uuids << group.uuid }
               missing = @group_uuids - uuids
               raise Insights::API::Common::InvalidParameter, "The following group uuids are missing #{missing.to_a.join(",")}" unless missing.empty?
             end

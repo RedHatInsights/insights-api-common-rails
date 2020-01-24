@@ -10,6 +10,7 @@ describe Insights::API::Common::RBAC::ShareResource do
   end
   let(:subject) { described_class.new(options) }
   let(:pagination_options) { { :limit => 500, :name => "catalog-portfolios-", :scope => "account" } }
+  let(:group_pagination_options) { {:limit => Insights::API::Common::RBAC::Utilities::MAX_GROUPS_LIMIT} }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
@@ -21,7 +22,7 @@ describe Insights::API::Common::RBAC::ShareResource do
     let(:group_uuids) { ["1"] }
     let(:resource_ids) { ["1"] }
     it "raises exception if group id is invalid" do
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, group_pagination_options).and_return(groups)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return(roles)
       expect { subject.process }.to raise_exception(Insights::API::Common::InvalidParameter)
     end
@@ -30,7 +31,7 @@ describe Insights::API::Common::RBAC::ShareResource do
   context "valid groups" do
     let(:resource_ids) { %w[4 5] }
     it "new roles" do
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, group_pagination_options).and_return(groups)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return(roles)
       allow(api_instance).to receive(:create_roles).and_return(role1)
 
@@ -44,7 +45,7 @@ describe Insights::API::Common::RBAC::ShareResource do
     let(:resource_ids) { [resource_id1, "2"] }
     let(:permissions) { ["#{app_name}:#{resource}:order", "#{app_name}:#{resource}:read"] }
     it "update roles" do
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, group_pagination_options).and_return(groups)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return(roles)
       allow(api_instance).to receive(:create_roles).and_return(role2)
       allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)

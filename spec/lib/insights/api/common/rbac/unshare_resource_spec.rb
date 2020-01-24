@@ -9,6 +9,7 @@ describe Insights::API::Common::RBAC::UnshareResource do
   end
   let(:subject) { described_class.new(options) }
   let(:pagination_options) { { :limit => 500, :name => "catalog-portfolios-", :scope => "account" } }
+  let(:group_pagination_options) { {:limit => Insights::API::Common::RBAC::Utilities::MAX_GROUPS_LIMIT} }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
@@ -18,7 +19,7 @@ describe Insights::API::Common::RBAC::UnshareResource do
 
   shared_examples_for "#unshare" do
     it "remove resource definitions" do
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, group_pagination_options).and_return(groups)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return([role1, role2])
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_policies, {}).and_return(policies)
       allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)
@@ -33,7 +34,7 @@ describe Insights::API::Common::RBAC::UnshareResource do
   context "invalid group uuid" do
     let(:group_uuids) { %w[1] }
     it "raises exception if group id is invalid" do
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, group_pagination_options).and_return(groups)
       expect { subject.process }.to raise_exception(Insights::API::Common::InvalidParameter)
     end
   end
