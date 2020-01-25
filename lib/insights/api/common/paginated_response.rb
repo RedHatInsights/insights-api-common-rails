@@ -17,9 +17,12 @@ module Insights
         def records
           @records ||= begin
             res = @base_query.order(:id).limit(limit).offset(offset)
+
+            select_for_associations, group_by_associations = sort_by_associations_query_parameters
             res = res.select(*select_for_associations)          if select_for_associations.present?
             res = res.left_outer_joins(*sort_by_associations)   if sort_by_associations.present?
-            res = res.group(group_associations)                 if group_associations.present?
+            res = res.group(group_by_associations)              if group_by_associations.present?
+
             order_options = sort_by_options(res.klass)
             res = res.reorder(order_options) if order_options.present?
             res
@@ -129,44 +132,33 @@ module Insights
           end
         end
 
-        def select_for_associations
-          @select_for_associations ||= begin
-            selects = []
-            count_selects = []
-            Array(sort_by).collect do |selection|
-              sort_attr, _sort_order = selection.split(':')
-              next unless sort_attr.include?('.')
+        def sort_by_associations_query_parameters
+          select_for_associations = []
+          group_by_associations   = []
+          count_selects           = []
 
-              association, attr = sort_attr.split('.')
+          Array(sort_by).collect do |selection|
+            sort_attr, _sort_order = selection.split(':')
+            next unless sort_attr.include?('.')
 
-              selects << "#{@base_query.table_name}.id" << "#{@base_query.table_name}.*" if selects.empty?
-              if attr == ASSOCIATION_COUNT_ATTR
-                count_selects << Arel.sql("COUNT (#{association.classify.constantize.table_name}.id)")
-              else
-                selects << association.classify.constantize.arel_attribute(attr)
-              end
+            association, attr = sort_attr.split('.')
+
+            base_id  = "#{@base_query.table_name}.id"
+            base_all = "#{@base_query.table_name}.*"
+            select_for_associations << base_id << base_all if select_for_associations.empty?
+            group_by_associations   << base_id << base_all if group_by_associations.empty?
+
+            if attr == ASSOCIATION_COUNT_ATTR
+              count_selects << Arel.sql("COUNT (#{association.classify.constantize.table_name}.id)")
+            else
+              arel_attr = association.classify.constantize.arel_attribute(attr)
+              select_for_associations << arel_attr
+              group_by_associations << arel_attr
             end
-            selects.append(*count_selects) unless count_selects.empty?
-            selects.compact.uniq
           end
-        end
+          select_for_associations.append(*count_selects) unless count_selects.empty?
 
-        def group_associations
-          @group_associations ||= begin
-            group_attrs = []
-            Array(sort_by).each do |selection|
-              sort_attr, _sort_order = selection.split(':')
-              next unless sort_attr.include?('.')
-
-              association, attr = sort_attr.split('.')
-
-              group_attrs << "#{@base_query.table_name}.id" << "#{@base_query.table_name}.*" if group_attrs.empty?
-              if attr != ASSOCIATION_COUNT_ATTR
-                group_attrs << association.classify.constantize.arel_attribute(attr)
-              end
-            end
-            group_attrs.compact.uniq
-          end
+          [select_for_associations.compact.uniq, group_by_associations.compact.uniq]
         end
       end
     end
