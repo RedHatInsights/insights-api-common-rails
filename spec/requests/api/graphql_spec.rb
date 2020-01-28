@@ -268,16 +268,22 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
   end
 
   context "supports sort_by with association attributes" do
-    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
+    before do
+      stub_const("ENV", "BYPASS_TENANCY" => nil)
+
+      @source_s1 = Source.create!(:tenant => tenant, :name => "source_s1", :source_type => source_typeR)
+      @source_s2 = Source.create!(:tenant => tenant, :name => "source_s2", :source_type => source_typeR)
+      @source_s3 = Source.create!(:tenant => tenant, :name => "source_s3", :source_type => source_typeR)
+    end
 
     it "sorting with an association attribute" do
-      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => topo_apptype,    :source => source_b3, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s3, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
-          sources(filter: { name: { starts_with: "source_b"}}, sort_by: "application_types.display_name") {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: "application_types.display_name") {
             name
             application_types {
               display_name
@@ -290,19 +296,19 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
         {
           "sources": [
             {
-              "name": "source_b1",
+              "name": "source_s1",
               "application_types": [
                 { "display_name": "Catalog" }
               ]
             },
             {
-              "name": "source_b2",
+              "name": "source_s2",
               "application_types": [
                 { "display_name": "Cost Management" }
               ]
             },
             {
-              "name": "source_b3",
+              "name": "source_s3",
               "application_types": [
                 { "display_name": "Topological Inventory" }
               ]
@@ -312,13 +318,13 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting with an association attribute in descending order" do
-      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => topo_apptype,    :source => source_b3, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s3, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
-          sources(filter: { name: { starts_with: "source_b"}}, sort_by: "application_types.display_name:desc") {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: "application_types.display_name:desc") {
             name
             application_types {
               display_name
@@ -331,19 +337,19 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
         {
           "sources": [
             {
-              "name": "source_b3",
+              "name": "source_s3",
               "application_types": [
                 { "display_name": "Topological Inventory" }
               ]
             },
             {
-              "name": "source_b2",
+              "name": "source_s2",
               "application_types": [
                 { "display_name": "Cost Management" }
               ]
             },
             {
-              "name": "source_b1",
+              "name": "source_s1",
               "application_types": [
                 { "display_name": "Catalog" }
               ]
@@ -353,13 +359,13 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting with an association attribute and direct attribute in mixed order" do
-      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => catalog_apptype, :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => source_b3, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s3, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
-          sources(filter: { name: { starts_with: "source_b"}}, sort_by: ["name:desc", "application_types.display_name:asc"]) {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: ["name:desc", "application_types.display_name:asc"]) {
             name
             application_types {
               display_name
@@ -372,19 +378,19 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
         {
           "sources": [
             {
-              "name": "source_b3",
+              "name": "source_s3",
               "application_types": [
                 { "display_name": "Cost Management" }
               ]
             },
             {
-              "name": "source_b2",
+              "name": "source_s2",
               "application_types": [
                 { "display_name": "Catalog" }
               ]
             },
             {
-              "name": "source_b1",
+              "name": "source_s1",
               "application_types": [
                 { "display_name": "Catalog" }
               ]
@@ -394,13 +400,13 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting based on an association count" do
-      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => topo_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
-          sources(filter: { name: { starts_with: "source_b"}}, sort_by: ["application_types.@count", "name"]) {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: ["application_types.@count", "name"]) {
             name
             application_types {
               display_name
@@ -413,18 +419,162 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
         {
           "sources": [
             {
-              "name": "source_b3",
+              "name": "source_s3",
               "application_types": [
               ]
             },
             {
-              "name": "source_b1",
+              "name": "source_s1",
               "application_types": [
                 { "display_name": "Catalog" }
               ]
             },
             {
-              "name": "source_b2",
+              "name": "source_s2",
+              "application_types": [
+                { "display_name": "Cost Management" },
+                { "display_name": "Topological Inventory" }
+              ]
+            }
+          ]
+        }'))
+    end
+
+    it "sorting based on an association count with secondary field" do
+      @source_s4 = Source.create!(:tenant => tenant, :name => "source_s4", :source_type => source_typeR)
+
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+
+      post(graphql_endpoint, :headers => headers, :params => {"query" => '
+        {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: ["application_types.@count", "name"]) {
+            name
+            application_types {
+              display_name
+            }
+          }
+        }'})
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_s3",
+              "application_types": [
+              ]
+            },
+            {
+              "name": "source_s4",
+              "application_types": [
+              ]
+            },
+            {
+              "name": "source_s1",
+              "application_types": [
+                { "display_name": "Catalog" }
+              ]
+            },
+            {
+              "name": "source_s2",
+              "application_types": [
+                { "display_name": "Cost Management" },
+                { "display_name": "Topological Inventory" }
+              ]
+            }
+          ]
+        }'))
+    end
+
+    it "sorting based on an association count with descending secondary field" do
+      @source_s4 = Source.create!(:tenant => tenant, :name => "source_s4", :source_type => source_typeR)
+
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+
+      post(graphql_endpoint, :headers => headers, :params => {"query" => '
+        {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: ["application_types.@count", "name:desc"]) {
+            name
+            application_types {
+              display_name
+            }
+          }
+        }'})
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_s4",
+              "application_types": [
+              ]
+            },
+            {
+              "name": "source_s3",
+              "application_types": [
+              ]
+            },
+            {
+              "name": "source_s1",
+              "application_types": [
+                { "display_name": "Catalog" }
+              ]
+            },
+            {
+              "name": "source_s2",
+              "application_types": [
+                { "display_name": "Cost Management" },
+                { "display_name": "Topological Inventory" }
+              ]
+            }
+          ]
+        }'))
+    end
+
+    it "sorting based on an association count with secondary field" do
+      @source_s4 = Source.create!(:tenant => tenant, :name => "source_s4", :source_type => source_typeR)
+
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+
+      post(graphql_endpoint, :headers => headers, :params => {"query" => '
+        {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: ["application_types.@count", "name"]) {
+            name
+            application_types {
+              display_name
+            }
+          }
+        }'})
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_s3",
+              "application_types": [
+              ]
+            },
+            {
+              "name": "source_s4",
+              "application_types": [
+              ]
+            },
+            {
+              "name": "source_s1",
+              "application_types": [
+                { "display_name": "Catalog" }
+              ]
+            },
+            {
+              "name": "source_s2",
               "application_types": [
                 { "display_name": "Cost Management" },
                 { "display_name": "Topological Inventory" }
@@ -435,13 +585,13 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
 
     it "sorting based on an association count in reverse order" do
-      Application.create(:application_type => catalog_apptype, :source => source_b1, :tenant => tenant)
-      Application.create(:application_type => cost_apptype,    :source => source_b2, :tenant => tenant)
-      Application.create(:application_type => topo_apptype,    :source => source_b2, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
 
       post(graphql_endpoint, :headers => headers, :params => {"query" => '
         {
-          sources(filter: { name: { starts_with: "source_b"}}, sort_by: "application_types.@count:desc") {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: "application_types.@count:desc") {
             name
             application_types {
               display_name
@@ -454,20 +604,72 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
         {
           "sources": [
             {
-              "name": "source_b2",
+              "name": "source_s2",
               "application_types": [
                 { "display_name": "Cost Management" },
                 { "display_name": "Topological Inventory" }
               ]
             },
             {
-              "name": "source_b1",
+              "name": "source_s1",
               "application_types": [
                 { "display_name": "Catalog" }
               ]
             },
             {
-              "name": "source_b3",
+              "name": "source_s3",
+              "application_types": [
+              ]
+            }
+          ]
+        }'))
+    end
+
+    it "sorting based on an association count in reverse order with secondary attribute in descending order" do
+      @source_s4 = Source.create!(:tenant => tenant, :name => "source_s4", :source_type => source_typeR)
+
+      Application.create(:application_type => topo_apptype,    :source => @source_s3, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s4, :tenant => tenant)
+
+      post(graphql_endpoint, :headers => headers, :params => {"query" => '
+        {
+          sources(filter: { name: { starts_with: "source_s"}}, sort_by: ["application_types.@count:desc", "name:desc"]) {
+            name
+            application_types {
+              display_name
+            }
+          }
+        }'})
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_s2",
+              "application_types": [
+                { "display_name": "Catalog" },
+                { "display_name": "Cost Management" },
+                { "display_name": "Topological Inventory" }
+              ]
+            },
+            {
+              "name": "source_s4",
+              "application_types": [
+                { "display_name": "Topological Inventory" }
+              ]
+            },
+            {
+              "name": "source_s3",
+              "application_types": [
+                { "display_name": "Topological Inventory" }
+              ]
+            },
+            {
+              "name": "source_s1",
               "application_types": [
               ]
             }
