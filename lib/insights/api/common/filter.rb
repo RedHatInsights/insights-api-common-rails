@@ -5,7 +5,7 @@ module Insights
         INTEGER_COMPARISON_KEYWORDS = ["eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
         STRING_COMPARISON_KEYWORDS  = ["contains", "contains_i", "eq", "eq_i", "starts_with", "starts_with_i", "ends_with", "ends_with_i", "nil", "not_nil"].freeze
 
-        attr_reader :apply, :arel_table, :api_doc_definition, :extra_filterable_attributes, :model
+        attr_reader :apply, :arel_table, :api_doc_definitions, :extra_filterable_attributes, :model
 
         # Instantiates a new Filter object
         #
@@ -14,21 +14,25 @@ module Insights
         #   An AR model that acts as the base collection to be filtered
         # raw_filter::
         #   The filter from the request query string
-        # api_doc_definition::
-        #   The documented object definition from the OpenAPI doc
+        # api_doc_definitions::
+        #   The documented object definitions from the OpenAPI doc
         # extra_filterable_attributes::
         #   Attributes that can be used for filtering but are not documented in the OpenAPI doc.  Something like `{"undocumented_column" => {"type" => "string"}}`
         #
         # == Returns:
         # A new Filter object, call #apply to get the filtered set of results.
         #
-        def initialize(model, raw_filter, api_doc_definition, extra_filterable_attributes = {})
-          self.query                   = model
-          @api_doc_definition          = api_doc_definition
+        def initialize(model, raw_filter, api_doc_definitions, extra_filterable_attributes = {})
+          @raw_filter = raw_filter
+          self.query = if filter_associations.present?
+                         model.left_outer_joins(filter_associations)
+                       else
+                         model
+                       end
+          @api_doc_definitions         = api_doc_definitions
           @arel_table                  = model.arel_table
           @extra_filterable_attributes = extra_filterable_attributes
           @model                       = model
-          @raw_filter                  = raw_filter
         end
 
         def apply
@@ -48,6 +52,31 @@ module Insights
           query
         end
 
+        # Condense filters for GraphQL to support association filtering
+        #
+        #     Input:  {"source_type"=>{"name"=>{"eq"=>"rhev"}}}
+        #     Output: {"source_type.name"=>{"eq"=>"rhev"}}
+        #
+        #     Input:  {"source_type"=>{"name"=>{"eq"=>["openstack", "openshift"]}}}
+        #     Output: {"source_type.name"=>{"eq"=>["openstack", "openshift"]}}
+        #
+        def self.condense(filter)
+          return filter if filter.blank? || !filter.kind_of?(Hash)
+
+          primary_key   = filter.keys.first
+          primary_value = filter[primary_key]
+
+          if filter.keys.size == 1 && primary_value.kind_of?(Hash)
+            secondary_key   = primary_value.keys.first
+            secondary_value = primary_value[secondary_key]
+            filter_operators = (INTEGER_COMPARISON_KEYWORDS + STRING_COMPARISON_KEYWORDS).uniq
+            if primary_value.keys.size == 1 && !filter_operators.include?(secondary_key)
+              filter = {"#{primary_key}.#{secondary_key}" => secondary_value}
+            end
+          end
+          filter
+        end
+
         private
 
         attr_accessor :query
@@ -55,9 +84,40 @@ module Insights
 
         class Error < ArgumentError; end
 
+        def api_doc_definition(collection = nil)
+          api_doc_definitions[collection || model.name]
+        end
+
+        def key_model_attribute(key)
+          if key.include?('.')
+            association, attr = key.split('.')
+            [association.classify.constantize, attr]
+          else
+            [model, key]
+          end
+        end
+
+        def model_arel_attribute(key)
+          key_model, attr = key_model_attribute(key)
+          key_model.arel_attribute(attr)
+        end
+
+        def filter_associations
+          return nil if @raw_filter.blank?
+
+          @filter_associations ||= begin
+            @raw_filter.keys.collect do |key|
+              next unless key.include?('.')
+
+              key.split('.').first.to_sym
+            end.compact.uniq
+          end
+        end
+
         def attribute_for_key(key)
-          attribute = api_doc_definition.properties[key.to_s]
-          attribute ||= extra_filterable_attributes[key.to_s]
+          key_model, attr = key_model_attribute(key)
+          attribute = api_doc_definitions[key_model.name].properties[attr.to_s]
+          attribute ||= extra_filterable_attributes[attr.to_s]
           return attribute if attribute
           errors << "found unpermitted parameter: #{key}"
           nil
@@ -128,7 +188,7 @@ module Insights
         end
 
         def arel_lower(key)
-          Arel::Nodes::NamedFunction.new("LOWER", [arel_attribute(key)])
+          Arel::Nodes::NamedFunction.new("LOWER", [model_arel_attribute(key)])
         end
 
         def comparator_contains(key, value)
@@ -144,7 +204,7 @@ module Insights
         end
 
         def comparator_starts_with(key, value)
-          self.query = query.where(arel_attribute(key).matches("#{query.sanitize_sql_like(value)}%", nil, true))
+          self.query = query.where(model_arel_attribute(key).matches("#{query.sanitize_sql_like(value)}%", nil, true))
         end
 
         def comparator_starts_with_i(key, value)
@@ -152,7 +212,7 @@ module Insights
         end
 
         def comparator_ends_with(key, value)
-          self.query = query.where(arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}", nil, true))
+          self.query = query.where(model_arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}", nil, true))
         end
 
         def comparator_ends_with_i(key, value)
@@ -160,7 +220,7 @@ module Insights
         end
 
         def comparator_eq(key, value)
-          self.query = query.where(arel_attribute(key).eq_any(Array(value)))
+          self.query = query.where(model_arel_attribute(key).eq_any(Array(value)))
         end
 
         def comparator_eq_i(key, value)
@@ -170,27 +230,27 @@ module Insights
         end
 
         def comparator_gt(key, value)
-          self.query = query.where(arel_attribute(key).gt(value))
+          self.query = query.where(model_arel_attribute(key).gt(value))
         end
 
         def comparator_gte(key, value)
-          self.query = query.where(arel_attribute(key).gteq(value))
+          self.query = query.where(model_arel_attribute(key).gteq(value))
         end
 
         def comparator_lt(key, value)
-          self.query = query.where(arel_attribute(key).lt(value))
+          self.query = query.where(model_arel_attribute(key).lt(value))
         end
 
         def comparator_lte(key, value)
-          self.query = query.where(arel_attribute(key).lteq(value))
+          self.query = query.where(model_arel_attribute(key).lteq(value))
         end
 
         def comparator_nil(key, _value = nil)
-          self.query = query.where(arel_attribute(key).eq(nil))
+          self.query = query.where(model_arel_attribute(key).eq(nil))
         end
 
         def comparator_not_nil(key, _value = nil)
-          self.query = query.where.not(arel_attribute(key).eq(nil))
+          self.query = query.where.not(model_arel_attribute(key).eq(nil))
         end
       end
     end

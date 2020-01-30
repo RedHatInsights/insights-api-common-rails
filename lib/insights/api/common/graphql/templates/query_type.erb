@@ -37,7 +37,7 @@ QueryType = ::GraphQL::ObjectType.define do
           scope = ::Insights::API::Common::Filter.new(
             scope,
             ActionController::Parameters.new(args[:filter]),
-            openapi_doc.definitions[openapi_schema_name]).apply
+            openapi_doc.definitions).apply
         end
         scope = ::Insights::API::Common::GraphQL.search_options(scope, args)
         if <%= graphql_options[:use_pagination_v2] %> == true

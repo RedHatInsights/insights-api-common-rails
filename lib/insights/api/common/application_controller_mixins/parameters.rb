@@ -90,7 +90,7 @@ module Insights
 
           def filtered
             check_if_openapi_enabled
-            Insights::API::Common::Filter.new(model, safe_params_for_list[:filter], api_doc_definition, extra_attributes_for_filtering).apply
+            Insights::API::Common::Filter.new(model, safe_params_for_list[:filter], api_doc_definitions, extra_attributes_for_filtering).apply
           end
 
           def extra_attributes_for_filtering
