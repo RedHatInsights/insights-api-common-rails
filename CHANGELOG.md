@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.0] - 2020-01-30
+### Added
+- Add a concern for the #tag and #untag methods to share common code #153
+- Add a StatusController for use in healthchecks that can be mapped to /health #143
+
+### Removed
+- Removed unwanted RBAC files #152
+
 ## [3.3.1] - 2020-01-15
 ### Fixed
 - Log errors as well as returning them in the response #147
@@ -87,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.3.1...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.3.1...v3.4.0
 [3.3.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.1.0...v3.2.0
