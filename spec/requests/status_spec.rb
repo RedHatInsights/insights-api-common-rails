@@ -4,7 +4,7 @@ RSpec.describe StatusController, :type => :request do
 
   before do
     stub_const("ENV", "BYPASS_TENANCY" => true)
-    stub_const("ENV", "DATABASE_URL" => "postgres://admin:smartvm@localhost/insights_api_common_development")
+    stub_const("ENV", "DATABASE_URL" => "postgres://admin:smartvm@localhost/insights_api_common_development?pool=5")
   end
 
   context "when the application is healthy" do
@@ -16,7 +16,9 @@ RSpec.describe StatusController, :type => :request do
 
   context "when the application is not healthy" do
     before do
-      allow(PG::Connection).to receive(:ping).with(ENV['DATABASE_URL']).and_return PG::Connection::PQPING_NO_RESPONSE
+      allow(PG::Connection).to receive(:ping)
+        .with(ENV['DATABASE_URL'].split("?").first)
+        .and_return PG::Connection::PQPING_NO_RESPONSE
     end
 
     it "returns a 500" do

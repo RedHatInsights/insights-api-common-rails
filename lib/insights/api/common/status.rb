@@ -4,7 +4,7 @@ module Insights
       module Status
         module Api
           def health
-            if PG::Connection.ping(ENV['DATABASE_URL']) == PG::Connection::PQPING_OK
+            if PG::Connection.ping(ENV['DATABASE_URL'].split("?").first) == PG::Connection::PQPING_OK
               head :ok
             else
               head :internal_server_error
