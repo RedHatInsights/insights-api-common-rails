@@ -111,55 +111,55 @@ module Insights
         def comparator_contains(key, value)
           return value.each { |v| comparator_contains(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(arel_table[key].matches("%#{query.sanitize_sql_like(value)}%", nil, true))
+          self.query = query.where("#{key} LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(value)}%")
         end
 
         def comparator_contains_i(key, value)
           return value.each { |v| comparator_contains_i(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(arel_table[key].lower.matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true))
+          self.query = query.where("#{key} ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(value)}%")
         end
 
         def comparator_starts_with(key, value)
-          self.query = query.where(arel_table[key].matches("#{query.sanitize_sql_like(value)}%", nil, true))
+          self.query = query.where("#{key} LIKE ?", "#{ActiveRecord::Base.sanitize_sql_like(value)}%")
         end
 
         def comparator_starts_with_i(key, value)
-          self.query = query.where(arel_table[key].lower.matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true))
+          self.query = query.where("#{key} ILIKE ?", "#{ActiveRecord::Base.sanitize_sql_like(value)}%")
         end
 
         def comparator_ends_with(key, value)
-          self.query = query.where(arel_table[key].matches("%#{query.sanitize_sql_like(value)}", nil, true))
+          self.query = query.where("#{key} LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(value)}")
         end
 
         def comparator_ends_with_i(key, value)
-          self.query = query.where(arel_table[key].lower.matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true))
+          self.query = query.where("#{key} ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(value)}")
         end
 
         def comparator_eq(key, value)
-          self.query = query.where(key => value)
+          self.query = query.where(key => Array(value).collect { |i| ActiveRecord::Base.sanitize_sql(i) })
         end
 
         def comparator_eq_i(key, value)
-          values = Array(value).map { |v| query.sanitize_sql_like(v.downcase) }
+          values = Array(value).collect { |i| ActiveRecord::Base.sanitize_sql(i.downcase) }
 
-          self.query = query.where(arel_table[key].lower.matches_any(values))
+          self.query = query.where("lower(#{key}) IN (?)", values)
         end
 
         def comparator_gt(key, value)
-          self.query = query.where(arel_table[key].gt(value))
+          self.query = query.where("#{key} > ?", value)
         end
 
         def comparator_gte(key, value)
-          self.query = query.where(arel_table[key].gteq(value))
+          self.query = query.where("#{key} >= ?", value)
         end
 
         def comparator_lt(key, value)
-          self.query = query.where(arel_table[key].lt(value))
+          self.query = query.where("#{key} < ?", value)
         end
 
         def comparator_lte(key, value)
-          self.query = query.where(arel_table[key].lteq(value))
+          self.query = query.where("#{key} <= ?", value)
         end
 
         def comparator_nil(key, _value = nil)
