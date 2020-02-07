@@ -66,8 +66,8 @@ module Insights
               end
             end
 
-            def base_path
-              @base_path ||= @content.fetch_path("servers", 0, "variables", "basePath", "default")
+            def server_base_path
+              @server_base_path ||= @content.fetch_path("servers", 0, "variables", "basePath", "default")
             end
 
             def paths
@@ -82,7 +82,7 @@ module Insights
               @routes ||= begin
                 paths.flat_map do |path, hash|
                   hash.collect do |verb, _details|
-                    p = File.join(base_path, path).gsub(/{\w*}/, ":id")
+                    p = File.join(server_base_path, path).gsub(/{\w*}/, ":id")
                     {:path => p, :verb => verb.upcase}
                   end
                 end
