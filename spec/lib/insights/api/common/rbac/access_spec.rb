@@ -33,8 +33,8 @@ describe Insights::API::Common::RBAC::Access do
     expect(described_class.enabled?).to be_truthy
   end
 
-  it "rbac is enabled by default" do
-    stub_const("ENV", "BYPASS_RBAC" => "1")
+  it "rbac is disabled with ENV var BYPASS_RBAC=true" do
+    stub_const("ENV", "BYPASS_RBAC" => "true")
     expect(described_class.enabled?).to be_falsey
   end
 end
