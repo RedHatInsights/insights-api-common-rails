@@ -34,7 +34,7 @@ module Insights
           end
 
           def self.enabled?
-            ENV['BYPASS_RBAC'].blank?
+            ENV['BYPASS_RBAC'] != "true"
           end
 
           private
