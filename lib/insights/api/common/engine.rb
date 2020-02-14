@@ -5,6 +5,7 @@ module Insights
         isolate_namespace Insights::API::Common
 
         config.autoload_paths << root.join("lib").to_s
+        config.autoload_paths << root.join("app/models/concerns").to_s
 
         initializer :load_inflections do
           Insights::API::Common::Inflections.load_inflections
