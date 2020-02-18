@@ -110,6 +110,11 @@ module Insights
           key_model.arel_attribute(attr)
         end
 
+        def model_arel_table(key)
+          key_model, attr = key_model_attribute(key)
+          key_model.arel_table
+        end
+
         def filter_associations
           return nil if @raw_filter.blank?
 
@@ -201,13 +206,13 @@ module Insights
         def comparator_contains(key, value)
           return value.each { |v| comparator_contains(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}%", nil, true))
+          self.query = query.where(model_arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}%", nil, true))
         end
 
         def comparator_contains_i(key, value)
           return value.each { |v| comparator_contains_i(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(arel_table.grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
+          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
         end
 
         def comparator_starts_with(key, value)
@@ -215,7 +220,7 @@ module Insights
         end
 
         def comparator_starts_with_i(key, value)
-          self.query = query.where(arel_table.grouping(arel_lower(key).matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
+          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
         end
 
         def comparator_ends_with(key, value)
@@ -223,7 +228,7 @@ module Insights
         end
 
         def comparator_ends_with_i(key, value)
-          self.query = query.where(arel_table.grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true)))
+          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true)))
         end
 
         def comparator_eq(key, value)
@@ -233,7 +238,7 @@ module Insights
         def comparator_eq_i(key, value)
           values = Array(value).map { |v| query.sanitize_sql_like(v.downcase) }
 
-          self.query = query.where(arel_table.grouping(arel_lower(key).matches_any(values)))
+          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches_any(values)))
         end
 
         def comparator_gt(key, value)
