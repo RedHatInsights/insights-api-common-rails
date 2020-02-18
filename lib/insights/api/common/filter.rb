@@ -5,7 +5,7 @@ module Insights
         INTEGER_COMPARISON_KEYWORDS = ["eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
         STRING_COMPARISON_KEYWORDS  = ["contains", "contains_i", "eq", "eq_i", "starts_with", "starts_with_i", "ends_with", "ends_with_i", "nil", "not_nil"].freeze
 
-        attr_reader :apply, :arel_table, :api_doc_definitions, :extra_filterable_attributes, :model
+        attr_reader :apply, :arel_table, :api_doc_definition, :extra_filterable_attributes, :model
 
         # Instantiates a new Filter object
         #
@@ -14,22 +14,22 @@ module Insights
         #   An AR model that acts as the base collection to be filtered
         # raw_filter::
         #   The filter from the request query string
-        # api_doc_definitions::
-        #   The documented object definitions from the OpenAPI doc
+        # api_doc_definition::
+        #   The documented object definition from the OpenAPI doc
         # extra_filterable_attributes::
         #   Attributes that can be used for filtering but are not documented in the OpenAPI doc.  Something like `{"undocumented_column" => {"type" => "string"}}`
         #
         # == Returns:
         # A new Filter object, call #apply to get the filtered set of results.
         #
-        def initialize(model, raw_filter, api_doc_definitions, extra_filterable_attributes = {})
+        def initialize(model, raw_filter, api_doc_definition, extra_filterable_attributes = {})
           @raw_filter = raw_filter
           self.query = if filter_associations.present?
                          model.left_outer_joins(filter_associations)
                        else
                          model
                        end
-          @api_doc_definitions         = api_doc_definitions
+          @api_doc_definition          = api_doc_definition
           @arel_table                  = model.arel_table
           @extra_filterable_attributes = extra_filterable_attributes
           @model                       = model
@@ -77,16 +77,24 @@ module Insights
           filter
         end
 
+        def self.association_attribute_properties(api_doc_definitions, raw_filter)
+          return {} if raw_filter.blank?
+
+          association_attributes = raw_filter.keys.select { |key| key.include?('.') }.compact.uniq
+          return {} if association_attributes.blank?
+
+          association_attributes.each_with_object({}) do |key, hash|
+            association, attr = key.split('.')
+            hash[key] = api_doc_definitions[association.singularize.classify].properties[attr.to_s]
+          end
+        end
+
         private
 
         attr_accessor :query
         delegate(:arel_attribute, :to => :model)
 
         class Error < ArgumentError; end
-
-        def api_doc_definition(collection = nil)
-          api_doc_definitions[collection || model.name]
-        end
 
         def key_model_attribute(key)
           if key.include?('.')
@@ -115,9 +123,8 @@ module Insights
         end
 
         def attribute_for_key(key)
-          key_model, attr = key_model_attribute(key)
-          attribute = api_doc_definitions[key_model.name].properties[attr.to_s]
-          attribute ||= extra_filterable_attributes[attr.to_s]
+          attribute = api_doc_definition.properties[key.to_s]
+          attribute ||= extra_filterable_attributes[key.to_s]
           return attribute if attribute
           errors << "found unpermitted parameter: #{key}"
           nil
