@@ -6,6 +6,5 @@ class ApplicationController < ActionController::Base
   include Insights::API::Common::ApplicationControllerMixins::ExceptionHandling
   include Insights::API::Common::ApplicationControllerMixins::Parameters
   include Insights::API::Common::ApplicationControllerMixins::RequestBodyValidation
-  include Insights::API::Common::ApplicationControllerMixins::RequestParameterValidation
   include Insights::API::Common::ApplicationControllerMixins::RequestPath
 end
