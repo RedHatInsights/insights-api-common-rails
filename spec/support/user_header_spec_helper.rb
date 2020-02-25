@@ -23,7 +23,8 @@ module UserHeaderSpecHelper
     "identity" => {
       "account_number" => "0369233",
       "type"           => "User",
-      "user"     =>  {
+      "auth_type"      => "basic-auth",
+      "user"           =>  {
         "username"     => "jdoe",
         "email"        => "jdoe@acme.com",
         "first_name"   => "John",
@@ -33,9 +34,8 @@ module UserHeaderSpecHelper
         "is_internal"  => false,
         "locale"       => "en_US"
       },
-      "internal" => {
+      "internal"       => {
         "org_id"    => "3340851",
-        "auth_type" => "basic-auth",
         "auth_time" => 6300
       }
     }
@@ -47,6 +47,10 @@ module UserHeaderSpecHelper
 
   def default_username
     default_user_hash["identity"]["user"]["username"]
+  end
+
+  def default_auth_type
+    default_user_hash["identity"]["auth_type"]
   end
 
   def encode(val)
