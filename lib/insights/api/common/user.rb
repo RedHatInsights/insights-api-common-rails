@@ -24,6 +24,7 @@ module Insights
         end
 
         def tenant
+          ActiveSupport::Deprecation.warn("Please switch to request.tenant, request.user.tenant will be removed in a future release.")
           find_tenant_key
         end
 

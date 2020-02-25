@@ -51,6 +51,18 @@ describe Insights::API::Common::Request do
       expect(@instance.user).to be_a(Insights::API::Common::User)
     end
 
+    it "#tenant" do
+      expect(@instance.tenant).to eq(default_account_number)
+    end
+
+    it "#system" do
+      expect(@instance.system).to be_nil
+    end
+
+    it "#auth_type" do
+      expect(@instance.auth_type).to eq("basic-auth")
+    end
+
     it "#to_h" do
       expect(@instance.to_h).to eq(:headers => forwardable_good, :original_url => "https://example.com")
     end
@@ -90,6 +102,64 @@ describe Insights::API::Common::Request do
 
     it "#request_id" do
       expect(@instance.request_id).to be_nil
+    end
+  end
+
+
+  context "with a good system request" do
+    let(:system_request) do
+      {
+        :headers      => {
+          'x-rh-identity'            => encoded_system_hash,
+          'x-rh-insights-request-id' => "01234567-89ab-cdef-0123-456789abcde",
+        },
+        :original_url => 'https://example.com'
+      }
+    end
+
+    around do |example|
+      described_class.with_request(system_request) do |instance|
+        @instance = instance
+        example.call
+      end
+    end
+
+    it "#original_url" do
+      expect(@instance.original_url).to eq "https://example.com"
+    end
+
+    describe "#headers" do
+      it "return a headers object" do
+        expect(@instance.headers).to be_a(ActionDispatch::Http::Headers)
+      end
+
+      it "allows case-insensitive lookup" do
+        expect(@instance.headers["X-Rh-Identity"]).to eq encoded_system_hash
+      end
+    end
+
+    it "#user" do
+      expect(@instance.user).to be_a(Insights::API::Common::User)
+    end
+
+    it "#tenant" do
+      expect(@instance.tenant).to eq(default_account_number)
+    end
+
+    it "#system" do
+      expect(@instance.system).to be_a(Insights::API::Common::System)
+    end
+
+    it "#auth_type" do
+      expect(@instance.auth_type).to eq("cert-auth")
+    end
+
+    it "#request_id" do
+      expect(@instance.request_id).to eq "01234567-89ab-cdef-0123-456789abcde"
+    end
+
+    it "#identity" do
+      expect(@instance.identity).to eq default_system_hash
     end
   end
 

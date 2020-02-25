@@ -41,6 +41,41 @@ module UserHeaderSpecHelper
     }
   }.freeze
 
+  DEFAULT_SYSTEM = {
+    "entitlements" => {
+      "ansible"          => {
+        "is_entitled" => true
+      },
+      "hybrid_cloud"     => {
+        "is_entitled" => true
+      },
+      "insights"         => {
+        "is_entitled" => true
+      },
+      "migrations"       => {
+        "is_entitled" => true
+      },
+      "openshift"        => {
+        "is_entitled" => true
+      },
+      "smart_management" => {
+        "is_entitled" => true
+      }
+    },
+    "identity" => {
+      "account_number" => "0369233",
+      "type"           => "System",
+      "auth_type"      => "cert-auth",
+      "system"         => {
+        "cn" => "certificate"
+      },
+      "internal"       => {
+        "org_id"    => "3340851",
+        "auth_time" => 6300
+      }
+    }
+  }.freeze
+
   def default_account_number
     default_user_hash["identity"]["account_number"]
   end
@@ -51,6 +86,10 @@ module UserHeaderSpecHelper
 
   def default_auth_type
     default_user_hash["identity"]["auth_type"]
+  end
+
+  def default_system_cn
+    default_system_hash["identity"]["system"]["cn"]
   end
 
   def encode(val)
@@ -66,7 +105,15 @@ module UserHeaderSpecHelper
     encode(hash || DEFAULT_USER)
   end
 
+  def encoded_system_hash(hash = nil)
+    encode(hash || DEFAULT_SYSTEM)
+  end
+
   def default_user_hash
     Marshal.load(Marshal.dump(DEFAULT_USER))
+  end
+
+  def default_system_hash
+    Marshal.load(Marshal.dump(DEFAULT_SYSTEM))
   end
 end
