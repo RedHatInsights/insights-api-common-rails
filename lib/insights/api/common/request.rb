@@ -72,8 +72,20 @@ module Insights
           raise IdentityError, "x-rh-identity not found"
         end
 
+        def tenant
+          @tenant ||= Insights::API::Common::Tenant.new(identity).tenant
+        end
+
         def user
           @user ||= User.new(identity)
+        end
+
+        def system
+          @system ||= System.new(identity) if identity.dig("identity", "system").present?
+        end
+
+        def auth_type
+          identity.dig("identity", "auth_type")
         end
 
         def entitlement
