@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0] - 2020-02-24
+### Added
+- Add the act_as_taggable_on mixin to API::Common #158
+- Allow machine credentials access to the API #162
+
+### Fixed
+- According to the IPP auth_type is in identity #161
+
 ## [3.4.2] - 2020-02-13
 ### Changed
 - Change BYPASS_RBAC to only check for the value "true" #157
@@ -103,7 +111,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.2...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.5.0...HEAD
+[3.5.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.2...v3.5.0
 [3.4.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.1...v3.4.2
 [3.4.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.3.1...v3.4.0
