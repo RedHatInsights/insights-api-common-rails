@@ -4,12 +4,18 @@ module Insights
       module RBAC
         require 'rbac-api-client'
 
+        class NetworkError  < StandardError; end
+        class TimedOutError < StandardError; end
+
         class Service
           def self.call(klass)
             setup
             yield init(klass)
           rescue RBACApiClient::ApiError => err
-            Rails.logger.error("RBACApiClient::ApiError #{err.message} ")
+            raise TimedOutError.new('Connection timed out') if err.code.nil?
+            raise NetworkError.new(err.message) if err.code.zero?
+
+            Rails.logger.error("#{err.class}: #{err.message} ")
             raise
           end
 
@@ -30,6 +36,10 @@ module Insights
                   fetched += result.data.count
                   break if count == fetched || result.data.empty?
                 end
+              rescue RBACApiClient::ApiError => err
+                raise TimedOutError.new('Connection timed out') if err.code.nil?
+                raise NetworkError.new(err.message) if err.code.zero?
+                raise
               rescue StandardError => e
                 Rails.logger.error("Exception when calling pagination on #{method} #{e}")
                 raise
