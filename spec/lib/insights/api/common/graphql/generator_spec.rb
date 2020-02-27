@@ -1,14 +1,14 @@
 require "insights/api/common/graphql"
 
 RSpec.describe Insights::API::Common::GraphQL::Generator do
-  let!(:graphql_endpoint) { "/api/v1.0/graphql" }
+  let!(:graphql_endpoint) { "/api/v2.0/graphql" }
 
   let!(:source_typeR) { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
   let!(:source_typeV) { SourceType.create(:name => "vmware", :product_name => "VmWare vCenter", :vendor => "vmware") }
 
   context "schema overlays" do
-    before { ::Insights::API::Common::GraphQL::Api.send(:remove_const, "V1x0") if ::Insights::API::Common::GraphQL::Api.const_defined?("V1x0", false) }
-    after  { ::Insights::API::Common::GraphQL::Api.send(:remove_const, "V1x0") }
+    before { ::Insights::API::Common::GraphQL::Api.send(:remove_const, "V2x0") if ::Insights::API::Common::GraphQL::Api.const_defined?("V2x0", false) }
+    after  { ::Insights::API::Common::GraphQL::Api.send(:remove_const, "V2x0") }
 
     it "support base_query" do
       graphql_request = double

@@ -27,7 +27,7 @@
     preload :<%= associations %>
 
     resolve lambda { |obj, args, _ctx|
-      ::Insights::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", args).load(obj)
+      ::Insights::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", graphql_options, args).load(obj)
     }
   end
 <%   end %>
