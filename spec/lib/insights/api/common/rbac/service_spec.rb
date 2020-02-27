@@ -1,6 +1,7 @@
 describe Insights::API::Common::RBAC::Service do
   let(:rbac_none_zero_ex) { RBACApiClient::ApiError.new(:messsage => "kaboom", :code => 1) }
   let(:rbac_zero_ex) { RBACApiClient::ApiError.new(:messsage => "kaboom", :code => 0) }
+  let(:rbac_nil_ex) { RBACApiClient::ApiError.new(:messsage => "kaboom") }
   let(:page_size) { 3 }
   let(:page1_data) { [1, 2, 3] }
   let(:page2_data) { [4, 5, 6] }
@@ -27,6 +28,13 @@ describe Insights::API::Common::RBAC::Service do
         raise rbac_zero_ex
       end
     end.to raise_exception(Insights::API::Common::RBAC::NetworkError)
+
+    expect do
+      stub_const("ENV", "RBAC_URL" => 'http://www.example.com')
+      described_class.call(RBACApiClient::StatusApi) do |_klass|
+        raise rbac_nil_ex
+      end
+    end.to raise_exception(Insights::API::Common::RBAC::TimedOutError)
   end
 
   context "pagination" do
