@@ -76,7 +76,7 @@ describe Insights::API::Common::RBAC::Seed do
       let(:request) { nil }
 
       it "raises an exception" do
-        allow(Insights::API::Common::RBAC::Service).to receive(:paginate).and_raise(RBACApiClient::ApiError.new('Kaboom'))
+        allow(Insights::API::Common::RBAC::Service).to receive(:paginate).and_raise(RBACApiClient::ApiError.new(:message => 'Kaboom'))
         expect { subject.process }.to raise_exception(RBACApiClient::ApiError, /Kaboom/)
       end
     end
