@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.6.0] - 2020-02-28
+### Added
+- Use add_role_to_group during RBAC seeding #138
+- Separate RBAC network error out from common errors #163
+- Move RBAC group validation to separate class and add specs #164
+
 ## [3.5.0] - 2020-02-24
 ### Added
 - Add the act_as_taggable_on mixin to API::Common #158
@@ -111,7 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.5.0...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.6.0...HEAD
+[3.6.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.2...v3.5.0
 [3.4.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.1...v3.4.2
 [3.4.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.0...v3.4.1
