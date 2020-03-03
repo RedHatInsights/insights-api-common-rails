@@ -3,6 +3,10 @@ RSpec.describe("Insights::API::Common::PaginatedResponseV2", :type => :request) 
   let(:tenant)          { Tenant.create!(:name => "default", :external_tenant => external_tenant) }
   let(:source_type)     { SourceType.create(:name => "rhev", :product_name => "RedHat Virtualization", :vendor => "redhat") }
 
+  let!(:catalog_apptype) { ApplicationType.create(:name => "/insights/platform/catalog", :display_name => "Catalog") }
+  let!(:cost_apptype)    { ApplicationType.create(:name => "/insights/platform/cost-management", :display_name => "Cost Management") }
+  let!(:topo_apptype)    { ApplicationType.create(:name => "/insights/platform/topological-inventory", :display_name => "Topological Inventory") }
+
   def create_source(attrs = {})
     Source.create!(attrs.merge(:tenant => tenant, :source_type => source_type))
   end
@@ -119,6 +123,107 @@ RSpec.describe("Insights::API::Common::PaginatedResponseV2", :type => :request) 
 
     it("returns a bad_request if one of the multiple sort_by order is invalid") do
       expect_failure("source_types", "sort_by[name]=asc&sort_by[vendor]=bogus", "ArgumentError: Invalid sort_by directive specified \"vendor=bogus\"")
+    end
+  end
+
+  context "sorted results via sort_by against associations" do
+    before do
+      @source_s1 = Source.create!(:tenant => tenant, :name => "source_s1", :source_type => source_type)
+      @source_s2 = Source.create!(:tenant => tenant, :name => "source_s2", :source_type => source_type)
+      @source_s3 = Source.create!(:tenant => tenant, :name => "source_s3", :source_type => source_type)
+    end
+
+    it "succeeds with single association attribute in ascending order" do
+      Application.create(:application_type => cost_apptype,    :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s3, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][display_name]=",
+                                     [
+                                       {:name => "source_s2"},
+                                       {:name => "source_s1"},
+                                       {:name => "source_s3"}
+                                     ])
+    end
+
+    it "succeeds with single association attribute in descending order" do
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s3, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][display_name]=desc",
+                                     [
+                                       {:name => "source_s2"},
+                                       {:name => "source_s3"},
+                                       {:name => "source_s1"}
+                                     ])
+    end
+
+    it "succeeds with an association attribute and direct attribute in mixed order" do
+      Application.create(:application_type => cost_apptype,    :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s3, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][display_name]=asc&sort_by[name]=desc",
+                                     [
+                                       {:name => "source_s2"},
+                                       {:name => "source_s3"},
+                                       {:name => "source_s1"}
+                                     ])
+    end
+
+    it "succeeds based on an association count" do
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][__count]=&sort_by[name]=",
+                                     [
+                                       {:name => "source_s3"},
+                                       {:name => "source_s1"},
+                                       {:name => "source_s2"}
+                                     ])
+    end
+
+    it "succeeds based on an association count in reverse order" do
+      Application.create(:application_type => catalog_apptype, :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][__count]=desc",
+                                     [
+                                       {:name => "source_s2"},
+                                       {:name => "source_s1"},
+                                       {:name => "source_s3"}
+                                     ])
+    end
+
+    it "succeeds based on an association count with a secondary attribute" do
+      Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s3, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][__count]=&sort_by[name]=",
+                                     [
+                                       {:name => "source_s1"},
+                                       {:name => "source_s3"},
+                                       {:name => "source_s2"}
+                                     ])
+    end
+
+    it "succeeds based on an association count with a secondary attribute in reverse order" do
+      Application.create(:application_type => catalog_apptype, :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => topo_apptype,    :source => @source_s2, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s1, :tenant => tenant)
+      Application.create(:application_type => cost_apptype,    :source => @source_s3, :tenant => tenant)
+
+      expect_success_ordered_objects("sources", "filter[name][starts_with]=source_s&sort_by[application_types][__count]&sort_by[name]=desc",
+                                     [
+                                       {:name => "source_s3"},
+                                       {:name => "source_s1"},
+                                       {:name => "source_s2"}
+                                     ])
     end
   end
 end
