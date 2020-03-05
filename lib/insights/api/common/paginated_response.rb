@@ -105,7 +105,8 @@ module Insights
         end
 
         def validate_sort_by
-          raise ArgumentError, "Invalid sort_by parameter specified \"#{sort_by}\"" if sort_by.present? && !sort_by.kind_of?(String) && !sort_by.kind_of?(Array)
+          return unless sort_by.present?
+          raise ArgumentError, "Invalid sort_by parameter specified \"#{sort_by}\"" unless sort_by.kind_of?(String) || sort_by.kind_of?(Array)
           Array(sort_by).each { |key| validate_sort_by_directive(key) }
         end
 

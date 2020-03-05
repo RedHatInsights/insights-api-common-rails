@@ -23,8 +23,7 @@ module Insights
         end
 
         def validate_sort_by
-          return if sort_by.blank?
-
+          return unless sort_by.present?
           raise ArgumentError, "Invalid sort_by parameter specified \"#{sort_by}\"" unless sort_by.kind_of?(ActionController::Parameters) || sort_by.kind_of?(Hash)
 
           sort_by.each { |sort_attr, sort_order| validate_sort_by_directive(sort_attr, sort_order) }

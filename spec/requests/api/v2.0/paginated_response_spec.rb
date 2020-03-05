@@ -92,6 +92,15 @@ RSpec.describe("Insights::API::Common::PaginatedResponseV2", :type => :request) 
                                      ])
     end
 
+    it("with multiple attributes and one with missing order") do
+      expect_success_ordered_objects("source_types", "filter[name][ends_with]=sample&sort_by[vendor]&sort_by[name]=desc",
+                                     [
+                                       {:vendor => "redhat", :name => "rhev_sample"},
+                                       {:vendor => "redhat", :name => "openstack_sample"},
+                                       {:vendor => "vmware", :name => "vmware_sample"}
+                                     ])
+    end
+
     it("returns a bad_request if the sort_by parameter is not an object") do
       expect_failure("source_types", "sort_by=name:asc", "ArgumentError: Invalid sort_by parameter specified \"name:asc\"")
     end
