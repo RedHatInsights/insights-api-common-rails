@@ -23,13 +23,13 @@ module Insights
           end
         end
 
-        # Condenses parameter values for handling multi-level associations and returns an array
-        # of key, value pairs.
+        # Condenses parameter values for handling multi-level associations
+        # and returns an array of key, value pairs.
         #
-        # Input: { "association" => { "attribute" => "value" }, "direct_attribute" = "value2" }
+        # Input:  { "association" => { "attribute" => "value" }, "direct_attribute" = "value2" }
         # Output: { "association.attribute" => "value", "direct_attribute" => "value2" }
         #
-        # Input: { "association" => { "attribute" => "value" }, "association2" => "attribute2" = "value2" }
+        # Input:  { "association" => { "attribute" => "value" }, "association2" => "attribute2" = "value2" }
         # Output: { "association.attribute" => "value", "association2.attribute2" => "value2" }
         #
         def compact_parameter(param)
@@ -38,9 +38,9 @@ module Insights
 
           param.each do |k, v|
             result << if v.kind_of?(Hash) || v.kind_of?(ActionController::Parameters)
-                        secondary_key = v.keys.first
+                        secondary_key   = v.keys.first
                         secondary_value = v[secondary_key]
-                        [ "#{k}.#{secondary_key}", secondary_value]
+                        ["#{k}.#{secondary_key}", secondary_value]
                       else
                         [k, v]
                       end
