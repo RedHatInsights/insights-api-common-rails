@@ -1,7 +1,7 @@
 module Insights
   module API
     module Common
-      class PaginatedResponseV2 <	PaginatedResponse
+      class PaginatedResponseV2 < PaginatedResponse
         attr_reader :limit, :offset, :sort_by
 
         private
@@ -14,8 +14,7 @@ module Insights
             sort_by.each do |sort_attr, sort_order|
               sort_order = "asc" if sort_order.blank?
               arel = model.arel_attribute(sort_attr)
-              arel = arel.asc  if sort_order == "asc"
-              arel = arel.desc if sort_order == "desc"
+              arel = (sort_order == "desc") ? arel.desc : arel.asc
               sort_options << arel
             end
             sort_options
@@ -30,8 +29,8 @@ module Insights
         end
 
         def validate_sort_by_directive(sort_attr, sort_order)
-          key = "#{sort_attr}:#{sort_order.blank? ? 'asc' : sort_order}"
-          raise ArgumentError, "Invalid sort_by directive specified \"#{sort_attr}=#{sort_order}\"" unless key.match?(/^[a-z\\-_]+(:asc|:desc)?$/)
+          order = sort_order.blank? ? "asc" : sort_order
+          raise ArgumentError, "Invalid sort_by directive specified \"#{sort_attr}=#{sort_order}\"" unless sort_attr.match?(/^[a-z\\-_]+$/) && order.match?(/^(asc|desc)$/)
         end
       end
     end

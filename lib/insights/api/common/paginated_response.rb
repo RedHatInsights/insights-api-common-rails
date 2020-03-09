@@ -97,9 +97,7 @@ module Insights
               sort_attr, sort_order = selection.split(':')
               sort_order ||= "asc"
               arel = model.arel_attribute(sort_attr)
-              arel = arel.asc  if sort_order == "asc"
-              arel = arel.desc if sort_order == "desc"
-              arel
+              (sort_order == "desc") ? arel.desc : arel.asc
             end
           end
         end

@@ -3,13 +3,13 @@ module Insights
     module Common
       module GraphQL
         class AssociationLoader < ::GraphQL::Batch::Loader
-          attr_reader :model, :association_name, :graphql_options, :args
+          attr_reader :args, :association_name, :graphql_options, :model
 
-          def initialize(model, association_name, graphql_options, args = {})
+          def initialize(model, association_name, args = {}, graphql_options = {})
             @model            = model
             @association_name = association_name
-            @graphql_options  = graphql_options
             @args             = args
+            @graphql_options  = graphql_options
           end
 
           def cache_key(record)
