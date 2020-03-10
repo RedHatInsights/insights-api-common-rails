@@ -57,4 +57,14 @@ describe Insights::API::Common::RBAC::Service do
       end.to raise_exception(StandardError)
     end
   end
+
+  context "user headers" do
+    it 'includes user headers in default headers' do
+      stub_const("ENV", "RBAC_URL" => 'http://www.example.com')
+      allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(:x => 1)
+      described_class.call(RBACApiClient::StatusApi, 'x-rh-user-header' => 'value') do |api|
+        expect(api.api_client.default_headers).to include(:x => 1, 'x-rh-user-header' => 'value')
+      end
+    end
+  end
 end
