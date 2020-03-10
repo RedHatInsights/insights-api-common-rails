@@ -8,9 +8,9 @@ module Insights
         class TimedOutError < StandardError; end
 
         class Service
-          def self.call(klass)
+          def self.call(klass, extra_headers = {})
             setup
-            yield init(klass)
+            yield init(klass, extra_headers)
           rescue RBACApiClient::ApiError => err
             raise TimedOutError.new('Connection timed out') if err.code.nil?
             raise NetworkError.new(err.message) if err.code.zero?
@@ -55,8 +55,8 @@ module Insights
             end
           end
 
-          private_class_method def self.init(klass)
-            headers = Insights::API::Common::Request.current_forwardable
+          private_class_method def self.init(klass, extra_headers)
+            headers = Insights::API::Common::Request.current_forwardable.merge(extra_headers)
             klass.new.tap do |api|
               api.api_client.default_headers = api.api_client.default_headers.merge(headers)
             end
