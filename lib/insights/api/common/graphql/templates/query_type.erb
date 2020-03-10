@@ -40,9 +40,15 @@ QueryType = ::GraphQL::ObjectType.define do
             openapi_doc.definitions[openapi_schema_name]).apply
         end
         scope = ::Insights::API::Common::GraphQL.search_options(scope, args)
-        ::Insights::API::Common::PaginatedResponse.new(
-          base_query: scope, request: nil, limit: args[:limit], offset: args[:offset], sort_by: args[:sort_by]
-        ).records
+        if <%= graphql_options[:use_pagination_v2] %> == true
+          ::Insights::API::Common::PaginatedResponseV2.new(
+            base_query: scope, request: nil, limit: args[:limit], offset: args[:offset], sort_by: args[:sort_by]
+          ).records
+        else
+          ::Insights::API::Common::PaginatedResponse.new(
+            base_query: scope, request: nil, limit: args[:limit], offset: args[:offset], sort_by: args[:sort_by]
+          ).records
+        end
       }
     end
   end

@@ -79,6 +79,14 @@ module Insights
           end
 
           def self.init_schema(request, schema_overlay = {})
+            base_init_schema(request, { :use_pagination_v2 => false }, schema_overlay)
+          end
+
+          def self.init_schema_v2(request, schema_overlay = {})
+            base_init_schema(request, { :use_pagination_v2 => true }, schema_overlay)
+          end
+
+          def self.base_init_schema(request, graphql_options, schema_overlay = {})
             api_version       = ::Insights::API::Common::GraphQL.version(request)
             version_namespace = "V#{api_version.tr('.', 'x')}"
             openapi_doc       = ::Insights::API::Common::OpenApi::Docs.instance[api_version]

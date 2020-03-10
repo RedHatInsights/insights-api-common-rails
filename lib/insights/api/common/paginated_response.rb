@@ -10,6 +10,7 @@ module Insights
           @limit      = (limit || 100).to_i.clamp(1, 1000)
           @offset     = (offset || 0).to_i.clamp(0, Float::INFINITY)
           @sort_by    = sort_by
+          validate_sort_by
         end
 
         def records
@@ -96,11 +97,19 @@ module Insights
               sort_attr, sort_order = selection.split(':')
               sort_order ||= "asc"
               arel = model.arel_attribute(sort_attr)
-              arel = arel.asc  if sort_order == "asc"
-              arel = arel.desc if sort_order == "desc"
-              arel
+              (sort_order == "desc") ? arel.desc : arel.asc
             end
           end
+        end
+
+        def validate_sort_by
+          return unless sort_by.present?
+          raise ArgumentError, "Invalid sort_by parameter specified \"#{sort_by}\"" unless sort_by.kind_of?(String) || sort_by.kind_of?(Array)
+          Array(sort_by).each { |key| validate_sort_by_directive(key) }
+        end
+
+        def validate_sort_by_directive(key)
+          raise ArgumentError, "Invalid sort_by directive specified \"#{key}\"" unless key.match?(/^[a-z\\-_]+(:asc|:desc)?$/)
         end
       end
     end

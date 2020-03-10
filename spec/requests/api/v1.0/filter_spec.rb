@@ -134,28 +134,32 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
                                      ])
     end
 
+    it("returns a bad_request if the sort_by attribute is not a string or array") do
+      expect_failure("source_types", "sort_by[attribute]=asc", "ArgumentError: Invalid sort_by parameter specified \"{\"attribute\"=>\"asc\"}\"")
+    end
+
     it("returns a bad_request if the single sort_by attribute is illegal") do
-      expect_failure("source_types", "sort_by=Capital^#", "OpenAPIParser::NotOneOf: Capital^# isn't one of in #/components/parameters/QuerySortBy/schema")
+      expect_failure("source_types", "sort_by=Capital^#", "ArgumentError: Invalid sort_by directive specified \"Capital^#\"")
     end
 
     it("returns a bad_request if the single sort_by attribute order is missing") do
-      expect_failure("source_types", "sort_by=name:", "OpenAPIParser::NotOneOf: name: isn't one of in #/components/parameters/QuerySortBy/schema")
+      expect_failure("source_types", "sort_by=name:", "ArgumentError: Invalid sort_by directive specified \"name:\"")
     end
 
     it("returns a bad_request if the single sort_by attribute order is invalid") do
-      expect_failure("source_types", "sort_by=name:bogus", "OpenAPIParser::NotOneOf: name:bogus isn't one of in #/components/parameters/QuerySortBy/schema")
+      expect_failure("source_types", "sort_by=name:bogus", "ArgumentError: Invalid sort_by directive specified \"name:bogus\"")
     end
 
     it("returns a bad_request one of the multiple sort_by attributes is malformed") do
-      expect_failure("source_types", "sort_by[]=Capital^#", "OpenAPIParser::NotOneOf: [\"Capital^#\"] isn't one of in #/components/parameters/QuerySortBy/schema")
+      expect_failure("source_types", "sort_by[]=Capital^#", "ArgumentError: Invalid sort_by directive specified \"Capital^#\"")
     end
 
     it("returns a bad_request if the single sort_by attribute order is missing") do
-      expect_failure("source_types", "sort_by[]=name&sort_by[]=vendor:", "OpenAPIParser::NotOneOf: [\"name\", \"vendor:\"] isn't one of in #/components/parameters/QuerySortBy/schema")
+      expect_failure("source_types", "sort_by[]=name&sort_by[]=vendor:", "ArgumentError: Invalid sort_by directive specified \"vendor:\"")
     end
 
     it("returns a bad_request if the single sort_by attribute order is invalid") do
-      expect_failure("source_types", "sort_by[]=name&sort_by[]=vendor:bogus", "OpenAPIParser::NotOneOf: [\"name\", \"vendor:bogus\"] isn't one of in #/components/parameters/QuerySortBy/schema")
+      expect_failure("source_types", "sort_by[]=name&sort_by[]=vendor:bogus", "ArgumentError: Invalid sort_by directive specified \"vendor:bogus\"")
     end
   end
 end
