@@ -96,11 +96,6 @@ module Insights
                 "description" => "ID of the resource",
                 "pattern"     => "^\\d+$",
                 "readOnly"    => true,
-              },
-              "SortByAttribute"    => {
-                "type"        => "string",
-                "description" => "Attribute with optional order to sort the result set by.",
-                "pattern"     => "^[a-z\\-_]+(:asc|:desc)?$"
               }
             }
           end
@@ -179,11 +174,10 @@ module Insights
                 "name"        => "sort_by",
                 "description" => "The list of attribute and order to sort the result set by.",
                 "required"    => false,
+                "style"       => "deepObject",
+                "explode"     => true,
                 "schema"      => {
-                  "oneOf" => [
-                    { "$ref" => "##{SCHEMAS_PATH}/SortByAttribute" },
-                    { "type" => "array", "items" => { "$ref" => "##{SCHEMAS_PATH}/SortByAttribute" } }
-                  ]
+                  "type" => "object"
                 }
               }
             }
