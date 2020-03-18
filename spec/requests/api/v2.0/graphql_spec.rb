@@ -193,6 +193,100 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
   end
 
+  context "supports sort_by with multiple association attributes" do
+    before do
+      stub_const("ENV", "BYPASS_TENANCY" => nil)
+
+      source_s1 = Source.create!(:tenant => tenant, :name => "source_s1", :source_type => source_typeR)
+      source_s2 = Source.create!(:tenant => tenant, :name => "source_s2", :source_type => source_typeR)
+      source_s3 = Source.create!(:tenant => tenant, :name => "source_s3", :source_type => source_typeR)
+
+      top1_apptype = ApplicationType.create(:name => "/topological-inventory", :display_name => "Topological Inventory")
+      cat1_apptype = ApplicationType.create(:name => "/catalog1", :display_name => "Catalog")
+      cat2_apptype = ApplicationType.create(:name => "/catalog2", :display_name => "Catalog")
+
+      Application.create(:application_type => cat1_apptype, :source => source_s1, :tenant => tenant)
+      Application.create(:application_type => cat2_apptype, :source => source_s2, :tenant => tenant)
+      Application.create(:application_type => top1_apptype, :source => source_s3, :tenant => tenant)
+    end
+
+    it "sorting with multiple association attribute in ascending order" do
+      post(graphql_endpoint, :headers => headers, :params => {"query" => '
+        {
+          sources(filter: { name: { starts_with: "source_s" } }, sort_by: { application_types: { display_name: "asc",  name: "asc" }} ) {
+            name
+            application_types {
+              name
+              display_name
+            }
+          }
+        }'})
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_s1",
+              "application_types": [
+                { "name": "/catalog1", "display_name": "Catalog" }
+              ]
+            },
+            {
+              "name": "source_s2",
+              "application_types": [
+                { "name": "/catalog2", "display_name": "Catalog" }
+              ]
+            },
+            {
+              "name": "source_s3",
+              "application_types": [
+                { "name": "/topological-inventory", "display_name": "Topological Inventory" }
+              ]
+            }
+          ]
+        }'))
+    end
+
+    it "sorting with multiple association attribute with mixed order" do
+      post(graphql_endpoint, :headers => headers, :params => {"query" => '
+        {
+          sources(filter: { name: { starts_with: "source_s" } }, sort_by: { application_types: { display_name: "desc",  name: "asc" }} ) {
+            name
+            application_types {
+              name
+              display_name
+            }
+          }
+        }'})
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"]).to eq(JSON.parse('
+        {
+          "sources": [
+            {
+              "name": "source_s3",
+              "application_types": [
+                { "name": "/topological-inventory", "display_name": "Topological Inventory" }
+              ]
+            },
+            {
+              "name": "source_s1",
+              "application_types": [
+                { "name": "/catalog1", "display_name": "Catalog" }
+              ]
+            },
+            {
+              "name": "source_s2",
+              "application_types": [
+                { "name": "/catalog2", "display_name": "Catalog" }
+              ]
+            }
+          ]
+        }'))
+    end
+  end
+
   context "supports sort_by with association count" do
     before do
       stub_const("ENV", "BYPASS_TENANCY" => nil)

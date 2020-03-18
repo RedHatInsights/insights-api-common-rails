@@ -2,7 +2,6 @@ module Insights
   module API
     module Common
       class PaginatedResponseV2 < PaginatedResponse
-
         # GraphQL name regex: /[_A-Za-z][_0-9A-Za-z]*/
         ASSOCIATION_COUNT_ATTR = "__count".freeze
 
@@ -26,23 +25,26 @@ module Insights
         # Condenses parameter values for handling multi-level associations
         # and returns an array of key, value pairs.
         #
-        # Input:  { "association" => { "attribute" => "value" }, "direct_attribute" = "value2" }
-        # Output: { "association.attribute" => "value", "direct_attribute" => "value2" }
+        # Examples:
         #
-        # Input:  { "association" => { "attribute" => "value" }, "association2" => "attribute2" = "value2" }
-        # Output: { "association.attribute" => "value", "association2.attribute2" => "value2" }
+        # Input:  { "association" => { "attribute" => "value" }, "direct_attribute" => "value2" }
+        # Output: [["association.attribute", "value"], ["direct_attribute", "value2"]]
+        #
+        # Input:  { "association" => { "attribute" => "value" }, "association2" => { "attribute2" => "value2" } }
+        # Output: [["association.attribute", "value"], ["association2.attribute2", "value2"]]
+        #
+        # Input:  { "association" => { "attribute1" => "value1", "attribute2" => "value2" } }
+        # Output: [["association.attribute1", "value1"], ["association.attribute2", "value2"]]
         #
         def compact_parameter(param)
           result = []
           return result if param.blank?
 
           param.each do |k, v|
-            result << if v.kind_of?(Hash) || v.kind_of?(ActionController::Parameters)
-                        secondary_key   = v.keys.first
-                        secondary_value = v[secondary_key]
-                        ["#{k}.#{secondary_key}", secondary_value]
+            result += if v.kind_of?(Hash) || v.kind_of?(ActionController::Parameters)
+                        Hash(v).map { |ak, av| ["#{k}.#{ak}", av] }
                       else
-                        [k, v]
+                        [[k, v]]
                       end
           end
           result
@@ -99,8 +101,9 @@ module Insights
               count_selects << Arel.sql("COUNT (#{association.classify.constantize.table_name}.id)")
             else
               arel_attr = association.classify.constantize.arel_attribute(attr)
-              select_for_associations << arel_attr
-              group_by_associations << arel_attr
+              association_attr = "#{association}_#{attr}"
+              select_for_associations << arel_attr.as(association_attr)
+              group_by_associations   << association_attr
             end
           end
           select_for_associations.append(*count_selects) unless count_selects.empty?
