@@ -24,10 +24,19 @@ RSpec.shared_context "rbac_objects" do
   let(:resource_def3) { instance_double(RBACApiClient::ResourceDefinition, :attribute_filter => filter3) }
   let(:filter4) { instance_double(RBACApiClient::ResourceDefinitionFilter, :key => 'id', :operation => 'equal', :value => '*') }
   let(:resource_def4) { instance_double(RBACApiClient::ResourceDefinition, :attribute_filter => filter4) }
+  let(:filter5) { instance_double(RBACApiClient::ResourceDefinitionFilter, :key => 'scope', :operation => 'equal', :value => 'admin') }
+  let(:resource_def5) { instance_double(RBACApiClient::ResourceDefinition, :attribute_filter => filter5) }
+  let(:filter6) { instance_double(RBACApiClient::ResourceDefinitionFilter, :key => 'scope', :operation => 'equal', :value => 'group') }
+  let(:resource_def6) { instance_double(RBACApiClient::ResourceDefinition, :attribute_filter => filter6) }
+  let(:filter7) { instance_double(RBACApiClient::ResourceDefinitionFilter, :key => 'scope', :operation => 'equal', :value => 'user') }
+  let(:resource_def7) { instance_double(RBACApiClient::ResourceDefinition, :attribute_filter => filter7) }
   let(:access1) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
   let(:access2) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def2]) }
   let(:access3) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:order", :resource_definitions => []) }
   let(:admin_access) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def4]) }
+  let(:admin_scope) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def5]) }
+  let(:group_scope) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def6]) }
+  let(:user_scope) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def7]) }
   let(:group_uuids) { [group1.uuid, group2.uuid, group3.uuid] }
   let(:api_instance) { double }
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
