@@ -5,13 +5,13 @@ module Insights
         class Access
           attr_reader :acl
           DEFAULT_LIMIT = 500
-          def initialize(app_name = ENV["APP_NAME"])
-            @app_name = app_name
+          def initialize(app_name_filter = ENV["APP_NAME"])
+            @app_name_filter = app_name_filter
           end
 
           def process
             Service.call(RBACApiClient::AccessApi) do |api|
-              @acl ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).to_a
+              @acl ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name_filter).to_a
             end
             self
           end
