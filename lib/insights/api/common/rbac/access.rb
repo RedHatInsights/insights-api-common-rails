@@ -5,6 +5,10 @@ module Insights
         class Access
           attr_reader :acl
           DEFAULT_LIMIT = 500
+          ADMIN_SCOPE = "admin"
+          GROUP_SCOPE = "group"
+          USER_SCOPE = "user"
+
           def initialize(app_name_filter = ENV["APP_NAME"])
             @app_name_filter = app_name_filter
           end
@@ -22,15 +26,15 @@ module Insights
           end
 
           def admin_scope?(resource, verb, app_name = ENV['APP_NAME'])
-            scope?(app_name, resource, verb, "admin")
+            scope?(app_name, resource, verb, ADMIN_SCOPE)
           end
 
           def group_scope?(resource, verb, app_name = ENV['APP_NAME'])
-            scope?(app_name, resource, verb, "group")
+            scope?(app_name, resource, verb, GROUP_SCOPE)
           end
 
           def user_scope?(resource, verb, app_name = ENV['APP_NAME'])
-            scope?(app_name, resource, verb, "user")
+            scope?(app_name, resource, verb, USER_SCOPE)
           end
 
           def self.enabled?
