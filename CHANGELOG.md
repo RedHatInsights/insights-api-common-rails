@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.0] - 2020-03-24
+### Added
+- RBAC - Added support for scopes in permissions #171
+- Enable sorting by association attributes and counts #167
+- Allow filtering of tag join records based on tag attributes #149
+- Accept user defined headers in RBAC calls #168
+
+### Fixed
+- Updated the OpenAPI generator for the object schema of sort_by #169
+
 ## [3.7.0] - 2020-03-10
 ### Added
 - Moving to object syntax for the sort_by parameter with PaginatedResponseV2 #165
@@ -124,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.7.0...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.8.0...HEAD
+[3.8.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.7.0...v3.8.0
 [3.7.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.4.2...v3.5.0
