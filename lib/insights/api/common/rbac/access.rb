@@ -26,7 +26,7 @@ module Insights
               if regexp.match?(item.permission)
                 memo << all_scopes(item)
               end
-            end.flatten
+            end.flatten.uniq.sort
           end
 
           def accessible?(resource, verb, app_name = ENV['APP_NAME'])
