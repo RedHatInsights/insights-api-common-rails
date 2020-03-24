@@ -5,32 +5,45 @@ module Insights
         class Access
           attr_reader :acl
           DEFAULT_LIMIT = 500
-          def initialize(resource, verb)
-            @resource = resource
-            @verb     = verb
-            @regexp   = Regexp.new(":(#{Regexp.escape(@resource)}|\\*):(#{Regexp.escape(@verb)}|\\*)")
-            @app_name = ENV["APP_NAME"]
+          ADMIN_SCOPE = "admin"
+          GROUP_SCOPE = "group"
+          USER_SCOPE = "user"
+
+          def initialize(app_name_filter = ENV["APP_NAME"])
+            @app_name_filter = app_name_filter
           end
 
           def process
             Service.call(RBACApiClient::AccessApi) do |api|
-              @acl ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).select do |item|
-                @regexp.match?(item.permission)
-              end
+              @acls ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name_filter).to_a
             end
             self
           end
 
-          def accessible?
-            @acl.any?
+          def scopes(resource, verb, app_name = ENV['APP_NAME'])
+            regexp = create_regexp(app_name, resource, verb)
+            @acls.each_with_object([]) do |item, memo|
+              if regexp.match?(item.permission)
+                memo << all_scopes(item)
+              end
+            end.flatten.uniq.sort
           end
 
-          def id_list
-            ids.include?('*') ? [] : ids
+          def accessible?(resource, verb, app_name = ENV['APP_NAME'])
+            regexp = create_regexp(app_name, resource, verb)
+            @acls.any? { |item| regexp.match?(item.permission) }
           end
 
-          def owner_scoped?
-            ids.include?('*') ? false : owner_scope_filter?
+          def admin_scope?(resource, verb, app_name = ENV['APP_NAME'])
+            scope?(app_name, resource, verb, ADMIN_SCOPE)
+          end
+
+          def group_scope?(resource, verb, app_name = ENV['APP_NAME'])
+            scope?(app_name, resource, verb, GROUP_SCOPE)
+          end
+
+          def user_scope?(resource, verb, app_name = ENV['APP_NAME'])
+            scope?(app_name, resource, verb, USER_SCOPE)
           end
 
           def self.enabled?
@@ -39,25 +52,32 @@ module Insights
 
           private
 
-          def ids
-            @ids ||= @acl.each_with_object([]) do |item, ids|
-              item.resource_definitions.each do |rd|
-                next unless rd.attribute_filter.key == 'id'
-                next unless rd.attribute_filter.operation == 'equal'
+          def scope?(app_name, resource, verb, scope)
+            regexp = create_regexp(app_name, resource, verb)
+            @acls.any? do |item|
+              regexp.match?(item.permission) && scope_matches?(item, scope)
+            end
+          end
 
-                ids << rd.attribute_filter.value
+          def scope_matches?(item, scope)
+            item.resource_definitions.any? do |rd|
+              rd.attribute_filter.key == 'scope' &&
+                rd.attribute_filter.operation == 'equal' &&
+                rd.attribute_filter.value == scope
+            end
+          end
+
+          def all_scopes(item)
+            item.resource_definitions.each_with_object([]) do |rd, memo|
+              if rd.attribute_filter.key == 'scope' &&
+                rd.attribute_filter.operation == 'equal'
+                memo << rd.attribute_filter.value
               end
             end
           end
 
-          def owner_scope_filter?
-            @acl.any? do |item|
-              item.resource_definitions.any? do |rd|
-                rd.attribute_filter.key == 'owner' &&
-                  rd.attribute_filter.operation == 'equal' &&
-                  rd.attribute_filter.value == '{{username}}'
-              end
-            end
+          def create_regexp(app_name, resource, verb)
+            Regexp.new("(#{Regexp.escape(app_name)}):(#{Regexp.escape(resource)}):(#{Regexp.escape(verb)})")
           end
         end
       end
