@@ -15,14 +15,23 @@ module Insights
 
           def process
             Service.call(RBACApiClient::AccessApi) do |api|
-              @acl ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name_filter).to_a
+              @acls ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name_filter).to_a
             end
             self
           end
 
+          def scopes(resource, verb, app_name = ENV['APP_NAME'])
+            regexp = create_regexp(app_name, resource, verb)
+            @acls.each_with_object([]) do |item, memo|
+              if regexp.match?(item.permission)
+                memo << all_scopes(item)
+              end
+            end.flatten
+          end
+
           def accessible?(resource, verb, app_name = ENV['APP_NAME'])
             regexp = create_regexp(app_name, resource, verb)
-            @acl.any? { |item| regexp.match?(item.permission) }
+            @acls.any? { |item| regexp.match?(item.permission) }
           end
 
           def admin_scope?(resource, verb, app_name = ENV['APP_NAME'])
@@ -45,7 +54,7 @@ module Insights
 
           def scope?(app_name, resource, verb, scope)
             regexp = create_regexp(app_name, resource, verb)
-            @acl.any? do |item|
+            @acls.any? do |item|
               regexp.match?(item.permission) && scope_matches?(item, scope)
             end
           end
@@ -55,6 +64,15 @@ module Insights
               rd.attribute_filter.key == 'scope' &&
                 rd.attribute_filter.operation == 'equal' &&
                 rd.attribute_filter.value == scope
+            end
+          end
+
+          def all_scopes(item)
+            item.resource_definitions.each_with_object([]) do |rd, memo|
+              if rd.attribute_filter.key == 'scope' &&
+                rd.attribute_filter.operation == 'equal'
+                memo << rd.attribute_filter.value
+              end
             end
           end
 

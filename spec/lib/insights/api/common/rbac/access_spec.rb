@@ -42,4 +42,10 @@ describe Insights::API::Common::RBAC::Access do
     expect(access_obj.accessible?(resource, 'read', app_name)).to be_truthy
     expect(access_obj.group_scope?(resource, 'read')).to be_truthy
   end
+
+  it "collects scopes" do
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([admin_scope, group_scope])
+
+    expect(access_obj.scopes(resource, 'read')).to match_array(%w(admin group))
+  end
 end
