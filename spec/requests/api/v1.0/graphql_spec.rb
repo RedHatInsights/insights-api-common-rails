@@ -400,61 +400,6 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
     end
   end
 
-  context "filtering on associations" do
-    before do
-      stub_const("ENV", "BYPASS_TENANCY" => nil)
-
-      rhev      = SourceType.create(:name => "filtered_rhev",      :product_name => "RedHat Virtualization", :vendor => "redhat")
-      openstack = SourceType.create(:name => "filtered_openstack", :product_name => "OpenStack",             :vendor => "redhat")
-      openshift = SourceType.create(:name => "filtered_openshift", :product_name => "OpenShift",             :vendor => "redhat")
-
-      Source.create!(:name => "rhev_source_sample",      :tenant => tenant, :source_type => rhev)
-      Source.create!(:name => "openstack_source_sample", :tenant => tenant, :source_type => openstack)
-      Source.create!(:name => "openshift_source_sample", :tenant => tenant, :source_type => openshift)
-    end
-
-    it("succeeds on a single association attribute value") do
-      post(graphql_endpoint, :headers => headers, :params => {"query" => '
-        {
-          sources(filter: { source_type: { name: { eq: "filtered_rhev"}}}) {
-            name
-          }
-        }'})
-
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["data"]).to eq(JSON.parse('
-        {
-          "sources": [
-            {
-              "name": "rhev_source_sample"
-            }
-          ]
-        }'))
-    end
-
-    it("succeeds with multiple association attribute values") do
-      post(graphql_endpoint, :headers => headers, :params => {"query" => '
-        {
-          sources(filter: { source_type: { name: { eq: ["filtered_openstack", "filtered_openshift"]}}}) {
-            name
-          }
-        }'})
-
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["data"]).to eq(JSON.parse('
-        {
-          "sources": [
-            {
-              "name": "openstack_source_sample"
-            },
-            {
-              "name": "openshift_source_sample"
-            }
-          ]
-        }'))
-    end
-  end
-
   context "querying associations" do
     before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
 

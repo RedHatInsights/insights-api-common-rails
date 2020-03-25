@@ -24,11 +24,11 @@ module Insights
         #
         def initialize(model, raw_filter, api_doc_definition, extra_filterable_attributes = {})
           @raw_filter = raw_filter
-          self.query = if filter_associations.present?
-                         model.left_outer_joins(filter_associations)
-                       else
-                         model
-                       end
+          self.query  = if filter_associations.present?
+                          model.left_outer_joins(filter_associations)
+                        else
+                          model
+                        end
           @api_doc_definition          = api_doc_definition
           @arel_table                  = model.arel_table
           @extra_filterable_attributes = extra_filterable_attributes
@@ -37,8 +37,9 @@ module Insights
 
         def apply
           return query if @raw_filter.blank?
-          @raw_filter.each do |k, v|
-            next unless attribute = attribute_for_key(k)
+
+          self.class.compact_filter(@raw_filter).each do |k, v|
+            next unless (attribute = attribute_for_key(k))
 
             if attribute["type"] == "string"
               type = determine_string_attribute_type(attribute)
@@ -52,35 +53,42 @@ module Insights
           query
         end
 
-        # Condense filters for GraphQL to support association filtering
+        # Compact filters to support association filtering
         #
-        #     Input:  {"source_type"=>{"name"=>{"eq"=>"rhev"}}}
-        #     Output: {"source_type.name"=>{"eq"=>"rhev"}}
+        #   Input:  {"source_type"=>{"name"=>{"eq"=>"rhev"}}}
+        #   Output: {"source_type.name"=>{"eq"=>"rhev"}}
         #
-        #     Input:  {"source_type"=>{"name"=>{"eq"=>["openstack", "openshift"]}}}
-        #     Output: {"source_type.name"=>{"eq"=>["openstack", "openshift"]}}
+        #   Input:  {"source_type"=>{"name"=>{"eq"=>["openstack", "openshift"]}}}
+        #   Output: {"source_type.name"=>{"eq"=>["openstack", "openshift"]}}
         #
-        def self.condense(filter)
-          return filter if filter.blank? || !filter.kind_of?(Hash)
+        def self.compact_filter(filter)
+          result = {}
+          return result if filter.blank?
+          return filter unless filter.kind_of?(Hash) || filter.kind_of?(ActionController::Parameters)
 
-          primary_key   = filter.keys.first
-          primary_value = filter[primary_key]
+          filter = Hash(filter.permit!) if filter.kind_of?(ActionController::Parameters)
+          filter_operators = (INTEGER_COMPARISON_KEYWORDS + STRING_COMPARISON_KEYWORDS).uniq
 
-          if filter.keys.size == 1 && primary_value.kind_of?(Hash)
-            secondary_key   = primary_value.keys.first
-            secondary_value = primary_value[secondary_key]
-            filter_operators = (INTEGER_COMPARISON_KEYWORDS + STRING_COMPARISON_KEYWORDS).uniq
-            if primary_value.keys.size == 1 && !filter_operators.include?(secondary_key)
-              filter = {"#{primary_key}.#{secondary_key}" => secondary_value}
+          filter.each do |ak, av|
+            if av.kind_of?(Hash)
+              av.each do |atk, atv|
+                if !filter_operators.include?(atk)
+                  result["#{ak}.#{atk}"] = atv
+                else
+                  result[ak] = av
+                end
+              end
+            else
+              result[ak] = av
             end
           end
-          filter
+          result
         end
 
         def self.association_attribute_properties(api_doc_definitions, raw_filter)
           return {} if raw_filter.blank?
 
-          association_attributes = raw_filter.keys.select { |key| key.include?('.') }.compact.uniq
+          association_attributes = compact_filter(raw_filter).keys.select { |key| key.include?('.') }.compact.uniq
           return {} if association_attributes.blank?
 
           association_attributes.each_with_object({}) do |key, hash|
@@ -119,7 +127,7 @@ module Insights
           return nil if @raw_filter.blank?
 
           @filter_associations ||= begin
-            @raw_filter.keys.collect do |key|
+            self.class.compact_filter(@raw_filter).keys.collect do |key|
               next unless key.include?('.')
 
               key.split('.').first.to_sym
@@ -146,7 +154,7 @@ module Insights
         end
 
         def string(k, val)
-          if val.kind_of?(ActionController::Parameters)
+          if val.kind_of?(Hash)
             val.each do |comparator, value|
               add_filter(comparator, STRING_COMPARISON_KEYWORDS, k, value)
             end
@@ -171,7 +179,7 @@ module Insights
         end
 
         def timestamp(k, val)
-          if val.kind_of?(ActionController::Parameters)
+          if val.kind_of?(Hash)
             val.each do |comparator, value|
               add_filter(comparator, INTEGER_COMPARISON_KEYWORDS, k, value)
             end
@@ -190,7 +198,7 @@ module Insights
         end
 
         def integer(k, val)
-          if val.kind_of?(ActionController::Parameters)
+          if val.kind_of?(Hash)
             val.each do |comparator, value|
               add_filter(comparator, INTEGER_COMPARISON_KEYWORDS, k, value)
             end

@@ -7,7 +7,7 @@ module Insights
             name "QueryFilter"
             description "The Query Filter"
 
-            coerce_input ->(value, _ctx) { API::Common::Filter.condense(JSON.parse(value.to_json)) }
+            coerce_input ->(value, _ctx) { JSON.parse(value.to_json) }
           end
         end
       end

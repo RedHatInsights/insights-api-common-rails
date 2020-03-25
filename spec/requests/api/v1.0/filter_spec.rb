@@ -101,28 +101,6 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     it("key:eq_i array")  { expect_success("sources", "filter[undocumented][eq_i][]=ABC&filter[undocumented][eq_i][]=XYZ", source_1, source_2, source_3, source_4) }
   end
 
-  context "allows filtering on association attributes" do
-    let!(:rhev)      { SourceType.create(:name => "rhev_sample",      :product_name => "RedHat Virtualization", :vendor => "redhat") }
-    let!(:openstack) { SourceType.create(:name => "openstack_sample", :product_name => "OpenStack",             :vendor => "redhat") }
-    let!(:openshift) { SourceType.create(:name => "openshift_sample", :product_name => "OpenShift",             :vendor => "redhat") }
-
-    let!(:source_rhev)       { Source.create!(:name => "rhev_source_sample",      :tenant => tenant, :source_type => rhev)      }
-    let!(:source_openstack)  { Source.create!(:name => "openstack_source_sample", :tenant => tenant, :source_type => openstack) }
-    let!(:source_openshift)  { Source.create!(:name => "openshift_source_sample", :tenant => tenant, :source_type => openshift) }
-
-    it("succeeds on a single association attribute value") do
-      expect_success("sources", "filter[source_type.name][eq]=#{rhev.name}", source_rhev)
-    end
-
-    it("succeeds on multiple association attribute values") do
-      expect_success("sources", "filter[source_type.name][eq][]=#{openstack.name}&filter[source_type.name][eq][]=#{openshift.name}", source_openstack, source_openshift)
-    end
-
-    it("succeeds with a non string association attribute value") do
-      expect_success("sources", "filter[source_type.id][gt]=#{openstack.id}", *Source.left_outer_joins(:source_type).where(SourceType.arel_table[:id].gt(openstack.id)))
-    end
-  end
-
   context "sorted results via sort_by" do
     let!(:rhev)      { SourceType.create(:name => "rhev_sample", :product_name => "RedHat Virtualization", :vendor => "redhat") }
     let!(:openstack) { SourceType.create(:name => "openstack_sample", :product_name => "OpenStack", :vendor => "redhat") }
