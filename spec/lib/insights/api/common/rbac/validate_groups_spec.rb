@@ -3,12 +3,13 @@ describe Insights::API::Common::RBAC::ValidateGroups do
   let(:groups) { RBACApiClient::GroupPagination.new(:meta => meta, :links => nil, :data => [group_out]) }
   let(:group_out) { RBACApiClient::GroupOut.new(:name => "group1", :uuid => "123") }
   let(:group_uuids) { SortedSet.new(["123"]) }
+  let(:request_url) { "http://rbac/api/rbac/v1/groups/?limit=10&offset=0&uuid=123" }
 
   subject { described_class.new(group_uuids) }
 
   before do
     stub_const("ENV", "RBAC_URL" => "http://rbac")
-    stub_request(:get, "http://rbac/api/rbac/v1/groups/?limit=10&offset=0")
+    stub_request(:get, request_url)
       .to_return(
         :status  => 200,
         :body    => groups.to_json,
@@ -28,6 +29,7 @@ describe Insights::API::Common::RBAC::ValidateGroups do
 
       context "when there are group uuids missing" do
         let(:group_uuids) { SortedSet.new(["123", "456"]) }
+        let(:request_url) { "http://rbac/api/rbac/v1/groups/?limit=10&offset=0&uuid=123,456" }
 
         it "throws an error" do
           expect { subject.process }.to raise_error(
@@ -40,7 +42,7 @@ describe Insights::API::Common::RBAC::ValidateGroups do
       context "when there are not group uuids missing" do
         it "validates the groups without an error" do
           subject.process
-          expect(a_request(:get, "http://rbac/api/rbac/v1/groups/?limit=10&offset=0")).to have_been_made
+          expect(a_request(:get, request_url)).to have_been_made
         end
 
         it "returns nil" do
@@ -54,7 +56,7 @@ describe Insights::API::Common::RBAC::ValidateGroups do
 
       it "does not validate the groups" do
         subject.process
-        expect(a_request(:get, "http://rbac/api/rbac/v1/groups/?limit=10&offset=0")).not_to have_been_made
+        expect(a_request(:get, request_url)).not_to have_been_made
       end
 
       it "returns nil" do
