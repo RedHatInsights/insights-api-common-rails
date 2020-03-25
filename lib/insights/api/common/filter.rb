@@ -4,6 +4,7 @@ module Insights
       class Filter
         INTEGER_COMPARISON_KEYWORDS = ["eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
         STRING_COMPARISON_KEYWORDS  = ["contains", "contains_i", "eq", "eq_i", "starts_with", "starts_with_i", "ends_with", "ends_with_i", "nil", "not_nil"].freeze
+        ALL_COMPARISON_KEYWORDS     = (INTEGER_COMPARISON_KEYWORDS + STRING_COMPARISON_KEYWORDS).uniq.freeze
 
         attr_reader :apply, :arel_table, :api_doc_definition, :extra_filterable_attributes, :model
 
@@ -23,16 +24,15 @@ module Insights
         # A new Filter object, call #apply to get the filtered set of results.
         #
         def initialize(model, raw_filter, api_doc_definition, extra_filterable_attributes = {})
-          @raw_filter = raw_filter
-          self.query  = if filter_associations.present?
-                          model.left_outer_joins(filter_associations)
-                        else
-                          model
-                        end
+          @raw_filter                  = raw_filter
           @api_doc_definition          = api_doc_definition
           @arel_table                  = model.arel_table
           @extra_filterable_attributes = extra_filterable_attributes
           @model                       = model
+        end
+
+        def query
+          @query ||= filter_associations.present? ? model.left_outer_joins(filter_associations) : model
         end
 
         def apply
@@ -67,12 +67,11 @@ module Insights
           return filter unless filter.kind_of?(Hash) || filter.kind_of?(ActionController::Parameters)
 
           filter = Hash(filter.permit!) if filter.kind_of?(ActionController::Parameters)
-          filter_operators = (INTEGER_COMPARISON_KEYWORDS + STRING_COMPARISON_KEYWORDS).uniq
 
           filter.each do |ak, av|
             if av.kind_of?(Hash)
               av.each do |atk, atv|
-                if !filter_operators.include?(atk)
+                if !ALL_COMPARISON_KEYWORDS.include?(atk)
                   result["#{ak}.#{atk}"] = atv
                 else
                   result[ak] = av
@@ -99,7 +98,6 @@ module Insights
 
         private
 
-        attr_accessor :query
         delegate(:arel_attribute, :to => :model)
 
         class Error < ArgumentError; end
@@ -214,63 +212,63 @@ module Insights
         def comparator_contains(key, value)
           return value.each { |v| comparator_contains(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(model_arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}%", nil, true))
+          @query = query.where(model_arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}%", nil, true))
         end
 
         def comparator_contains_i(key, value)
           return value.each { |v| comparator_contains_i(key, v) } if value.kind_of?(Array)
 
-          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
+          @query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
         end
 
         def comparator_starts_with(key, value)
-          self.query = query.where(model_arel_attribute(key).matches("#{query.sanitize_sql_like(value)}%", nil, true))
+          @query = query.where(model_arel_attribute(key).matches("#{query.sanitize_sql_like(value)}%", nil, true))
         end
 
         def comparator_starts_with_i(key, value)
-          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
+          @query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("#{query.sanitize_sql_like(value.downcase)}%", nil, true)))
         end
 
         def comparator_ends_with(key, value)
-          self.query = query.where(model_arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}", nil, true))
+          @query = query.where(model_arel_attribute(key).matches("%#{query.sanitize_sql_like(value)}", nil, true))
         end
 
         def comparator_ends_with_i(key, value)
-          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true)))
+          @query = query.where(model_arel_table(key).grouping(arel_lower(key).matches("%#{query.sanitize_sql_like(value.downcase)}", nil, true)))
         end
 
         def comparator_eq(key, value)
-          self.query = query.where(model_arel_attribute(key).eq_any(Array(value)))
+          @query = query.where(model_arel_attribute(key).eq_any(Array(value)))
         end
 
         def comparator_eq_i(key, value)
           values = Array(value).map { |v| query.sanitize_sql_like(v.downcase) }
 
-          self.query = query.where(model_arel_table(key).grouping(arel_lower(key).matches_any(values)))
+          @query = query.where(model_arel_table(key).grouping(arel_lower(key).matches_any(values)))
         end
 
         def comparator_gt(key, value)
-          self.query = query.where(model_arel_attribute(key).gt(value))
+          @query = query.where(model_arel_attribute(key).gt(value))
         end
 
         def comparator_gte(key, value)
-          self.query = query.where(model_arel_attribute(key).gteq(value))
+          @query = query.where(model_arel_attribute(key).gteq(value))
         end
 
         def comparator_lt(key, value)
-          self.query = query.where(model_arel_attribute(key).lt(value))
+          @query = query.where(model_arel_attribute(key).lt(value))
         end
 
         def comparator_lte(key, value)
-          self.query = query.where(model_arel_attribute(key).lteq(value))
+          @query = query.where(model_arel_attribute(key).lteq(value))
         end
 
         def comparator_nil(key, _value = nil)
-          self.query = query.where(model_arel_attribute(key).eq(nil))
+          @query = query.where(model_arel_attribute(key).eq(nil))
         end
 
         def comparator_not_nil(key, _value = nil)
-          self.query = query.where.not(model_arel_attribute(key).eq(nil))
+          @query = query.where.not(model_arel_attribute(key).eq(nil))
         end
       end
     end
