@@ -17,6 +17,10 @@ module Insights
             self.class.send(:api_doc_definition)
           end
 
+          def api_doc_definitions
+            self.class.send(:api_doc_definitions)
+          end
+
           module ClassMethods
             private
 
@@ -26,6 +30,10 @@ module Insights
 
             def api_doc_definition
               @api_doc_definition ||= api_doc.definitions[name.split("::").last[0..-11].singularize]
+            end
+
+            def api_doc_definitions
+              @api_doc_definitions ||= api_doc.definitions
             end
 
             def api_version
