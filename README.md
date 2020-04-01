@@ -49,21 +49,21 @@ Or install it yourself as:
 
 After implementing filtering in your application, this is the way to filter via parameters on index functions:
 
-| Query Parameter | Ruby Client Parameter <br> **GraphQL filter: Parameter** |
-| --------------- | -------------------------------------------------------- |
-|"?filter[name]=reviews"|`{:filter => { :name => "reviews" }}`<br> **`filter: { name: "reviews" }`**|
-|"?filter[name][eq]=reviews"|`{:filter => { :name => { :eq => "reviews" } }}` <br> **`filter: { name: { eq: "reviews" } }`**|
-|"?filter[name][starts_with]=a"|`{:filter => { :name => { :starts_with => "a" } }}` <br> **`filter: { name: { starts_with: "a" } }`**|
-|"?filter[name][ends_with]=manager"|`{:filter => { :name => { :ends_with => "manager" } }}` <br> **`filter: { name: { ends_with: "manager" } }`**|
-|"?filter[name][contains]=openshift"|`{:filter => { :name => { :contains => "openshift" } }}` <br> **`filter: { name: { contains: "openshift" } }`**|
-|"?filter[id]=5"|`{:filter => { :id => "5" }}` <br> **`filter: { id: "5" }`**|
-|"?filter[id][eq]=5"|`{:filter => { :id => { :eq => "5" }}}` <br> **`filter: { id: { eq: "5" } }`**|
-|"?filter[id][gt]=180"|`{:filter => { :id => { :gt => "180" }}}` <br> **`filter: { id: { gt: "180" } }`**|
-|"?filter[id][gte]=190"|`{:filter => { :id => { :gte => "190" }}}` <br> **`filter: { id: { gte: "190" } }`**|
-|"?filter[id][lt]=5"|`{:filter => { :id => { :lt => "5" }}} ` <br> **`filter: { id: { lt: "5" } }`**|
-|"?filter[id][lte]=5"|`{:filter => { :id => { :lte => "5" }}}` <br> **`filter: { id: { lte: "5" } }`**|
-|"?filter[id][]=5&filter[id][]=10&filter[id][]=15&filter[id][]=20"|`{:filter => { :id => ["5", "10", "15", "20"]}}` <br> **`filter: { id: ["5", "10", "15", "20"] }`**|
-|"?filter[id][eq][]=5&filter[id][eq][]=10&filter[id][eq][]=15&filter[id][eq][]=20"|`{:filter => { :id => { :eq => ["5", "10", "15", "20"]}}}` <br> **`filter: { id: { eq: ["5", "10", "15", "20"] }`**|
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?filter[name]=reviews" | { :filter => { :name => "reviews" } } | filter: { name: "reviews" } |
+| "?filter[name][eq]=reviews" | { :filter => { :name => { :eq => "reviews" } } } | filter: { name: { eq: "reviews" } } |
+| "?filter[name][starts_with]=a" | { :filter => { :name => { :starts_with => "a" } } } | filter: { name: { starts_with: "a" } } |
+| "?filter[name][ends_with]=manager" | { :filter => { :name => { :ends_with => "manager" } } } | filter: { name: { ends_with: "manager" } } |
+| "?filter[name][contains]=openshift" | { :filter => { :name => { :contains => "openshift" } } } | filter: { name: { contains: "openshift" } } |
+| "?filter[id]=5" | { :filter => { :id => "5" } } | filter: { id: "5" } |
+| "?filter[id][eq]=5" | { :filter => { :id => { :eq => "5" } } } | filter: { id: { eq: "5" } } |
+| "?filter[id][gt]=180" | { :filter => { :id => { :gt => "180" } } } | filter: { id: { gt: "180" } } |
+| "?filter[id][gte]=190" | { :filter => { :id => { :gte => "190" } } } | filter: { id: { gte: "190" } } |
+| "?filter[id][lt]=5" | { :filter => { :id => { :lt => "5" } } } | filter: { id: { lt: "5" } } |
+| "?filter[id][lte]=5" | { :filter => { :id => { :lte => "5" } } } | filter: { id: { lte: "5" } } |
+| "?filter[id][]=5&filter[id][]=10&filter[id][]=15&filter[id][]=20" | { :filter => { :id => ["5", "10", "15", "20"] } } | filter: { id: ["5", "10", "15", "20"] } |
+| "?filter[id][eq][]=5&filter[id][eq][]=10&filter[id][eq][]=15&filter[id][eq][]=20" | { :filter => { :id => { :eq => ["5", "10", "15", "20"] } } } | filter: { id: { eq: ["5", "10", "15", "20"] } |
 
 #### Sorting Results
 
@@ -98,27 +98,27 @@ Single level association can be specified as follows:
 
 ##### Filter by association attribute:
 
-| Query Parameter | Ruby Client Parameter <br> **GraphQL filter: Parameter** |
-| --------------- | -------------------------------------------------------- |
-|"?filter[association][name]=reviews"|`{ :filter => { :association => { :name => "reviews" } } }`<br> **`filter: { association: { name: "reviews" } }`**|
-|"?filter[association][name][eq]=reviews"|`{ :filter => { :association => { :name => { :eq => "reviews" } } } }` <br> **`filter: { association: { name: { eq: "reviews" } } }`**|
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?filter[association][name]=reviews" | { :filter => { :association => { :name => "reviews" } } } | filter: { association: { name: "reviews" } } |
+| "?filter[association][name][eq]=reviews" | { :filter => { :association => { :name => { :eq => "reviews" } } } } | filter: { association: { name: { eq: "reviews" } } } |
 
 ##### Sort by association attributes and count:
 
 The _sort_by_ parameter can also be used to choose to sort by attributes of association objects as well as sorting by
 the count of association records by specifying the **__count** special attribute as follows:
 
-| Query Parameter | Ruby Client Parameter <br> **GraphQL filter: Parameter** |
-| --------------- | -------------------------------------------------------- |
-|"?sort_by[association][name]"| { :sort_by => { :association => { :name => nil } } }<br> **`sort_by: { association: { name: null } }`**|
-|"?sort_by[association][name]=desc"| { :sort_by => { :association => { :name => "desc" } } }<br> **`sort_by: { association: { name: "desc" } }`**|
-|"?sort_by[association][__count]=asc"| { :sort_by => { :association => { :__count => "asc" } } }<br> **`sort_by: { association: { __count: "asc" } }`**|
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?sort_by[association][name]" | { :sort_by => { :association => { :name => nil } } } | sort_by: { association: { name: null } } |
+| "?sort_by[association][name]=desc" | { :sort_by => { :association => { :name => "desc" } } } | sort_by: { association: { name: "desc" } } |
+| "?sort_by[association][__count]=asc" | { :sort_by => { :association => { :__count => "asc" } } } | sort_by: { association: { __count: "asc" } } |
 
 ##### Combined Filtering and Sorting example:
 
-| Query Parameter | Ruby Client Parameter <br> **GraphQL filter: Parameter** |
-| --------------- | -------------------------------------------------------- |
-|"?filter[name][starts_with]=sample_&sort_by[application_types][__count]=desc&sort_by[name]=asc|` { :filter => { :name => { :starts_with => "sample_" } }, :sort_by => { :application_types => { :__count => "desc" }, :name => "asc" } }`<br> **`filter: { name: { starts_with: "sample_" } }, sort_by: { application_types: { __count: "desc" }, name: "asc" }`**|
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?filter[name][starts_with]=sample_&sort_by[application_types][__count]=desc&sort_by[name]=asc" | { :filter => { :name => { :starts_with => "sample_" } }, :sort_by => { :application_types => { :__count => "desc" }, :name => "asc" } } | filter: { name: { starts_with: "sample_" } }, sort_by: { application_types: { __count: "desc" }, name: "asc" } |
 
 ## Development
 
