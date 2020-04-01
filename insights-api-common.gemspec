@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
 
   # For Insights::API::Common::OpenApi
   spec.add_runtime_dependency "more_core_extensions"
-  spec.add_runtime_dependency "openapi_parser",      "~> 0.6.1"
+  spec.add_runtime_dependency "openapi_parser",      "~> 0.10.0"
 
   # For Insights::API::Common::GraphQL
   spec.add_runtime_dependency "graphql",         "~> 1.9"
