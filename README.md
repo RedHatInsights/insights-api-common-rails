@@ -49,43 +49,76 @@ Or install it yourself as:
 
 After implementing filtering in your application, this is the way to filter via parameters on index functions:
 
-| Query Parameter | Ruby Client Parameter <br> **GraphQL filter: Parameter** |
-| --------------- | -------------------------------------------------------- |
-|"?filter[name]=reviews"|`{:filter => { :name => "reviews" }}`<br> **`filter: { name: "reviews" }`**|
-|"?filter[name][eq]=reviews"|`{:filter => { :name => { :eq => "reviews" } }}` <br> **`filter: { name: { eq: "reviews" } }`**|
-|"?filter[name][starts_with]=a"|`{:filter => { :name => { :starts_with => "a" } }}` <br> **`filter: { name: { starts_with: "a" } }`**|
-|"?filter[name][ends_with]=manager"|`{:filter => { :name => { :ends_with => "manager" } }}` <br> **`filter: { name: { ends_with: "manager" } }`**|
-|"?filter[name][contains]=openshift"|`{:filter => { :name => { :contains => "openshift" } }}` <br> **`filter: { name: { contains: "openshift" } }`**|
-|"?filter[id]=5"|`{:filter => { :id => "5" }}` <br> **`filter: { id: "5" }`**|
-|"?filter[id][eq]=5"|`{:filter => { :id => { :eq => "5" }}}` <br> **`filter: { id: { eq: "5" } }`**|
-|"?filter[id][gt]=180"|`{:filter => { :id => { :gt => "180" }}}` <br> **`filter: { id: { gt: "180" } }`**|
-|"?filter[id][gte]=190"|`{:filter => { :id => { :gte => "190" }}}` <br> **`filter: { id: { gte: "190" } }`**|
-|"?filter[id][lt]=5"|`{:filter => { :id => { :lt => "5" }}} ` <br> **`filter: { id: { lt: "5" } }`**|
-|"?filter[id][lte]=5"|`{:filter => { :id => { :lte => "5" }}}` <br> **`filter: { id: { lte: "5" } }`**|
-|"?filter[id][]=5&filter[id][]=10&filter[id][]=15&filter[id][]=20"|`{:filter => { :id => ["5", "10", "15", "20"]}}` <br> **`filter: { id: ["5", "10", "15", "20"] }`**|
-|"?filter[id][eq][]=5&filter[id][eq][]=10&filter[id][eq][]=15&filter[id][eq][]=20"|`{:filter => { :id => { :eq => ["5", "10", "15", "20"]}}}` <br> **`filter: { id: { eq: ["5", "10", "15", "20"] }`**|
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?filter[name]=reviews" | { :filter => { :name => "reviews" } } | filter: { name: "reviews" } |
+| "?filter[name][eq]=reviews" | { :filter => { :name => { :eq => "reviews" } } } | filter: { name: { eq: "reviews" } } |
+| "?filter[name][starts_with]=a" | { :filter => { :name => { :starts_with => "a" } } } | filter: { name: { starts_with: "a" } } |
+| "?filter[name][ends_with]=manager" | { :filter => { :name => { :ends_with => "manager" } } } | filter: { name: { ends_with: "manager" } } |
+| "?filter[name][contains]=openshift" | { :filter => { :name => { :contains => "openshift" } } } | filter: { name: { contains: "openshift" } } |
+| "?filter[id]=5" | { :filter => { :id => "5" } } | filter: { id: "5" } |
+| "?filter[id][eq]=5" | { :filter => { :id => { :eq => "5" } } } | filter: { id: { eq: "5" } } |
+| "?filter[id][gt]=180" | { :filter => { :id => { :gt => "180" } } } | filter: { id: { gt: "180" } } |
+| "?filter[id][gte]=190" | { :filter => { :id => { :gte => "190" } } } | filter: { id: { gte: "190" } } |
+| "?filter[id][lt]=5" | { :filter => { :id => { :lt => "5" } } } | filter: { id: { lt: "5" } } |
+| "?filter[id][lte]=5" | { :filter => { :id => { :lte => "5" } } } | filter: { id: { lte: "5" } } |
+| "?filter[id][]=5&filter[id][]=10&filter[id][]=15&filter[id][]=20" | { :filter => { :id => ["5", "10", "15", "20"] } } | filter: { id: ["5", "10", "15", "20"] } |
+| "?filter[id][eq][]=5&filter[id][eq][]=10&filter[id][eq][]=15&filter[id][eq][]=20" | { :filter => { :id => { :eq => ["5", "10", "15", "20"] } } } | filter: { id: { eq: ["5", "10", "15", "20"] } |
 
 #### Sorting Results
 
 Sorting query results is controlled via the _sort_by_ query parameter. The _sort_by_ parameter is available for both REST API and GraphQL requests.
 
-The syntax for the _sort_by_ parameter supports:
+The _sort_by_ parameter specifies which attribute name to sort the results by, and may include a sort order of ascending _asc_ or descending _desc_. The default behavior when no sorting order is specified is to sort by ascending order.
 
-- a single string representing the attribute name to sort by which may be followed by :asc or :desc
-  - **attribute**   (_default order is ascending_)
-  - **attribute:asc** (_ascending order_)
-  - **attribute:desc** (_descending order_)
-- an array of strings of the above syntax
+The syntax for the _sort_by_ parameter is as follows:
+
+- One or more object keys representing the attribute name(s) to sort by which may be assigned the **asc** or **desc** value for the sort order.
+
+  - [**attribute**]   (_default order is ascending_)
+  - [**attribute**]=**asc** (_ascending order_)
+  - [**attribute**]=**desc** (_descending order_)
 
 ##### Sort_by Examples:
 
-- GET /api/v1.0/sources?sort_by=name
-- GET /api/v1.0/vms?sort_by[]=power_state\&sort_by[]=memory:desc
+- GET /api/v2.0/sources?sort_by[name]
+- GET /api/v2.0/vms?sort_by[power_state]&sort_by[memory]=desc
 
 | Query Parameter | Ruby Client Parameter | GraphQL Parameter |
 | --------------- | --------------------- | ----------------- |
-| "?sort_by=name" | { :sort_by => "name" } | sort_by: "name" |
-| "?sort_by[]=power_state\&sort_by[]=memory:desc" | { :sort_by => ["power_state", "memory:desc"] } |  sort_by: ["power_state, "memory:desc"] |
+| "?sort_by[name]" | { :sort_by => { :name => nil } } | sort_by: { name: null } |
+| "?sort_by[name]=asc" | { :sort_by => { :name => "asc" } } | sort_by: { name: "asc" } |
+| "?sort_by[power_state]&sort_by[memory]=desc" | { :sort_by => { :power_state => nil, :memory => "desc" } } | sort_by: { power_state: null, memory: "desc" } |
+
+#### Filtering and Sorting by Association attribute
+
+Requests can also be filtered by assocation attribute and sorted by association attribute and count in addition to the direct attribute specified as in the above examples.
+
+Single level association can be specified as follows:
+
+##### Filter by association attribute:
+
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?filter[association][name]=reviews" | { :filter => { :association => { :name => "reviews" } } } | filter: { association: { name: "reviews" } } |
+| "?filter[association][name][eq]=reviews" | { :filter => { :association => { :name => { :eq => "reviews" } } } } | filter: { association: { name: { eq: "reviews" } } } |
+
+##### Sort by association attributes and count:
+
+The _sort_by_ parameter can also be used to choose to sort by attributes of association objects as well as sorting by
+the count of association records by specifying the **__count** special attribute as follows:
+
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?sort_by[association][name]" | { :sort_by => { :association => { :name => nil } } } | sort_by: { association: { name: null } } |
+| "?sort_by[association][name]=desc" | { :sort_by => { :association => { :name => "desc" } } } | sort_by: { association: { name: "desc" } } |
+| "?sort_by[association][__count]=asc" | { :sort_by => { :association => { :__count => "asc" } } } | sort_by: { association: { __count: "asc" } } |
+
+##### Combined Filtering and Sorting example:
+
+| Query Parameter | Ruby Client Parameter | GraphQL Parameter |
+| --------------- | --------------------- | ----------------- |
+| "?filter[name][starts_with]=sample_&sort_by[application_types][__count]=desc&sort_by[name]=asc" | { :filter => { :name => { :starts_with => "sample_" } }, :sort_by => { :application_types => { :__count => "desc" }, :name => "asc" } } | filter: { name: { starts_with: "sample_" } }, sort_by: { application_types: { __count: "desc" }, name: "asc" } |
 
 ## Development
 
