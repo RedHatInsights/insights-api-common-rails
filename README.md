@@ -92,7 +92,7 @@ The syntax for the _sort_by_ parameter is as follows:
 
 #### Filtering and Sorting by Association attribute
 
-Requests can also be filtered by assocation attribute and sorted by association attribute and count in addition to the direct attribute specified as in the above examples.
+Requests can also be filtered by assocation attribute and sorted by association attribute and count in addition to the direct attribute specified as in the above examples. When specifying attribute associations, the filter operators must be specified.
 
 Single level association can be specified as follows:
 
@@ -100,8 +100,8 @@ Single level association can be specified as follows:
 
 | Query Parameter | Ruby Client Parameter | GraphQL Parameter |
 | --------------- | --------------------- | ----------------- |
-| "?filter[association][name]=reviews" | { :filter => { :association => { :name => "reviews" } } } | filter: { association: { name: "reviews" } } |
 | "?filter[association][name][eq]=reviews" | { :filter => { :association => { :name => { :eq => "reviews" } } } } | filter: { association: { name: { eq: "reviews" } } } |
+| "?filter[source_type][name][eq][]=OpenStack&filter[source_type][name][eq][]=OpenShift" | { :filter => { :source_type => { :name => { :eq => [ "OpenStack", "OpenShift" ] } } } } | filter: { source_type: { name: { eq: [ "OpenStack", "OpenShift" ] } } } |
 
 ##### Sort by association attributes and count:
 

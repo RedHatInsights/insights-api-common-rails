@@ -72,7 +72,7 @@ module Insights
           filter.each do |ak, av|
             if av.kind_of?(Hash)
               av.each do |atk, atv|
-                if !ALL_COMPARISON_KEYWORDS.include?(atk)
+                if !ALL_COMPARISON_KEYWORDS.include?(atk) && atv.kind_of?(Hash)
                   result["#{ak}.#{atk}"] = atv
                 else
                   result[ak] = av

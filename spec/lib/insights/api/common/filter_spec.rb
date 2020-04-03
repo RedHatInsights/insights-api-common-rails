@@ -1,8 +1,22 @@
 describe Insights::API::Common::Filter do
   context "compact_filter method" do
-    it "compacts association filter specifications of string" do
+    it "does not compact association filter of string values without operators" do
       parameters  = {"association" => {"attribute" => "value"}}
-      expectation = {"association.attribute" => "value"}
+      expectation = {"association" => {"attribute" => "value"}}
+
+      expect(described_class.compact_filter(parameters)).to(eq(expectation))
+    end
+
+    it "does not compact association filter of array values without operators" do
+      parameters  = {"association" => {"attribute" => ["value1", "value2"]}}
+      expectation = {"association" => {"attribute" => ["value1", "value2"]}}
+
+      expect(described_class.compact_filter(parameters)).to(eq(expectation))
+    end
+
+    it "compacts association filter specifications of string" do
+      parameters  = {"association" => {"attribute" => {"eq" => "value"}}}
+      expectation = {"association.attribute" => {"eq" => "value"}}
 
       expect(described_class.compact_filter(parameters)).to(eq(expectation))
     end
