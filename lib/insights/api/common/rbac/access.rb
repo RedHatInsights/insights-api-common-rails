@@ -4,7 +4,6 @@ module Insights
       module RBAC
         class Access
           attr_reader :acl
-          DEFAULT_LIMIT = 500
           ADMIN_SCOPE = "admin"
           GROUP_SCOPE = "group"
           USER_SCOPE = "user"
@@ -15,7 +14,7 @@ module Insights
 
           def process
             Service.call(RBACApiClient::AccessApi) do |api|
-              @acls ||= Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name_filter).to_a
+              @acls ||= api.get_principal_access(@app_name_filter).data
             end
             self
           end
