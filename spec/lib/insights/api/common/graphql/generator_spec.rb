@@ -18,7 +18,7 @@ RSpec.describe Insights::API::Common::GraphQL::Generator do
 
       schema_overlay = {
         "^source_types$" => {
-          "base_query" => lambda do |model_class, _ctx|
+          "base_query" => lambda do |model_class, _args, _ctx|
             model_class.where(:vendor => "redhat")
           end
         }
@@ -62,7 +62,7 @@ RSpec.describe Insights::API::Common::GraphQL::Generator do
 
       schema_overlay = {
         "^source_types$" => {
-          "base_query" => lambda do |model_class, _ctx|
+          "base_query" => lambda do |model_class, _args, _ctx|
             model_class.where(:vendor => "redhat")
           end
         }
