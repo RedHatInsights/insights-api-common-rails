@@ -11,7 +11,7 @@ module Insights
               errors = Insights::API::Common::ErrorDocument.new.tap do |error_document|
                 exception_list_from(exception).each do |exc|
                   code = exc.respond_to?(:code) ? exc.code : error_code_from_class(exc)
-                  error_document.add(code, "#{exc.class}: #{exc.message}")
+                  error_document.add(code.to_s, "#{exc.class}: #{exc.message}")
                 end
               end
 
