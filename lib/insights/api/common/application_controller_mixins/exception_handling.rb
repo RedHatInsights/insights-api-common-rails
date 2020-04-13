@@ -30,7 +30,7 @@ module Insights
 
           def error_code_from_class(exception)
             if ActionDispatch::ExceptionWrapper.rescue_responses.key?(exception.class.to_s)
-              ActionDispatch::ExceptionWrapper.rescue_responses[exception.class.to_s]
+              Rack::Utils.status_code(ActionDispatch::ExceptionWrapper.rescue_responses[exception.class.to_s])
             else
               DEFAULT_ERROR_CODE
             end

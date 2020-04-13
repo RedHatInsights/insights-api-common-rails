@@ -15,6 +15,15 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
     end
   end
 
+  context "when there is only one http exception" do
+    it "returns a properly formatted error doc" do
+      get("/api/v1.0/http_error", :headers => headers)
+
+      expect(error.first["status"]).to eq(403)
+      expect(error.first["detail"]).to match(/UnauthorizedError/)
+    end
+  end
+
   context "when there are multiple exceptions" do
     before do
       get("/api/v1.0/error_nested", :headers => headers)
