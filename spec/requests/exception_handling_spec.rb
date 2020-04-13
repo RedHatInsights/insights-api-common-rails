@@ -52,7 +52,7 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
     it "returns the configured error" do
       get("/api/v1.0/error", :headers => headers)
 
-      expect(error.first["status"]).to eq "201"
+      expect(error.first["status"]).to eq 201
     end
   end
 end
