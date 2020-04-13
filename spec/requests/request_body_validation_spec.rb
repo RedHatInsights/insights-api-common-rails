@@ -18,7 +18,7 @@ RSpec.describe "Insights::API::Common::ApplicationController Body", :type => :re
     post("/api/v1.0/authentications", :headers => headers, :params => default_params.merge("garbage" => "abc"))
 
     expect(response.status).to eq(400)
-    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::NotExistPropertyDefinition: #/components/schemas/Authentication does not define properties: garbage", "status" => 400}])
+    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::NotExistPropertyDefinition: #/components/schemas/Authentication does not define properties: garbage", "status" => "400"}])
   end
 
   it "permitted key, good value" do
@@ -32,7 +32,7 @@ RSpec.describe "Insights::API::Common::ApplicationController Body", :type => :re
     post("/api/v1.0/authentications", :headers => headers, :params => default_params.merge("username" => 1))
 
     expect(response.status).to eq(400)
-    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::ValidateError: #/components/schemas/Authentication/properties/username expected string, but received Integer: 1", "status" => 400}])
+    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::ValidateError: #/components/schemas/Authentication/properties/username expected string, but received Integer: 1", "status" => "400"}])
   end
 
   it "patch, permitted key, array" do
@@ -76,13 +76,13 @@ RSpec.describe "Insights::API::Common::ApplicationController Body", :type => :re
     post("/api/v1.0/authentications", :headers => headers, :params => {"username" => "abc"})
 
     expect(response.status).to eq(400)
-    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::NotExistRequiredKey: #/components/schemas/Authentication missing required parameters: authtype", "status" => 400}])
+    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::NotExistRequiredKey: #/components/schemas/Authentication missing required parameters: authtype", "status" => "400"}])
   end
 
   it "empty body" do
     post("/api/v1.0/authentications", :headers => headers)
 
     expect(response.status).to eq(400)
-    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::NotExistRequiredKey: #/components/schemas/Authentication missing required parameters: authtype", "status" => 400}])
+    expect(response.parsed_body).to eq("errors" => [{"detail" => "OpenAPIParser::NotExistRequiredKey: #/components/schemas/Authentication missing required parameters: authtype", "status" => "400"}])
   end
 end
