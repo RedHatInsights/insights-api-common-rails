@@ -26,6 +26,18 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
     end
   end
 
+  context "api_client_error" do
+    it "returns a properly formatted error doc" do
+      get("/api/v1.0/api_client_error", :headers => headers)
+
+      expect(error.count).to eq(2)
+      expect(error.first['status']).to eq('400')
+      expect(error.second['status']).to eq('404')
+      expect(error.first['detail']).to eq('A very bad request')
+      expect(error.second['detail']).to eq('Buzz is missing')
+    end
+  end
+
   context "when there are multiple exceptions" do
     before do
       get("/api/v1.0/error_nested", :headers => headers)
