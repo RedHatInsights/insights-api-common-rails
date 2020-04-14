@@ -11,7 +11,7 @@ module Insights
               errors = Insights::API::Common::ErrorDocument.new.tap do |error_document|
                 exception_list_from(exception).each do |exc|
                   code = exc.respond_to?(:code) ? exc.code : error_code_from_class(exc)
-                  error_document.add(code, "#{exc.class}: #{exc.message}")
+                  error_document.add(code.to_s, "#{exc.class}: #{exc.message}")
                 end
               end
 
@@ -30,7 +30,7 @@ module Insights
 
           def error_code_from_class(exception)
             if ActionDispatch::ExceptionWrapper.rescue_responses.key?(exception.class.to_s)
-              ActionDispatch::ExceptionWrapper.rescue_responses[exception.class.to_s]
+              Rack::Utils.status_code(ActionDispatch::ExceptionWrapper.rescue_responses[exception.class.to_s])
             else
               DEFAULT_ERROR_CODE
             end

@@ -66,6 +66,10 @@ module Api
       rescue ArgumentError
         raise SomethingHappened, "something else happened"
       end
+
+      def http_error
+        raise ActionCable::Connection::Authorization::UnauthorizedError
+      end
     end
 
     class GraphqlController < Api::V1::GraphqlController; end
