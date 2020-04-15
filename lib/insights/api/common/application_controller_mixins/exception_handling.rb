@@ -53,7 +53,7 @@ module Insights
                 error_document.add(error['status'], error['detail'])
               end
             else
-              error_document.add(exc.code, exc.message )
+              error_document.add(exc.code.to_s, exc.message )
             end
           end
         end
