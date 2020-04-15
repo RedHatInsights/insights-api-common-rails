@@ -26,7 +26,7 @@ QueryType = ::GraphQL::ObjectType.define do
 
       resolve lambda { |_obj, args, ctx|
         if base_query.present?
-          scope = base_query.call(model_class, ctx)
+          scope = base_query.call(model_class, args, ctx)
         else
           scope = model_class
         end
