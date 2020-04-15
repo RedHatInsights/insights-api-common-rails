@@ -46,7 +46,7 @@ module Insights
 
           def api_client_errors(exc, error_document)
             body = JSON.parse(exc.response_body)
-            if body.key?('errors') && body['errors'].is_a?(Array)
+            if body.is_a?(Hash) && body.key?('errors') && body['errors'].is_a?(Array)
               body['errors'].each do |error|
                 next unless error.key?('status') && error.key?('detail')
 
