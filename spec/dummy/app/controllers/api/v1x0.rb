@@ -72,10 +72,7 @@ module Api
       end
 
       def api_client_error
-        require 'json'
-        data = [{'status' => '400', 'detail' => 'A very bad request'},
-                {'status' => '404', 'detail' => 'Buzz is missing'}]
-        raise ApiClientError.new(:code => '400', :response_headers => {}, :response_body => {'errors' => data}.to_json)
+        raise ApiClientError.new
       end
     end
 

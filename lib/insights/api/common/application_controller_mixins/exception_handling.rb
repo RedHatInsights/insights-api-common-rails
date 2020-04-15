@@ -40,7 +40,8 @@ module Insights
           end
 
           def api_client_exception?(exc)
-            exc.respond_to?(:code) && exc.respond_to?(:response_body) && exc.respond_to?(:response_headers)
+            exc.respond_to?(:code) && exc.respond_to?(:response_body) && exc.respond_to?(:response_headers) &&
+              !exc.response_body.nil?
           end
 
           def api_client_errors(exc, error_document)
