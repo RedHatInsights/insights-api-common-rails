@@ -70,6 +70,10 @@ module Api
       def http_error
         raise ActionCable::Connection::Authorization::UnauthorizedError
       end
+
+      def api_client_error
+        raise ApiClientError.new
+      end
     end
 
     class GraphqlController < Api::V1::GraphqlController; end

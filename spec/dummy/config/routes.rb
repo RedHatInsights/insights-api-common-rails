@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get "/error",        :to => "errors#error"
       get "/error_nested", :to => "errors#error_nested"
       get "/http_error", :to => "errors#http_error"
+      get "/api_client_error", :to => "errors#api_client_error"
       get "/openapi.json", :to => "root#openapi"
       post "graphql" => "graphql#query"
       resources :applications, :only => [:index]
@@ -28,6 +29,7 @@ Rails.application.routes.draw do
       get "/error",        :to => "errors#error"
       get "/error_nested", :to => "errors#error_nested"
       get "/http_error", :to => "errors#http_error"
+      get "/api_client_error", :to => "errors#api_client_error"
       get "/openapi.json", :to => "root#openapi"
       post "graphql" => "graphql#query"
       resources :authentications, :only => [:create, :update]
