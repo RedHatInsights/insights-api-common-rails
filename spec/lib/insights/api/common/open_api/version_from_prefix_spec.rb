@@ -1,9 +1,11 @@
 describe Insights::API::Common::OpenApi::VersionFromPrefix do
-  class TestClass
-    include Insights::API::Common::OpenApi::VersionFromPrefix
+  let(:test_class) do
+    Class.new do
+      include Insights::API::Common::OpenApi::VersionFromPrefix
+    end
   end
 
-  let(:model) { TestClass.new }
+  let(:model) { test_class.new }
 
   it "properly detects the version to serialize for" do
     expect(model.api_version_from_prefix("api/v0.0/")).to eq("0.0")

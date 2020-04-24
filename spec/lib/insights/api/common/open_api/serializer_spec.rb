@@ -1,22 +1,38 @@
 describe Insights::API::Common::OpenApi::Serializer do
   describe "#as_json" do
-    class TestSourceType < SourceType
-      include Insights::API::Common::OpenApi::Serializer
+    let(:test_source_type) do
+      Class.new(SourceType) do
+        include Insights::API::Common::OpenApi::Serializer
 
-      def self.presentation_name
-        "SourceType"
-      end
+        def self.presentation_name
+          "SourceType"
+        end
 
-      attribute :expensive_computation
+        attribute :expensive_computation
 
-      def expensive_computation
-        "1"
+        def expensive_computation
+          "1"
+        end
       end
     end
 
-    class SourceTypeEncrypted < TestSourceType
-      def self.encrypted_columns
-        ["vendor"]
+    let(:encrypted_source_type) do
+      Class.new(SourceType) do
+        include Insights::API::Common::OpenApi::Serializer
+
+        def self.presentation_name
+          "SourceType"
+        end
+
+        def self.encrypted_columns
+          ["vendor"]
+        end
+
+        attribute :expensive_computation
+
+        def expensive_computation
+          "1"
+        end
       end
     end
 
@@ -29,7 +45,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           let(:version) { "v1.0" }
 
           context "when the class does not have encrypted columns" do
-            let(:model) { TestSourceType.new(:updated_at => time, :vendor => "test") }
+            let(:model) { test_source_type.new(:updated_at => time, :vendor => "test") }
 
             it "does not attempt to include attributes not in the api doc" do
               expect(model).not_to receive(:expensive_computation)
@@ -45,7 +61,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           end
 
           context "when the class has encrypted columns" do
-            let(:model) { SourceTypeEncrypted.new(:updated_at => time, :vendor => "test") }
+            let(:model) { encrypted_source_type.new(:updated_at => time, :vendor => "test") }
 
             it "does not attempt to include attributes not in the api doc" do
               expect(model).not_to receive(:expensive_computation)
@@ -64,7 +80,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           let(:version) { "v2.0" }
 
           context "when the class does not have encrypted columns" do
-            let(:model) { TestSourceType.new(:updated_at => time, :vendor => "test") }
+            let(:model) { test_source_type.new(:updated_at => time, :vendor => "test") }
 
             it "includes attributes in the api doc" do
               expect(model).to receive(:expensive_computation)
@@ -81,7 +97,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           end
 
           context "when the class has encrypted columns" do
-            let(:model) { SourceTypeEncrypted.new(:updated_at => time, :vendor => "test") }
+            let(:model) { encrypted_source_type.new(:updated_at => time, :vendor => "test") }
 
             it "includes attributes in the api doc" do
               expect(model).to receive(:expensive_computation)
@@ -101,7 +117,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           let(:args) { {:template => "show"} }
 
           context "when the class does not have encrypted columns" do
-            let(:model) { TestSourceType.new }
+            let(:model) { test_source_type.new }
 
             it "returns all attributes" do
               expect(model.as_json(args)).to eq(
@@ -118,7 +134,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           end
 
           context "when the class has encrypted columns" do
-            let(:model) { SourceTypeEncrypted.new }
+            let(:model) { encrypted_source_type.new }
 
             it "returns all attributes except the encrypted ones" do
               expect(model.as_json(args)).to eq(
@@ -138,7 +154,7 @@ describe Insights::API::Common::OpenApi::Serializer do
 
     context "when there are no arguments passed through" do
       context "when the class does not have encrypted columns" do
-        let(:model) { TestSourceType.new }
+        let(:model) { test_source_type.new }
 
         it "returns all attributes" do
           expect(model.as_json).to eq(
@@ -155,7 +171,7 @@ describe Insights::API::Common::OpenApi::Serializer do
       end
 
       context "when the class has encrypted columns" do
-        let(:model) { SourceTypeEncrypted.new }
+        let(:model) { encrypted_source_type.new }
 
         it "returns all attributes except the encrypted ones" do
           expect(model.as_json).to eq(
