@@ -1,7 +1,11 @@
 describe Insights::API::Common::OpenApi::Serializer do
   describe "#as_json" do
-    class Endpoint < ApplicationRecord
+    class TestSourceType < SourceType
       include Insights::API::Common::OpenApi::Serializer
+
+      def self.presentation_name
+        "SourceType"
+      end
 
       attribute :expensive_computation
 
@@ -10,13 +14,9 @@ describe Insights::API::Common::OpenApi::Serializer do
       end
     end
 
-    class EndpointEncrypted < Endpoint
-      def self.presentation_name
-        "Endpoint"
-      end
-
+    class SourceTypeEncrypted < TestSourceType
       def self.encrypted_columns
-        ["role"]
+        ["vendor"]
       end
     end
 
@@ -29,7 +29,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           let(:version) { "v1.0" }
 
           context "when the class does not have encrypted columns" do
-            let(:model) { Endpoint.new(:updated_at => time, :source_id => 123, :role => "test") }
+            let(:model) { TestSourceType.new(:updated_at => time, :vendor => "test") }
 
             it "does not attempt to include attributes not in the api doc" do
               expect(model).not_to receive(:expensive_computation)
@@ -38,15 +38,14 @@ describe Insights::API::Common::OpenApi::Serializer do
 
             it "removes nil values, returns an iso date format, and stringifies ids" do
               result = model.as_json(args)
-              expect(result.keys).to match_array(["default", "updated_at", "source_id", "role"])
+              expect(result.keys).to match_array(["updated_at", "vendor"])
               expect(result["updated_at"].to_i).to eq(time.iso8601.to_i)
-              expect(result["source_id"]).to eq("123")
-              expect(result["role"]).to eq("test")
+              expect(result["vendor"]).to eq("test")
             end
           end
 
           context "when the class has encrypted columns" do
-            let(:model) { EndpointEncrypted.new(:updated_at => time, :source_id => 123, :role => "test") }
+            let(:model) { SourceTypeEncrypted.new(:updated_at => time, :vendor => "test") }
 
             it "does not attempt to include attributes not in the api doc" do
               expect(model).not_to receive(:expensive_computation)
@@ -55,9 +54,8 @@ describe Insights::API::Common::OpenApi::Serializer do
 
             it "removes nil values, returns an iso date format, and stringifies ids" do
               result = model.as_json(args)
-              expect(result.keys).to match_array(["default", "updated_at", "source_id"])
+              expect(result.keys).to match_array(["updated_at"])
               expect(result["updated_at"].to_i).to eq(time.iso8601.to_i)
-              expect(result["source_id"]).to eq("123")
             end
           end
         end
@@ -66,7 +64,7 @@ describe Insights::API::Common::OpenApi::Serializer do
           let(:version) { "v2.0" }
 
           context "when the class does not have encrypted columns" do
-            let(:model) { Endpoint.new(:updated_at => time, :source_id => 123, :role => "test") }
+            let(:model) { TestSourceType.new(:updated_at => time, :vendor => "test") }
 
             it "includes attributes in the api doc" do
               expect(model).to receive(:expensive_computation)
@@ -75,16 +73,15 @@ describe Insights::API::Common::OpenApi::Serializer do
 
             it "removes nil values, returns an iso date format, and stringifies ids" do
               result = model.as_json(args)
-              expect(result.keys).to match_array(["default", "expensive_computation", "updated_at", "source_id", "role"])
+              expect(result.keys).to match_array(["expensive_computation", "updated_at", "vendor"])
               expect(result["updated_at"].to_i).to eq(time.iso8601.to_i)
-              expect(result["source_id"]).to eq("123")
-              expect(result["role"]).to eq("test")
+              expect(result["vendor"]).to eq("test")
               expect(result["expensive_computation"]).to eq("1")
             end
           end
 
           context "when the class has encrypted columns" do
-            let(:model) { EndpointEncrypted.new(:updated_at => time, :source_id => 123, :role => "test") }
+            let(:model) { SourceTypeEncrypted.new(:updated_at => time, :vendor => "test") }
 
             it "includes attributes in the api doc" do
               expect(model).to receive(:expensive_computation)
@@ -93,9 +90,8 @@ describe Insights::API::Common::OpenApi::Serializer do
 
             it "removes nil values, returns an iso date format, and stringifies ids" do
               result = model.as_json(args)
-              expect(result.keys).to match_array(["default", "expensive_computation", "updated_at", "source_id"])
+              expect(result.keys).to match_array(["expensive_computation", "updated_at"])
               expect(result["updated_at"].to_i).to eq(time.iso8601.to_i)
-              expect(result["source_id"]).to eq("123")
               expect(result["expensive_computation"]).to eq("1")
             end
           end
@@ -105,46 +101,34 @@ describe Insights::API::Common::OpenApi::Serializer do
           let(:args) { {:template => "show"} }
 
           context "when the class does not have encrypted columns" do
-            let(:model) { Endpoint.new }
+            let(:model) { TestSourceType.new }
 
             it "returns all attributes" do
               expect(model.as_json(args)).to eq(
-                "certificate_authority" => nil,
                 "created_at"            => nil,
-                "default"               => false,
                 "expensive_computation" => "1",
-                "host"                  => nil,
                 "id"                    => nil,
-                "path"                  => nil,
-                "port"                  => nil,
-                "role"                  => nil,
-                "scheme"                => nil,
-                "source_id"             => nil,
-                "tenant_id"             => nil,
+                "name"                  => nil,
+                "product_name"          => nil,
+                "vendor"                => nil,
                 "updated_at"            => nil,
-                "verify_ssl"            => nil
+                "schema"                => nil
               )
             end
           end
 
           context "when the class has encrypted columns" do
-            let(:model) { EndpointEncrypted.new }
+            let(:model) { SourceTypeEncrypted.new }
 
             it "returns all attributes except the encrypted ones" do
               expect(model.as_json(args)).to eq(
-                "certificate_authority" => nil,
                 "created_at"            => nil,
-                "default"               => false,
                 "expensive_computation" => "1",
-                "host"                  => nil,
                 "id"                    => nil,
-                "path"                  => nil,
-                "port"                  => nil,
-                "scheme"                => nil,
-                "source_id"             => nil,
-                "tenant_id"             => nil,
+                "name"                  => nil,
+                "product_name"          => nil,
                 "updated_at"            => nil,
-                "verify_ssl"            => nil
+                "schema"                => nil
               )
             end
           end
@@ -154,46 +138,34 @@ describe Insights::API::Common::OpenApi::Serializer do
 
     context "when there are no arguments passed through" do
       context "when the class does not have encrypted columns" do
-        let(:model) { Endpoint.new }
+        let(:model) { TestSourceType.new }
 
         it "returns all attributes" do
           expect(model.as_json).to eq(
-            "certificate_authority" => nil,
             "created_at"            => nil,
-            "default"               => false,
             "expensive_computation" => "1",
-            "host"                  => nil,
             "id"                    => nil,
-            "path"                  => nil,
-            "port"                  => nil,
-            "role"                  => nil,
-            "scheme"                => nil,
-            "source_id"             => nil,
-            "tenant_id"             => nil,
+            "name"                  => nil,
+            "product_name"          => nil,
+            "vendor"                => nil,
             "updated_at"            => nil,
-            "verify_ssl"            => nil
+            "schema"                => nil
           )
         end
       end
 
       context "when the class has encrypted columns" do
-        let(:model) { EndpointEncrypted.new }
+        let(:model) { SourceTypeEncrypted.new }
 
         it "returns all attributes except the encrypted ones" do
           expect(model.as_json).to eq(
-            "certificate_authority" => nil,
             "created_at"            => nil,
-            "default"               => false,
             "expensive_computation" => "1",
-            "host"                  => nil,
             "id"                    => nil,
-            "path"                  => nil,
-            "port"                  => nil,
-            "scheme"                => nil,
-            "source_id"             => nil,
-            "tenant_id"             => nil,
+            "name"                  => nil,
+            "product_name"          => nil,
             "updated_at"            => nil,
-            "verify_ssl"            => nil
+            "schema"                => nil
           )
         end
       end

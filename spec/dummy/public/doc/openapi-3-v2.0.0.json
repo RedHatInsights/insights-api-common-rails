@@ -1135,9 +1135,6 @@
           "default": {
             "type": "boolean"
           },
-          "expensive_computation": {
-            "type": "string"
-          },
           "host": {
             "description": "URI host component",
             "example": "www.example.com",
@@ -1311,6 +1308,9 @@
           },
           "name": {
             "example": "openshift",
+            "type": "string"
+          },
+          "expensive_computation": {
             "type": "string"
           },
           "product_name": {
