@@ -1135,6 +1135,9 @@
           "default": {
             "type": "boolean"
           },
+          "expensive_computation": {
+            "type": "string"
+          },
           "host": {
             "description": "URI host component",
             "example": "www.example.com",

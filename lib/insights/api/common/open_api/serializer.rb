@@ -6,7 +6,8 @@ module Insights
           include VersionFromPrefix
 
           def as_json(arg = {})
-            previous = super
+            previous = super(:except => excluded_attributes(arg))
+
             encrypted_columns_set = (self.class.try(:encrypted_columns) || []).to_set
             encryption_filtered = previous.except(*encrypted_columns_set)
             return encryption_filtered unless arg.key?(:prefixes)
@@ -16,7 +17,6 @@ module Insights
               next if attrs[name].nil?
               attrs[name] = attrs[name].iso8601 if attrs[name].kind_of?(Time)
               attrs[name] = attrs[name].to_s if name.ends_with?("_id") || name == "id"
-              attrs[name] = self.public_send(name) if !attrs.key?(name) && !encrypted_columns_set.include?(name)
             end
             attrs.compact
           end
