@@ -48,6 +48,7 @@ module Insights
             ENV['APP_NAME'] = app_name
             ENV['PATH_PREFIX'] = app_prefix
             Rails.application.reload_routes!
+            @operation_ids = []
           end
 
           def server_base_path
@@ -198,9 +199,10 @@ module Insights
 
           def openapi_list_description(klass_name, primary_collection)
             sub_collection = (primary_collection != klass_name)
+            operationId = unique_name("list#{primary_collection if sub_collection}#{klass_name.pluralize}")
             {
               "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if sub_collection}",
-              "operationId" => "list#{primary_collection if sub_collection}#{klass_name.pluralize}",
+              "operationId" => operationId,
               "description" => "Returns an array of #{klass_name} objects",
               "parameters"  => [
                 { "$ref" => "##{PARAMETERS_PATH}/QueryLimit"  },
@@ -561,6 +563,16 @@ module Insights
 
           def schema_overrides
             {}
+          end
+
+          def unique_name(operation_id)
+            if @operation_ids.include?(operation_id)
+              # Method names would be aa, aa_1, aa_2 so we dont mangle the first aa
+              counter = @operation_ids.select { |name| name.start_with?(operation_id) }.count
+              operation_id = "#{operation_id}_#{counter}"
+            end
+            @operation_ids << operation_id
+            operation_id
           end
         end
       end
