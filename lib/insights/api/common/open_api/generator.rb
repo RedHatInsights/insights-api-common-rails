@@ -199,7 +199,13 @@ module Insights
 
           def openapi_list_description(klass_name, primary_collection)
             sub_collection = (primary_collection != klass_name)
-            operationId = unique_name("list#{primary_collection if sub_collection}#{klass_name.pluralize}")
+            klass = klass_name.constantize
+            operationId = if klass.respond_to?(:list_operation_id)
+                            klass.send(:list_operation_id)
+                          else
+                            "list#{primary_collection if sub_collection}#{klass_name.pluralize}"
+                          end
+            validate_operation_id(operationId, klass_name)
             {
               "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if sub_collection}",
               "operationId" => operationId,
@@ -565,14 +571,11 @@ module Insights
             {}
           end
 
-          def unique_name(operation_id)
+          def validate_operation_id(operation_id, klass_name)
             if @operation_ids.include?(operation_id)
-              # Method names would be aa, aa_1, aa_2 so we dont mangle the first aa
-              counter = @operation_ids.select { |name| name.start_with?(operation_id) }.count
-              operation_id = "#{operation_id}_#{counter}"
+              raise ArgumentError, "operation id cannot be duplicates, #{operation_id} in class #{klass_name}"
             end
             @operation_ids << operation_id
-            operation_id
           end
         end
       end
