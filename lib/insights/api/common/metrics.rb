@@ -2,13 +2,14 @@ module Insights
   module API
     module Common
       class Metrics
-        def self.activate(config, prefix)
+        def self.activate(config, prefix, args = {})
           require 'prometheus_exporter'
           require 'prometheus_exporter/client'
 
           ensure_exporter_server
           enable_in_process_metrics
           enable_web_server_metrics(prefix)
+          setup_custom_metrics(args[:custom_metrics])
         end
 
         private_class_method def self.ensure_exporter_server
@@ -32,6 +33,23 @@ module Insights
         private_class_method def self.enable_web_server_metrics(prefix)
           require "insights/api/common/middleware/web_server_metrics"
           Rails.application.middleware.unshift(Insights::API::Common::Middleware::WebServerMetrics, :metrics_prefix => prefix)
+        end
+
+        private_class_method def self.setup_custom_metrics(custom_metrics)
+          return if custom_metrics.nil?
+
+          custom_metrics.each do |metric|
+            instance_variable_set("@#{metric[:name]}_#{metric[:type]}", PrometheusExporter::Client.default.register(metric[:type], metric[:name], metric[:description]))
+
+            define_singleton_method(metric[:name]) do
+              case metric[:type]
+              when :counter
+                instance_variable_get("@#{metric[:name]}_#{metric[:type]}")&.observe(1)
+              else
+                "Metric of type #{metric[:type]} unsupported, implement it in Insights::API::Common::Metrics#L45"
+              end
+            end
+          end
         end
       end
     end
