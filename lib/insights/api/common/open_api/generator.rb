@@ -48,7 +48,7 @@ module Insights
             ENV['APP_NAME'] = app_name
             ENV['PATH_PREFIX'] = app_prefix
             Rails.application.reload_routes!
-            @operation_ids = []
+            @operation_id_hash = {}
           end
 
           def server_base_path
@@ -199,16 +199,9 @@ module Insights
 
           def openapi_list_description(klass_name, primary_collection)
             sub_collection = (primary_collection != klass_name)
-            klass = klass_name.constantize
-            operationId = if klass.respond_to?(:list_operation_id)
-                            klass.send(:list_operation_id)
-                          else
-                            "list#{primary_collection if sub_collection}#{klass_name.pluralize}"
-                          end
-            validate_operation_id(operationId, klass_name)
             {
               "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if sub_collection}",
-              "operationId" => operationId,
+              "operationId" => operation_id(klass_name, primary_collection, sub_collection),
               "description" => "Returns an array of #{klass_name} objects",
               "parameters"  => [
                 { "$ref" => "##{PARAMETERS_PATH}/QueryLimit"  },
@@ -571,11 +564,22 @@ module Insights
             {}
           end
 
-          def validate_operation_id(operation_id, klass_name)
-            if @operation_ids.include?(operation_id)
-              raise ArgumentError, "operation id cannot be duplicates, #{operation_id} in class #{klass_name}"
+          def validate_operation_id(name, klass_name)
+            if @operation_id_hash.key?(name)
+              raise ArgumentError, "operation id cannot be duplicates, #{name} in class #{klass_name} has already been used in class #{@operation_id_hash[name]}"
             end
-            @operation_ids << operation_id
+            @operation_id_hash[name] = klass_name
+          end
+
+          def operation_id(klass_name, primary_collection, sub_collection)
+            klass = klass_name.constantize
+            name = if klass.respond_to?(:list_operation_id)
+                     klass.send(:list_operation_id)
+                   else
+                     "list#{primary_collection if sub_collection}#{klass_name.pluralize}"
+                   end
+            validate_operation_id(name, klass_name)
+            name
           end
         end
       end
