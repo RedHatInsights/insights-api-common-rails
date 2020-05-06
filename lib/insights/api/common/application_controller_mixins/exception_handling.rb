@@ -7,19 +7,25 @@ module Insights
 
           def self.included(other)
             other.rescue_from(StandardError, RuntimeError) do |exception|
-              logger.error("#{exception.class.name}: #{exception.message}\n#{exception.backtrace.join("\n")}")
-              errors = Insights::API::Common::ErrorDocument.new.tap do |error_document|
-                exception_list_from(exception).each do |exc|
-                  if api_client_exception?(exc)
-                    api_client_errors(exc, error_document)
-                  else
-                    error_document.add(error_code_from_class(exc).to_s, "#{exc.class}: #{exc.message}")
-                  end
+              rescue_from_handler(exception) do |error_document, exc|
+                error_document.add(error_code_from_class(exc).to_s, "#{exc.class}: #{exc.message}")
+              end
+            end
+          end
+
+          def rescue_from_handler(exception)
+            logger.error("#{exception.class.name}: #{exception.message}\n#{exception.backtrace.join("\n")}")
+            errors = Insights::API::Common::ErrorDocument.new.tap do |error_document|
+              exception_list_from(exception).each do |exc|
+                if api_client_exception?(exc)
+                  api_client_errors(exc, error_document)
+                else
+                  yield error_document, exc
                 end
               end
-
-              render :json => errors.to_h, :status => error_code_from_class(exception)
             end
+
+            render :json => errors.to_h, :status => error_code_from_class(exception)
           end
 
           def exception_list_from(exception)
