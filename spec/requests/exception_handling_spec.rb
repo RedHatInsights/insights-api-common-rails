@@ -26,6 +26,14 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
     end
   end
 
+  context "pundit error" do
+    it "returns a customized error message" do
+      get("/api/v1.0/pundit_error", :headers => headers)
+      expect(response.status).to eq(403)
+      expect(error.first["detail"]).to match(/You are not authorized to create this source type/)
+    end
+  end
+
   context "api_client_error" do
     context "with response body" do
       let(:response_header) { { 'Content-Type' => 'application/json' } }
