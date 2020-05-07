@@ -117,8 +117,8 @@ module Insights
                     "type"        => "object",
                     "properties"  => {
                       "status"    => {
-                        "type"    => "integer",
-                        "example" => 404
+                        "type"    => "string",
+                        "example" => "404"
                       },
                       "detail"    => {
                         "type"    => "string",
