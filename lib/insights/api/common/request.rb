@@ -25,6 +25,14 @@ module Insights
           Thread.current[:current_request]
         end
 
+        def self.current_request_id
+          Thread.current[:request_id]
+        end
+
+        def self.current_request_id=(id)
+          Thread.current[:request_id] = id
+        end
+
         def self.current!
           current || raise(RequestNotSet)
         end
@@ -45,10 +53,13 @@ module Insights
 
         def self.with_request(request)
           saved = current
+          saved_request_id = current&.request_id
           self.current = request
+          self.current_request_id = current&.request_id
           yield current
         ensure
           self.current = saved
+          self.current_request_id = saved_request_id
         end
 
         def self.current_forwardable
