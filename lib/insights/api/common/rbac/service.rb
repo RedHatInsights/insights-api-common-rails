@@ -2,7 +2,7 @@ module Insights
   module API
     module Common
       module RBAC
-        require 'rbac-api-client'
+        require 'insights-rbac-api-client'
 
         class NetworkError  < StandardError; end
         class TimedOutError < StandardError; end
