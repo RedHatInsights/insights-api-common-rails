@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "more_core_extensions"
   spec.add_runtime_dependency "openapi_parser",      "~> 0.10.0"
 
+  spec.add_runtime_dependency "insights-rbac-api-client", "~> 1.0"
   # For Insights::API::Common::GraphQL
   spec.add_runtime_dependency "graphql",         "~> 1.9"
   spec.add_runtime_dependency "graphql-batch",   "~> 0.4"

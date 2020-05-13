@@ -2,7 +2,7 @@ module Insights
   module API
     module Common
       module RBAC
-        require 'rbac-api-client'
+        require 'insights-rbac-api-client'
 
         class Seed
           def initialize(seed_file, user_file = nil)
