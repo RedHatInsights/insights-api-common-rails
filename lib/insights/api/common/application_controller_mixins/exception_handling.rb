@@ -45,7 +45,7 @@ module Insights
           end
 
           def api_client_errors(exc, error_document)
-            body = JSON.parse(exc.response_body)
+            body = json_parsed_body(exc)
             if body.is_a?(Hash) && body.key?('errors') && body['errors'].is_a?(Array)
               body['errors'].each do |error|
                 next unless error.key?('status') && error.key?('detail')
@@ -55,6 +55,12 @@ module Insights
             else
               error_document.add(exc.code.to_s, exc.message )
             end
+          end
+
+          def json_parsed_body(exc)
+            JSON.parse(exc.response_body)
+          rescue StandardError
+            nil
           end
         end
       end

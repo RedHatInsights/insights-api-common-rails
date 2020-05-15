@@ -57,10 +57,10 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
       let(:response_header) { { 'Content-Type' => 'application/json' } }
       let(:api_client_exception) do
         ApiClientError.new(:code            => 503,
-                           :response_body   => response_body.to_json,
+                           :response_body   => response_body,
                            :response_header => response_header)
       end
-      let(:response_body) { 'fred' }
+      let(:response_body) { "@" }
 
       before do
         allow(ApiClientError).to receive(:new).and_return(api_client_exception)
