@@ -4,7 +4,6 @@ module Insights
       module ApplicationControllerMixins
         module ExceptionHandling
           DEFAULT_ERROR_CODE = 400
-          PUNDIT_UNAUTHORIZED_ERROR = "Pundit::NotAuthorizedError".freeze
 
           def self.included(other)
             other.rescue_from(StandardError, RuntimeError) do |exception|
@@ -20,8 +19,8 @@ module Insights
               exception_list_from(exception).each do |exc|
                 if api_client_exception?(exc)
                   api_client_errors(exc, error_document)
-                elsif pundit_exception?(exc)
-                  message = "You are not authorized to #{exc.query.delete_suffix('?')} this #{exc.record.model_name.human.downcase}"
+                elsif custom_exception?(exc)
+                  message = fetch_custom_message(exc)
                   error_document.add(error_code_from_class(exc).to_s, message)
                 else
                   yield error_document, exc
@@ -41,8 +40,12 @@ module Insights
             end
           end
 
-          def pundit_exception?(exception)
-            exception.class.to_s == PUNDIT_UNAUTHORIZED_ERROR
+          def custom_exception?(exception)
+            Insights::API::Common::CustomExceptions::CUSTOM_EXCEPTION_LIST.include?(exception.class.to_s)
+          end
+
+          def fetch_custom_message(exception)
+            Insights::API::Common::CustomExceptions.custom_message(exception)
           end
 
           def error_code_from_class(exception)
