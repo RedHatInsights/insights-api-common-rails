@@ -1,8 +1,8 @@
 # Insights::API::Common
 
 [![Build Status](https://travis-ci.org/RedHatInsights/insights-api-common-rails.svg)](https://travis-ci.org/RedHatInsights/insights-api-common-rails)
-[![Maintainability](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/maintainability)](https://codeclimate.com/github/RedHatInsights/insights-api-common-rails/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/790ea6c77d82da6be68a/test_coverage)](https://codeclimate.com/github/RedHatInsights/insights-api-common-rails/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/8ec8a19165383fdaed47/maintainability)](https://codeclimate.com/github/RedHatInsights/insights-api-common-rails/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/8ec8a19165383fdaed47/test_coverage)](https://codeclimate.com/github/RedHatInsights/insights-api-common-rails/test_coverage)
 [![Security](https://hakiri.io/github/RedHatInsights/insights-api-common-rails/master.svg)](https://hakiri.io/github/RedHatInsights/insights-api-common-rails/master)
 
 Header, Encryption, RBAC, Serialization, Pagination and other common behavior for Insights microservices built with Rails
