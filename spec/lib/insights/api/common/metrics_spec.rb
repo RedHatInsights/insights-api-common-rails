@@ -33,7 +33,7 @@ describe Insights::API::Common::Metrics do
     end
 
     it "adds instance vars to track the counts on the Metrics object" do
-      expect(metrics.instance_values.keys).to match_array %w[message_on_queue_counter error_processing_payload_counter]
+      expect(metrics.instance_values.keys).to match_array %w[message_on_queue_counter error_processing_payload_counter metrics_port]
     end
 
     it "adds the metrics defined in the hash" do

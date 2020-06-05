@@ -6,6 +6,8 @@ module Insights
           require 'prometheus_exporter'
           require 'prometheus_exporter/client'
 
+          return if metrics_port == 0
+
           ensure_exporter_server
           enable_in_process_metrics
           enable_web_server_metrics(prefix)
@@ -14,10 +16,10 @@ module Insights
 
         private_class_method def self.ensure_exporter_server
           require 'socket'
-          TCPSocket.open("localhost", 9394) {}
+          TCPSocket.open("localhost", metrics_port) {}
         rescue Errno::ECONNREFUSED
           require 'prometheus_exporter/server'
-          server = PrometheusExporter::Server::WebServer.new(port: 9394)
+          server = PrometheusExporter::Server::WebServer.new(port: metrics_port)
           server.start
 
           PrometheusExporter::Client.default = PrometheusExporter::LocalClient.new(collector: server.collector)
@@ -50,6 +52,10 @@ module Insights
               end
             end
           end
+        end
+
+        private_class_method def self.metrics_port
+          @metrics_port ||= (ENV['METRICS_PORT']&.to_i || 9394)
         end
       end
     end
