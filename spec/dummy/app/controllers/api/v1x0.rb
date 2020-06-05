@@ -74,10 +74,25 @@ module Api
       def api_client_error
         raise ApiClientError.new
       end
+
+      def pundit_error
+        raise Pundit::NotAuthorizedError.new("create?", SourceType)
+      end
     end
 
     class GraphqlController < Api::V1::GraphqlController; end
     class SourcesController < Api::V1::SourcesController; end
     class SourceTypesController < Api::V1::SourceTypesController; end
+  end
+end
+
+module Pundit
+  class NotAuthorizedError < StandardError
+    attr_accessor :query, :record
+
+    def initialize(query, record)
+      @query = query
+      @record = record
+    end
   end
 end
