@@ -441,7 +441,7 @@ module Insights
               end
 
               # Take existing attrs, that we won't generate
-              ['example', 'format', 'readOnly', 'title', 'description'].each do |property_key|
+              ['example', 'format', 'nullable', 'readOnly', 'title', 'description'].each do |property_key|
                 property_value                 = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, property_key)
                 properties_value[property_key] = property_value if property_value
               end
