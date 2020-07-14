@@ -2,6 +2,10 @@
 set -eu
 set -o pipefail
 
+curl -L https://raw.githubusercontent.com/OpenAPITools/openapi-generator/master/bin/utils/openapi-generator-cli.sh > ./openapi-generator-cli
+chmod +x ./openapi-generator-cli
+echo "openapi-generator-cli successfully downloaded"
+
 if ! ver=$(./openapi-generator-cli version | tail -1); then
   ver="4.3.1"  
   echo "Use default version ${ver} to validate"
