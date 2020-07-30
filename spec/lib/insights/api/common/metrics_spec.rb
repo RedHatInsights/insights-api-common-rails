@@ -1,3 +1,6 @@
+require 'prometheus_exporter'
+require 'prometheus_exporter/client'
+
 describe Insights::API::Common::Metrics do
   let(:custom_metrics) do
     {
@@ -17,7 +20,7 @@ describe Insights::API::Common::Metrics do
   end
 
   let(:metrics) { Insights::API::Common::Metrics }
-  let(:prometheus) { PrometheusExporter::Client.default }
+  let(:prometheus) { PrometheusExporter::Client.new }
 
   before do
     # Dummy app doesn't listen here.
@@ -25,14 +28,25 @@ describe Insights::API::Common::Metrics do
   end
 
   describe ".setup_custom_metrics" do
+    around do |example|
+      PrometheusExporter::Client.default = prometheus
+      metrics.instance_variable_set(:@metrics_port, port)
+
+      example.call
+
+      metrics.instance_variables.each { |e| metrics.remove_instance_variable(e) }
+      PrometheusExporter::Client.default = nil
+    end
+
     context "with metrics port set" do
+      let(:port) { 9394 }
+
       before do
-        metrics.instance_variable_set(:@metrics_port, 9394)
         metrics.activate(nil, "dummy_prefix", custom_metrics)
       end
 
       after do
-        metrics.instance_variable_set(:@metrics_port, nil)
+        PrometheusExporter::Instrumentation::Process.stop
       end
 
       it "creates the singleton methods on the Metrics object" do
@@ -51,13 +65,10 @@ describe Insights::API::Common::Metrics do
     end
 
     context "with metrics port zero" do
-      before do
-        metrics.instance_variable_set(:@metrics_port, 0)
-        metrics.activate(nil, "dummy_prefix", custom_metrics)
-      end
+      let(:port) { 0 }
 
-      after do
-        metrics.instance_variable_set(:@metrics_port, nil)
+      before do
+        metrics.activate(nil, "dummy_prefix", custom_metrics)
       end
 
       it "creates the singleton methods on the Metrics object" do
