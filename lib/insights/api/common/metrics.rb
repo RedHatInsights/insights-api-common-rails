@@ -6,12 +6,13 @@ module Insights
           require 'prometheus_exporter'
           require 'prometheus_exporter/client'
 
+          setup_custom_metrics(args[:custom_metrics])
+
           return if metrics_port == 0
 
           ensure_exporter_server
           enable_in_process_metrics
           enable_web_server_metrics(prefix)
-          setup_custom_metrics(args[:custom_metrics])
         end
 
         private_class_method def self.ensure_exporter_server
@@ -41,14 +42,18 @@ module Insights
           return if custom_metrics.nil?
 
           custom_metrics.each do |metric|
-            instance_variable_set("@#{metric[:name]}_#{metric[:type]}", PrometheusExporter::Client.default.register(metric[:type], metric[:name], metric[:description]))
+            if metrics_port == 0
+              define_singleton_method(metric[:name]) {}
+            else
+              instance_variable_set("@#{metric[:name]}_#{metric[:type]}", PrometheusExporter::Client.default.register(metric[:type], metric[:name], metric[:description]))
 
-            define_singleton_method(metric[:name]) do
-              case metric[:type]
-              when :counter
-                instance_variable_get("@#{metric[:name]}_#{metric[:type]}")&.observe(1)
-              else
-                "Metric of type #{metric[:type]} unsupported, implement it in Insights::API::Common::Metrics#L45"
+              define_singleton_method(metric[:name]) do
+                case metric[:type]
+                when :counter
+                  instance_variable_get("@#{metric[:name]}_#{metric[:type]}")&.observe(1)
+                else
+                  "Metric of type #{metric[:type]} unsupported, implement it in Insights::API::Common::Metrics#L45"
+                end
               end
             end
           end
