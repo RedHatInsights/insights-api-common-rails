@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.2] - 2020-07-30
+### Added
+- Add openapi-validator.sh script for reference from API repos. #202
+- Add github workflow to release to rubygems automatically #199
+### Changed
+- Define custom metric methods even if port is zero #203
+- Make sure Pundit exception's query type is String #205
+- Excluding existing 'nullable' attributes #198
+
 ## [4.1.1] - 2020-06-09
 ### Added
 - Add the ability to disable metrics by setting METRICS_PORT=0 #196
@@ -176,8 +185,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.1...HEAD
-[4.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.0...v4.1.1
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...HEAD
+[4.1.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.1...v4.1.2
+[4.1.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.3...v4.1.0
 [4.0.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.2...v4.0.3
 [4.0.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.1...v4.0.2
