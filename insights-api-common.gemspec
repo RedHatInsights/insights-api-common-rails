@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   # For Insights::API::Common::Logging
   spec.add_runtime_dependency "manageiq-loggers", "~> 0.3"
-  spec.add_runtime_dependency "cloudwatchlogger", "~> 0.2"
+  spec.add_runtime_dependency "cloudwatchlogger", "~> 0.2.1"
 
   # For Insights::API::Common::Metrics
   spec.add_runtime_dependency "prometheus_exporter", "~> 0.4.5"
