@@ -200,6 +200,8 @@ describe Insights::API::Common::Request do
     end
 
     it 'with an invalid Hash' do
+      expect(Rails.logger).to receive(:error).with(/ArgumentError: /).once
+
       expect do
         described_class.with_request({}) {}
       end.to raise_exception(ArgumentError)

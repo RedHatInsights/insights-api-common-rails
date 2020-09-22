@@ -14,7 +14,6 @@ module Insights
           end
 
           def rescue_from_handler(exception)
-            logger.error("#{exception.class.name}: #{exception.message}\n#{exception.backtrace.join("\n")}")
             errors = Insights::API::Common::ErrorDocument.new.tap do |error_document|
               exception_list_from(exception).each do |exc|
                 if api_client_exception?(exc)
