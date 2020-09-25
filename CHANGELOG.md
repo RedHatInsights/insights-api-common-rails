@@ -6,6 +6,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.4] - 2020-09-25
+### Changed
+- Remove POST / PATCH from redirects #173
+
+## [4.1.3] - 2020-08-26
+### Changed
+- Pin cloudwatchlogger gem to ~> 0.2.1 #207
+
+## [4.1.2] - 2020-07-30
+### Added
+- Add openapi-validator.sh script for reference from API repos. #202
+- Add github workflow to release to rubygems automatically #199
+### Changed
+- Define custom metric methods even if port is zero #203
+- Make sure Pundit exception's query type is String #205
+- Excluding existing 'nullable' attributes #198
+
+## [4.1.1] - 2020-06-09
+### Added
+- Add the ability to disable metrics by setting METRICS_PORT=0 #196
+### Changed
+- Handle Pundit::NotAuthorizedError exceptions differently than general exceptions #185
+
+## [4.1.0] - 2020-06-02
+### Changed
+- Improve serializer to exclude attributes that should not be needed #181
+
+## [4.0.3] - 2020-05-13
+### Added
+- Add support for custom prometheus metrics defined by the application #184
+
+## [4.0.2] - 2020-05-13
+### Added
+- Enforce unique operation ids #182
+- ManangeIQ Logger is deprecating the use of current_request #183
+- The status field in the error object is string #188
+- Switched to insights-rbac-api-client from rubygems #189
+
+
+## [4.0.1] - 2020-04-27
+### Added
+- Percolate errors from different micro services #180
+
+## [4.0.0] - 2020-04-15
+### Added
+- Added args to the base_query call #177
+
+## [3.10.0] - 2020-04-14
+### Added
+- Remove the RBAC Client limit and offset parameters to get data in single call #175
+- Use rack to get proper status code from symbols #179
+
+## [3.9.0] - 2020-04-02
+### Added
+- Update documentation for sort_by and filter with associations #170
+- Upgrade openapi_parser dependency #174
+- Enable filtering by association attributes #159
+- RBAC: Implement group_uuid filtering #172
+
 ## [3.8.0] - 2020-03-24
 ### Added
 - RBAC - Added support for scopes in permissions #171
@@ -134,7 +193,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.8.0...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...HEAD
+[4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3...v4.1.4
+[4.1.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...v4.1.3
+[4.1.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.1...v4.1.2
+[4.1.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.0...v4.1.1
+[4.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.3...v4.1.0
+[4.0.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.2...v4.0.3
+[4.0.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.1...v4.0.2
+[4.0.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.0...v4.0.1
+[4.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.10.0...v4.0.0
+[3.10.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.9.0...v3.10.0
+[3.9.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.8.0...v3.9.0
 [3.8.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.7.0...v3.8.0
 [3.7.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v3.5.0...v3.6.0
