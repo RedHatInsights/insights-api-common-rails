@@ -24,7 +24,7 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     expect(response).to(
       have_attributes(
         :parsed_body => {
-          "errors" => errors.collect { |e| {"detail" => e, "status" => 400} }
+          "errors" => errors.collect { |e| {"detail" => e, "status" => "400"} }
         },
         :status      => 400
       )

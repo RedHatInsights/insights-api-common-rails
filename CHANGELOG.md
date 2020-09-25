@@ -193,6 +193,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-09-24
 ### Initial release to rubygems.org
 
+
 [Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...HEAD
 [4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3...v4.1.4
 [4.1.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...v4.1.3

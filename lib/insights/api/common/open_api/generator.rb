@@ -48,6 +48,7 @@ module Insights
             ENV['APP_NAME'] = app_name
             ENV['PATH_PREFIX'] = app_prefix
             Rails.application.reload_routes!
+            @operation_id_hash = {}
           end
 
           def server_base_path
@@ -117,8 +118,8 @@ module Insights
                     "type"        => "object",
                     "properties"  => {
                       "status"    => {
-                        "type"    => "integer",
-                        "example" => 404
+                        "type"    => "string",
+                        "example" => "404"
                       },
                       "detail"    => {
                         "type"    => "string",
@@ -200,7 +201,7 @@ module Insights
             sub_collection = (primary_collection != klass_name)
             {
               "summary"     => "List #{klass_name.pluralize}#{" for #{primary_collection}" if sub_collection}",
-              "operationId" => "list#{primary_collection if sub_collection}#{klass_name.pluralize}",
+              "operationId" => operation_id(klass_name, primary_collection, sub_collection),
               "description" => "Returns an array of #{klass_name} objects",
               "parameters"  => [
                 { "$ref" => "##{PARAMETERS_PATH}/QueryLimit"  },
@@ -440,7 +441,7 @@ module Insights
               end
 
               # Take existing attrs, that we won't generate
-              ['example', 'format', 'readOnly', 'title', 'description'].each do |property_key|
+              ['example', 'format', 'nullable', 'readOnly', 'title', 'description'].each do |property_key|
                 property_value                 = openapi_contents.dig(*path_parts(SCHEMAS_PATH), klass_name, "properties", key, property_key)
                 properties_value[property_key] = property_value if property_value
               end
@@ -561,6 +562,24 @@ module Insights
 
           def schema_overrides
             {}
+          end
+
+          def validate_operation_id(name, klass_name)
+            if @operation_id_hash.key?(name)
+              raise ArgumentError, "operation id cannot be duplicates, #{name} in class #{klass_name} has already been used in class #{@operation_id_hash[name]}"
+            end
+            @operation_id_hash[name] = klass_name
+          end
+
+          def operation_id(klass_name, primary_collection, sub_collection)
+            klass = klass_name.constantize
+            name = if klass.respond_to?(:list_operation_id)
+                     klass.send(:list_operation_id)
+                   else
+                     "list#{primary_collection if sub_collection}#{klass_name.pluralize}"
+                   end
+            validate_operation_id(name, klass_name)
+            name
           end
         end
       end

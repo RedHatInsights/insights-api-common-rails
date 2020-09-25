@@ -1310,6 +1310,9 @@
             "example": "openshift",
             "type": "string"
           },
+          "expensive_computation": {
+            "type": "string"
+          },
           "product_name": {
             "example": "OpenShift",
             "type": "string"

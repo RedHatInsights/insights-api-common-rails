@@ -4,6 +4,8 @@ describe Insights::API::Common::Request do
     ActionDispatch::Request.new(headers)
   end
 
+  let(:x_rh_insights_request_id) { "01234567-89ab-cdef-0123-456789abcde" }
+
   let(:request_bad) do
     {
       :headers      => { 'blah' => 'blah' },
@@ -21,7 +23,7 @@ describe Insights::API::Common::Request do
   let(:forwardable_good) do
     {
       'x-rh-identity'            => encoded_user_hash,
-      'x-rh-insights-request-id' => "01234567-89ab-cdef-0123-456789abcde",
+      'x-rh-insights-request-id' => x_rh_insights_request_id
     }
   end
 
@@ -35,6 +37,10 @@ describe Insights::API::Common::Request do
 
     it "#original_url" do
       expect(@instance.original_url).to eq "https://example.com"
+    end
+
+    it ".current_request_id" do
+      expect(described_class.current_request_id).to eq x_rh_insights_request_id
     end
 
     describe "#headers" do
@@ -72,7 +78,7 @@ describe Insights::API::Common::Request do
     end
 
     it "#request_id" do
-      expect(@instance.request_id).to eq "01234567-89ab-cdef-0123-456789abcde"
+      expect(@instance.request_id).to eq x_rh_insights_request_id
     end
 
     it "#identity" do
@@ -103,6 +109,10 @@ describe Insights::API::Common::Request do
     it "#request_id" do
       expect(@instance.request_id).to be_nil
     end
+
+    it ".current_request_id" do
+      expect(described_class.current_request_id).to be_nil
+    end
   end
 
 
@@ -111,7 +121,7 @@ describe Insights::API::Common::Request do
       {
         :headers      => {
           'x-rh-identity'            => encoded_system_hash,
-          'x-rh-insights-request-id' => "01234567-89ab-cdef-0123-456789abcde",
+          'x-rh-insights-request-id' => x_rh_insights_request_id
         },
         :original_url => 'https://example.com'
       }
@@ -155,7 +165,7 @@ describe Insights::API::Common::Request do
     end
 
     it "#request_id" do
-      expect(@instance.request_id).to eq "01234567-89ab-cdef-0123-456789abcde"
+      expect(@instance.request_id).to eq x_rh_insights_request_id
     end
 
     it "#identity" do

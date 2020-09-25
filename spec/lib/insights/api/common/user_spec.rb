@@ -15,11 +15,16 @@ describe Insights::API::Common::User do
   end
 
   context "user getter methods" do
-    let(:user_keys)   { %w(username email first_name last_name active? org_admin? internal? locale tenant) }
-    let(:user_values) { ['jdoe', 'jdoe@acme.com', 'John', 'Doe', true, false, false, 'en_US', '0369233'] }
+    let(:user_keys)   { %w(username email first_name last_name active? org_admin? internal? locale) }
+    let(:user_values) { ['jdoe', 'jdoe@acme.com', 'John', 'Doe', true, false, false, 'en_US'] }
     let(:bad_user)    { %w(fred barney type) }
     let(:user)        { Insights::API::Common::Request.current.user }
     let(:other_user)  { default_user_hash }
+    let(:account_number) { UserHeaderSpecHelper::DEFAULT_USER['identity']['account_number'] }
+
+    it "checks the tenant from the request" do
+      expect(Insights::API::Common::Request.current.tenant).to eq(account_number)
+    end
 
     it "returns values for user methods" do
       user_keys.each do |key|
