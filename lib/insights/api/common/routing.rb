@@ -8,7 +8,7 @@ module Insights
           @route_mapper = route_mapper
         end
 
-        def redirect_major_version(version, prefix, via: [:delete, :get, :options, :patch, :post])
+        def redirect_major_version(version, prefix, via: [:delete, :get, :options])
           route_mapper.match(
             "/#{version.split('.').first}/*path(.:format)",
             :format => false,

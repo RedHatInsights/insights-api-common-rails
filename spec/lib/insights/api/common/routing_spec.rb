@@ -1,5 +1,6 @@
 RSpec.describe Insights::API::Common::Routing, :type => :request do
   let(:expected_version) { "v0.1" }
+  let(:major_version) { "v1" }
 
   describe("/api/v0") do
     it "sanity test for a regular resource" do
@@ -24,6 +25,10 @@ RSpec.describe Insights::API::Common::Routing, :type => :request do
       get("/api/#{expected_version}/openapi.json")
       expect(response.status).to eq(200)
       expect(response.headers["Location"]).to be_nil
+    end
+
+    it "does not allow redirects to a POST endpoint" do
+      expect { post("/api/#{major_version}/graphql") }.to raise_exception(ActionController::RoutingError)
     end
   end
 end
