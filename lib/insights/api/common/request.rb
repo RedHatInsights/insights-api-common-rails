@@ -57,6 +57,9 @@ module Insights
           self.current = request
           self.current_request_id = current&.request_id
           yield current
+        rescue => exception
+          Rails.logger.error("#{exception.class.name}: #{exception.message}\n#{exception.backtrace.join("\n")}")
+          raise
         ensure
           self.current = saved
           self.current_request_id = saved_request_id
