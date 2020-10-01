@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.5] - 2020-10-01
+### Changed
+- Fixed to log error messages in with_request block #208
+
 ## [4.1.4] - 2020-09-25
 ### Changed
 - Remove POST / PATCH from redirects #173
@@ -194,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5...HEAD
+[4.1.5]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...v4.1.5
 [4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3...v4.1.4
 [4.1.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...v4.1.3
 [4.1.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.1...v4.1.2
