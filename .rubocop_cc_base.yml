@@ -44,4 +44,3 @@ Metrics/ParameterLists:
   Enabled: true
 Metrics/PerceivedComplexity:
   Enabled: false
-
