@@ -88,11 +88,12 @@ end
 
 module Pundit
   class NotAuthorizedError < StandardError
-    attr_accessor :query, :record
+    attr_accessor :query, :record, :policy
 
-    def initialize(query, record)
+    def initialize(query, record, policy = nil)
       @query = query
       @record = record
+      @policy = policy
     end
   end
 end

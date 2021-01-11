@@ -30,7 +30,7 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
     it "returns a customized error message" do
       get("/api/v1.0/pundit_error", :headers => headers)
       expect(response.status).to eq(403)
-      expect(error.first["detail"]).to match(/You are not authorized to create this source type/)
+      expect(error.first["detail"]).to match(/You are not authorized to perform the create action for this source type/)
     end
   end
 
