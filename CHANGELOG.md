@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2021-01-13
+### Changed
+- Make `Parameters#params_for_update` only include writeable fields in permit-hash #213
+- Use custom error_message if a policy exposes it #214
+
 ## [4.1.5] - 2020-10-01
 ### Changed
 - Fixed to log error messages in with_request block #208
@@ -198,7 +203,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5...v5.0.0
 [4.1.5]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...v4.1.5
 [4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3...v4.1.4
 [4.1.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...v4.1.3
