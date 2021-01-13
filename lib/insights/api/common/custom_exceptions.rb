@@ -7,7 +7,8 @@ module Insights
         def self.custom_message(exception)
           case exception.class.to_s
           when "Pundit::NotAuthorizedError"
-            "You are not authorized to #{exception.query.to_s.delete_suffix('?')} this #{exception.record.model_name.human.downcase}"
+            exception.policy.try(:error_message) ||
+              "You are not authorized to perform the #{exception.query.to_s.delete_suffix('?')} action for this #{exception.record.model_name.human.downcase}"
           end
         end
       end
