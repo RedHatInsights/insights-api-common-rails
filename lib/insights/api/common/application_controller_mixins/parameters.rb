@@ -123,7 +123,8 @@ module Insights
 
           def sanctified_permit_param(api_doc_definition, attributes)
             api_doc_definition['properties'].each_with_object([]) do |(k, v), memo|
-              next unless attributes.each { |attr| attr.include?(k) }
+              # only add to the permit hash if we're actually trying to update it.
+              next unless attributes.any? { |attr| attr.include?(k) }
 
               memo << if v['type'] == 'array'
                         { k => [] }
