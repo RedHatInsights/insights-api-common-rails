@@ -1,7 +1,7 @@
 module Insights
   module API
     module Common
-      VERSION = "4.1.5".freeze
+      VERSION = "5.0.0".freeze
     end
   end
 end
