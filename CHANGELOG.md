@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.1] - 2021-01-26
+### Changed
+- Pinning `graphql` gem to 1.11.7 due to breaking change in version 1.12.0
+
 ## [5.0.0] - 2021-01-13
 ### Changed
 - Make `Parameters#params_for_update` only include writeable fields in permit-hash #213
@@ -203,7 +207,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.1...HEAD
+[5.0.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5...v5.0.0
 [4.1.5]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...v4.1.5
 [4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3...v4.1.4
