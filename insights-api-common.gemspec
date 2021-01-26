@@ -30,8 +30,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "openapi_parser",      "~> 0.10.0"
 
   spec.add_runtime_dependency "insights-rbac-api-client", "~> 1.0"
-  # For Insights::API::Common::GraphQL
-  spec.add_runtime_dependency "graphql",         "~> 1.9"
+  # For Insights::API::Common::GraphQL, pinning for now due to breaking change brought in 1.12.0
+  spec.add_runtime_dependency "graphql",         "1.11.7"
   spec.add_runtime_dependency "graphql-batch",   "~> 0.4"
   spec.add_runtime_dependency "graphql-preload", "~> 2.0", "< 2.1"
   spec.add_runtime_dependency "query_relation"
