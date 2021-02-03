@@ -18,7 +18,22 @@ module Insights::API::Common
           :level          => translate_error(severity),
           :account_number => account_number
         }
+        payload.merge!(framework_evidence)
         JSON.generate(merge_message(payload, msg).compact) << "\n"
+      end
+
+      def framework_evidence
+        sidekiq_ctx = sidekiq_current_ctx
+        if sidekiq_ctx
+          {
+            :controller     => sidekiq_ctx[:class],
+            :transaction_id => sidekiq_ctx[:jid]
+          }
+        else
+          {
+            :transaction_id => rails_transation_id
+          }
+        end
       end
 
       def merge_message(payload, msg)
@@ -27,7 +42,6 @@ module Insights::API::Common
         else
           payload[:message] = msg2str(msg)
         end
-        payload[:transaction_id] = transaction_id if payload[:transaction_id].blank?
         payload
       end
 
@@ -41,10 +55,19 @@ module Insights::API::Common
         Thread.current[:audit_account_number]
       end
 
-      def transaction_id
+      def sidekiq_current_ctx
+        return unless Module.const_defined?(:Sidekiq)
+
+        if ::Sidekiq.const_defined?(:Context)
+          Sidekiq::Context.current
+        else
+          # versions up to 6.0.0
+          Thread.current[:sidekiq_context]
+        end
+      end
+
+      def rails_transation_id
         ActiveSupport::Notifications.instrumenter.id
-        # TODO: Sidekiq job id
-        # TODO: Racecar id
       end
     end
   end
