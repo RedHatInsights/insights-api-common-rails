@@ -16,10 +16,10 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "acts_as_tenant"
   spec.add_runtime_dependency "manageiq-password", "~>0.1"
   spec.add_runtime_dependency "pg",                "> 0"
-  spec.add_runtime_dependency "rails",             ">= 5.2.2.1", "~> 5.2.2"
+  spec.add_runtime_dependency "rails",             "~>6.0.0"
 
   # For Insights::API::Common::Logging
-  spec.add_runtime_dependency "manageiq-loggers", "~> 0.3"
+  spec.add_runtime_dependency "manageiq-loggers", "~> 0.6"
   spec.add_runtime_dependency "cloudwatchlogger", "~> 0.2.1"
 
   # For Insights::API::Common::Metrics
@@ -31,9 +31,9 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "insights-rbac-api-client", "~> 1.0"
   # For Insights::API::Common::GraphQL, pinning for now due to breaking change brought in 1.12.0
-  spec.add_runtime_dependency "graphql",         "1.11.7"
-  spec.add_runtime_dependency "graphql-batch",   "~> 0.4"
-  spec.add_runtime_dependency "graphql-preload", "~> 2.0", "< 2.1"
+  spec.add_runtime_dependency "graphql",         "~> 1.7", "< 1.10.6"
+  spec.add_runtime_dependency "graphql-batch",   "~> 0.4.3"
+  spec.add_runtime_dependency "graphql-preload", "= 2.1.0.1"
   spec.add_runtime_dependency "query_relation"
 
   spec.add_development_dependency "factory_bot"
@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-rails", "~> 2.8"
   spec.add_development_dependency "rspec",       "~> 3.0"
   spec.add_development_dependency "rspec-mocks"
-  spec.add_development_dependency "rspec-rails", "~> 3.8"
+  spec.add_development_dependency "rspec-rails", "~> 4.0.1"
   spec.add_development_dependency "simplecov",   '~> 0.17.1'
   spec.add_development_dependency "webmock"
 end
