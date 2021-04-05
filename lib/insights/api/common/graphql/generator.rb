@@ -20,8 +20,32 @@ module Insights
             openapi_path.split("/")[1..-1]
           end
 
+          def self.template_file_by(type, root_dir = __dir__)
+            Pathname.new(root_dir).join(File.expand_path("templates", root_dir), "#{type}.erb")
+          end
+
+          def self.root_dir
+            Rails.root
+          end
+
+          def self.app_name
+            Rails.application.class.parent.name.underscore
+          end
+
+          def self.pluggable_template_file_by(type)
+            templates_relative_path = "lib/#{app_name}/api/graphql/templates"
+            template_path = File.expand_path(templates_relative_path, root_dir)
+            Pathname.new(root_dir).join(template_path, "#{type}.erb")
+          end
+
+          def self.template_path_by(type)
+            template_path_pluggable = pluggable_template_file_by(type)
+            template_path_default   = template_file_by(type)
+            template_path_pluggable.exist? ? template_path_pluggable : template_path_default
+          end
+
           def self.template(type)
-            File.read(Pathname.new(__dir__).join(File.expand_path("templates", __dir__), "#{type}.erb").to_s)
+            File.read(template_path_by(type))
           end
 
           def self.graphql_type(property_name, property_format, property_type)
