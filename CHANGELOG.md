@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.2] - 2021-04-05
+### Added
+- Allow to load GraphQL erb templates outside of repo #221
+- Add not_eq comparators #223 
+### Fixed
+- Bind to 127.0.0.1 instead of localhost #220 
+
 ## [5.0.1] - 2021-01-26
 ### Changed
 - Pinning `graphql` gem to 1.11.7 due to breaking change in version 1.12.0
@@ -207,12 +214,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.1...HEAD
-[5.0.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0...v5.0.1
-[5.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5...v5.0.0
-[4.1.5]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4...v4.1.5
-[4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3...v4.1.4
-[4.1.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...v4.1.3
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.2.freeze...HEAD
+[5.0.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.1.freeze...v5.0.2.freeze
+[5.0.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0.freeze...v5.0.1.freeze
+[5.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5.freeze...v5.0.0.freeze
+[4.1.5]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.4.freeze...v4.1.5.freeze
+[4.1.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.3.freeze...v4.1.4.freeze
+[4.1.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.2...v4.1.3.freeze
 [4.1.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.1...v4.1.2
 [4.1.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.0.3...v4.1.0
