@@ -17,7 +17,7 @@ module Insights
 
         private_class_method def self.ensure_exporter_server
           require 'socket'
-          TCPSocket.open("localhost", metrics_port) {}
+          TCPSocket.open("127.0.0.1", metrics_port) {}
         rescue Errno::ECONNREFUSED
           require 'prometheus_exporter/server'
           server = PrometheusExporter::Server::WebServer.new(port: metrics_port)
