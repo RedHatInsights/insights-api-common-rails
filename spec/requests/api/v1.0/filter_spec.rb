@@ -55,8 +55,14 @@ RSpec.describe("Insights::API::Common::Filter", :type => :request) do
     it("key:eq single")          { expect_success("sources", "filter[name][eq]=#{source_1.name}", source_1) }
     it("key:eq array")           { expect_success("sources", "filter[name][eq][]=#{source_1.name}&filter[name][eq][]=#{source_3.name}", source_1, source_3) }
 
+    it("key:not_eq single")      { expect_success("sources", "filter[name][not_eq]=#{source_1.name}", source_2, source_3, source_4, source_5, source_6, source_7, source_8) }
+    it("key:not_eq array")       { expect_success("sources", "filter[name][not_eq][]=#{source_1.name}&filter[name][not_eq][]=#{source_3.name}", source_2, source_4, source_5, source_6, source_7, source_8) }
+
     it("key:eq_i single")        { expect_success("sources", "filter[name][eq_i]=#{source_1.name}", source_1, source_2) }
     it("key:eq_i array")         { expect_success("sources", "filter[name][eq_i][]=#{source_1.name}&filter[name][eq_i][]=#{source_3.name}", source_1, source_2, source_3, source_4) }
+
+    it("key:not_eq_i single")    { expect_success("sources", "filter[name][not_eq_i]=#{source_1.name}", source_3, source_4, source_5, source_6, source_7, source_8) }
+    it("key:not_eq_i array")     { expect_success("sources", "filter[name][not_eq_i][]=#{source_1.name}&filter[name][not_eq_i][]=#{source_3.name}", source_5, source_6, source_7, source_8) }
 
     it("key:contains_i single")  { expect_success("sources", "filter[name][contains_i]=a", source_1, source_2) }
     it("key:contains_i array")   { expect_success("sources", "filter[name][contains_i][]=s&filter[name][contains_i][]=a", source_1, source_2) }
