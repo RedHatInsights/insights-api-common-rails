@@ -30,6 +30,7 @@ Or install it yourself as:
 | Supported Comparators     | Comparator    |
 | ---------------------     | ----------    |
 | Integer                   | eq            |
+|                           | not_eq        |
 |                           | gt            |
 |                           | gte           |
 |                           | lt            |
@@ -37,12 +38,14 @@ Or install it yourself as:
 |                           | nil           |
 |                           | not_nil       |
 | String                    | eq            |
+|                           | not_eq        |
 |                           | contains      |
 |                           | starts_with   |
 |                           | ends_with     |
 |                           | nil           |
 |                           | not_nil       |
 | String (case insensitive) | eq_i          |
+|                           | not_eq_i      |
 |                           | contains_i    |
 |                           | starts_with_i |
 |                           | ends_with_i   |
@@ -53,6 +56,7 @@ After implementing filtering in your application, this is the way to filter via 
 | --------------- | --------------------- | ----------------- |
 | "?filter[name]=reviews" | { :filter => { :name => "reviews" } } | filter: { name: "reviews" } |
 | "?filter[name][eq]=reviews" | { :filter => { :name => { :eq => "reviews" } } } | filter: { name: { eq: "reviews" } } |
+| "?filter[name][not_eq]=reviews" | { :filter => { :name => { :not_eq => "reviews" } } } | filter: { name: { not_eq: "reviews" } } |
 | "?filter[name][starts_with]=a" | { :filter => { :name => { :starts_with => "a" } } } | filter: { name: { starts_with: "a" } } |
 | "?filter[name][ends_with]=manager" | { :filter => { :name => { :ends_with => "manager" } } } | filter: { name: { ends_with: "manager" } } |
 | "?filter[name][contains]=openshift" | { :filter => { :name => { :contains => "openshift" } } } | filter: { name: { contains: "openshift" } } |
