@@ -2,8 +2,8 @@ module Insights
   module API
     module Common
       class Filter
-        INTEGER_COMPARISON_KEYWORDS = ["eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
-        STRING_COMPARISON_KEYWORDS  = ["contains", "contains_i", "eq", "eq_i", "starts_with", "starts_with_i", "ends_with", "ends_with_i", "nil", "not_nil"].freeze
+        INTEGER_COMPARISON_KEYWORDS = ["eq", "not_eq", "gt", "gte", "lt", "lte", "nil", "not_nil"].freeze
+        STRING_COMPARISON_KEYWORDS  = ["contains", "contains_i", "eq", "not_eq", "eq_i", "not_eq_i", "starts_with", "starts_with_i", "ends_with", "ends_with_i", "nil", "not_nil"].freeze
         ALL_COMPARISON_KEYWORDS     = (INTEGER_COMPARISON_KEYWORDS + STRING_COMPARISON_KEYWORDS).uniq.freeze
 
         attr_reader :apply, :arel_table, :api_doc_definition, :extra_filterable_attributes, :model
@@ -240,6 +240,16 @@ module Insights
 
         def comparator_eq(key, value)
           self.query = query.where(model_arel_attribute(key).eq_any(Array(value)))
+        end
+
+        def comparator_not_eq(key, value)
+          self.query = query.where.not(model_arel_attribute(key).eq_any(Array(value)))
+        end
+
+        def comparator_not_eq_i(key, value)
+          values = Array(value).map { |v| query.sanitize_sql_like(v.downcase) }
+
+          self.query = query.where.not(model_arel_table(key).grouping(arel_lower(key).matches_any(values)))
         end
 
         def comparator_eq_i(key, value)
