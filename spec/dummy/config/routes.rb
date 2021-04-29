@@ -21,8 +21,11 @@ Rails.application.routes.draw do
       resources :authentications, :only => [:create, :update]
       resources :vms, :only => [:index, :show]
       resources :persons, :only => [:index, :create, :show, :update]
-      resources :sources, :only => [:index]
+      resources :sources, :only => [:index] do
+        resources :tasks, :only => [:index]
+      end
       resources :source_types, :only => [:index]
+      resources :tasks, :only => [:index, :show]
       resources :extras, :only => [:index]
     end
 

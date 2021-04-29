@@ -669,6 +669,105 @@
         }
       }
     },
+    "/sources/{id}/tasks": {
+      "get": {
+        "summary": "List Tasks for Source",
+        "operationId": "listSourceTasks",
+        "description": "Returns an array of Task objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksCollection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "summary": "List Tasks",
+        "operationId": "listTasks",
+        "description": "Returns an array of Task objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksCollection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "summary": "Show an existing Task",
+        "operationId": "showTask",
+        "description": "Returns a Task object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
     "/persons": {
       "get": {
         "summary": "List Person Objects",
@@ -912,6 +1011,16 @@
         "schema": {
           "type": "string",
           "pattern": "^\\d+$"
+        }
+      },
+      "UUID": {
+        "name": "id",
+        "in": "path",
+        "description": "UUID of task",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         }
       }
     },
@@ -1197,6 +1306,63 @@
           }
         }
       },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UUID"
+          },
+          "name": {
+            "example": "OpenShift default",
+            "type": "string"
+          },
+          "status": {
+            "example": "valid",
+            "type": "string"
+          },
+          "state": {
+            "example": "complete",
+            "type": "string"
+          },
+          "message": {
+            "example": "Ready to go",
+            "type": "string"
+          },
+          "source_id": {
+            "$ref": "#/components/schemas/ID"
+          },
+          "tenant": {
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          }
+        }
+      },
+      "TasksCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            }
+          }
+        }
+      },
       "GraphQLRequest": {
         "type": "object",
         "properties": {
@@ -1240,6 +1406,12 @@
         "type": "string",
         "description": "ID of the resource",
         "pattern": "^\\d+$",
+        "readOnly": true
+      },
+      "UUID": {
+        "type": "string",
+        "description": "UUID of the resource",
+        "format": "uuid",
         "readOnly": true
       },
       "OrderParameters": {

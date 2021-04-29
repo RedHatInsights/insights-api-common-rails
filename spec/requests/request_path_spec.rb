@@ -30,4 +30,24 @@ RSpec.describe "Insights::API::Common::ApplicationController Request path", :typ
     expect(response.status).to eq(400)
     expect(response.parsed_body).to eq("errors" => [{"detail" => "Insights::API::Common::ApplicationControllerMixins::RequestPath::RequestPathError: ID is invalid", "status" => "400"}])
   end
+
+  context "when object id pattern is different" do
+    let(:external_tenant) { rand(1000).to_s }
+    let(:tenant)          { Tenant.create!(:name => "default", :external_tenant => external_tenant) }
+    let(:source_type)     { SourceType.create(:name => "AnsibleTower", :product_name => "RedHat AnsibleTower", :vendor => "redhat") }
+
+    before do
+      @source = Source.create!(:tenant => tenant, :name => "source_s1", :source_type => source_type)
+      @task = Task.create!(:tenant => tenant, :source => @source, :name => "Task_t1", :state => "pending")
+    end
+
+    it "valid ID" do
+      get "/api/v2.0/tasks/#{@task.id}"
+      get "/api/v2.0/sources/#{@source.id}/tasks"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["data"].count).to eq(1)
+      expect(response.parsed_body["data"].first["id"]).to eq(@task.id)
+    end
+  end
 end

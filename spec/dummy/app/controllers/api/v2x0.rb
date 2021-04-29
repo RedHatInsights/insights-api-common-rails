@@ -16,5 +16,6 @@ module Api
     class GraphqlController          < Api::V2::GraphqlController; end
     class SourcesController          < Api::V2::SourcesController; end
     class SourceTypesController      < Api::V2::SourceTypesController; end
+    class TasksController            < Api::V2::TasksController; end
   end
 end
