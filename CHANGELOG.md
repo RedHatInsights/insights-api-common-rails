@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.3] - 2021-05-14
+### Fixed
+-  Change to support object id with different patterns #224 
+
 ## [5.0.2] - 2021-04-05
 ### Added
 - Allow to load GraphQL erb templates outside of repo #221
@@ -214,7 +218,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.2.freeze...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.3.freeze...HEAD
+[5.0.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.2.freeze...v5.0.3.freeze
 [5.0.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.1.freeze...v5.0.2.freeze
 [5.0.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0.freeze...v5.0.1.freeze
 [5.0.0]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v4.1.5.freeze...v5.0.0.freeze
