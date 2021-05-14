@@ -44,10 +44,14 @@ module Insights
             private
 
             def id_regexp(primary_collection_name)
-              @id_regexp ||= begin
+              @id_regexp_table ||= {}
+
+              if @id_regexp_table.empty? || @id_regexp_table[primary_collection_name].nil?
                 id_parameter = id_parameter_from_api_doc(primary_collection_name)
-                id_parameter ? id_parameter.fetch_path("schema", "pattern") : /^\d+$/
+                @id_regexp_table[primary_collection_name] = id_parameter ? id_parameter.fetch_path("schema", "pattern") : /^\d+$/
               end
+
+              @id_regexp_table[primary_collection_name]
             end
 
             def id_parameter_from_api_doc(primary_collection_name)
