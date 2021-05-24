@@ -67,6 +67,10 @@ module Api
         raise SomethingHappened, "something else happened"
       end
 
+      def error_utf8
+        raise StandardError, "something \xAE happened"
+      end
+
       def http_error
         raise ActionCable::Connection::Authorization::UnauthorizedError
       end

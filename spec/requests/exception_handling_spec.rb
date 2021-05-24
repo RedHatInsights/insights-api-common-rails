@@ -34,6 +34,14 @@ RSpec.describe "Insights::API::Common::ApplicationController Exception Handling"
     end
   end
 
+  context "utf-8 conversion error" do
+    it "returns the error message" do
+      get "/api/v1.0/error_utf8", :headers => headers
+      expect(response.status).to eq(400)
+      expect(error.first["detail"]).to match(/StandardError/)
+    end
+  end
+
   context "api_client_error" do
     context "with response body" do
       let(:response_header) { { 'Content-Type' => 'application/json' } }
