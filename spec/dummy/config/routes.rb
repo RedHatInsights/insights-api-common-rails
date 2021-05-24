@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     namespace :v1x0, :path => "v1.0" do
       get "/error",        :to => "errors#error"
       get "/error_nested", :to => "errors#error_nested"
+      get "/error_utf8",   :to => "errors#error_utf8"
       get "/http_error", :to => "errors#http_error"
       get "/api_client_error", :to => "errors#api_client_error"
       get "/pundit_error", :to => "errors#pundit_error"

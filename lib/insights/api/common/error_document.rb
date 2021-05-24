@@ -4,7 +4,8 @@ module Insights
       class ErrorDocument
         def add(status = 400, message)
           @status = status
-          errors << {"status" => status, "detail" => message}
+          safe_message = message.to_s.encode('UTF-8', :invalid => :replace, :undef => :replace)
+          errors << {"status" => status, "detail" => safe_message}
           self
         end
 
