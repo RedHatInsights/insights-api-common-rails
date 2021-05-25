@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.4] - 2021-05-25
+### Fixed
+- Ensure UTF-8 compatibility for ErrorDocument#to_h.to_json #227 
+
 ## [5.0.3] - 2021-05-14
 ### Fixed
 -  Change to support object id with different patterns #224 
@@ -218,7 +222,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.3.freeze...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.4.freeze...HEAD
+[5.0.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.3.freeze...v5.0.4.freeze
 [5.0.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.2.freeze...v5.0.3.freeze
 [5.0.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.1.freeze...v5.0.2.freeze
 [5.0.1]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.0.freeze...v5.0.1.freeze
