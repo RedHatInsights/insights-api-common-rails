@@ -164,7 +164,13 @@ module Insights
 
               graphql_model_type_template = ERB.new(template("model_type"), nil, '<>').result(binding)
               graphql_namespace.module_eval(graphql_model_type_template)
+
+              graphql_aggregate_model_type_template = ERB.new(template("aggregate_model_type"), nil, '<>').result(binding)
+              graphql_namespace.module_eval(graphql_aggregate_model_type_template)
             end
+
+            graphql_aggregate_type_template = ERB.new(template("aggregate_type"), nil, '<>').result(binding)
+            graphql_namespace.module_eval(graphql_aggregate_type_template)
 
             graphql_query_type_template = ERB.new(template("query_type"), nil, '<>').result(binding)
             graphql_namespace.module_eval(graphql_query_type_template)

@@ -1,0 +1,8 @@
+<%= klass_name %>AggregateType = ::GraphQL::ObjectType.define do
+  name "<%= klass_name %>AggregateType"
+  description "A <%= klass_name %>AggregateType to wrap metrics aggregation"
+
+  field :aggregate, AggregateType do
+    resolve ->(object, _args, _ctx) { object }
+  end
+end

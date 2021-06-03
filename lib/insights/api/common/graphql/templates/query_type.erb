@@ -45,5 +45,24 @@ QueryType = ::GraphQL::ObjectType.define do
         end
       }
     end
+
+    field_aggregate = "#{collection}_aggregate"
+    field field_aggregate do
+      description "The #{collection} aggregation associated with this #{klass_name}"
+      klass_name_type = "::Insights::API::Common::GraphQL::Api::#{version_namespace}::#{klass_name}AggregateType".constantize
+      argument :filter, ::Insights::API::Common::GraphQL::Types::QueryFilter, "The Query Filter for querying the #{collection}"
+
+      type klass_name_type
+
+      resolve lambda { |_obj, args, _ctx|
+        if base_query.present?
+          scope = base_query.call(model_class, args, ctx)
+        else
+          scope = model_class
+        end
+
+        ::Insights::API::Common::Filter.build_filtered_scope(scope, "<%= api_version %>", klass_name, args[:filter]).count
+      }
+    end
   end
 end
