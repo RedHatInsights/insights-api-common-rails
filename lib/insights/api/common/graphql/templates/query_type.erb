@@ -31,18 +31,9 @@ QueryType = ::GraphQL::ObjectType.define do
           scope = model_class
         end
 
-        if args[:filter]
-          openapi_doc = ::Insights::API::Common::OpenApi::Docs.instance["<%= api_version %>"]
-          openapi_schema_name, _schema = ::Insights::API::Common::GraphQL::Generator.openapi_schema(openapi_doc, klass_name)
-          association_attribute_properties =
-            Insights::API::Common::Filter.association_attribute_properties(openapi_doc.definitions, ActionController::Parameters.new(args[:filter]))
-          scope = ::Insights::API::Common::Filter.new(
-            scope,
-            ActionController::Parameters.new(args[:filter]),
-            openapi_doc.definitions[openapi_schema_name],
-            association_attribute_properties).apply
-        end
+        scope = ::Insights::API::Common::Filter.build_filtered_scope(scope, "<%= api_version %>", klass_name, args[:filter])
         scope = ::Insights::API::Common::GraphQL.search_options(scope, args)
+
         if <%= graphql_options[:use_pagination_v2] %> == true
           ::Insights::API::Common::PaginatedResponseV2.new(
             base_query: scope, request: nil, limit: args[:limit], offset: args[:offset], sort_by: args[:sort_by]
