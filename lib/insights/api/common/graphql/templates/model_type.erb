@@ -30,6 +30,19 @@
       ::Insights::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", args, graphql_options).load(obj)
     }
   end
+
+  field :<%= associations %>_aggregate do
+    description "Aggregation of <%= associations %> associated with <%= klass_name %> model."
+    type <%= "#{association_class_name}AggregateType" %>
+
+    associations_name = "<%= associations %>"
+    preload :<%= associations %>
+
+    resolve lambda { |obj, args, _ctx|
+      ::Insights::API::Common::GraphQL::AssociationLoader.new(<%= klass_name.constantize %>, "<%= associations %>", args, graphql_options).load(obj)
+    }
+  end
+
 <%   end %>
 <% end %>
 end

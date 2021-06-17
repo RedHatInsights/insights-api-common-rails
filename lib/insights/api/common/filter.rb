@@ -177,6 +177,20 @@ module Insights
           end
         end
 
+        def self.build_filtered_scope(scope, api_version, klass_name, filter)
+          return scope unless filter
+
+          openapi_doc = ::Insights::API::Common::OpenApi::Docs.instance[api_version]
+          openapi_schema_name, = ::Insights::API::Common::GraphQL::Generator.openapi_schema(openapi_doc, klass_name)
+
+          action_parameters = ActionController::Parameters.new(filter)
+          definitions = openapi_doc.definitions
+
+          association_attribute_properties = association_attribute_properties(definitions, action_parameters)
+
+          new(scope, action_parameters, definitions[openapi_schema_name], association_attribute_properties).apply
+        end
+
         def timestamp(k, val)
           if val.kind_of?(Hash)
             val.each do |comparator, value|

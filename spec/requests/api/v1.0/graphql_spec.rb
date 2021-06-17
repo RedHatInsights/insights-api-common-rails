@@ -217,6 +217,100 @@ RSpec.describe Insights::API::Common::GraphQL, :type => :request do
           ]
         }'))
     end
+
+    context "aggregation" do
+      context "total count aggregation" do
+        let(:starts_with) { "source_b" }
+        let(:filter)      { '{ name: { starts_with: "' + starts_with + '" } }' }
+
+        def find_by_name_in(array, name, search_column = 'name')
+          array.detect { |x| x[search_column] == name }
+        end
+
+        it "queries total_count at top level with offset and limit" do
+          post(graphql_endpoint, :headers => headers, :params => { "query" => "
+            {
+              sources(limit:1, offset:0, filter: #{filter}) {
+                name
+              },
+              sources_aggregate(filter: #{filter}) {
+                aggregate {
+                  total_count
+                }
+              }
+            }" })
+
+          source_count = Source.where("lower(name) like ?", "#{starts_with}%").count
+          expect(response.parsed_body["data"]["sources_aggregate"]["aggregate"]["total_count"]).to eq(source_count)
+          expect(response.parsed_body["data"]["sources"].count).to eq(1)
+          expect(response.status).to eq(200)
+        end
+
+        it "queries aggregation on association at first level with offset and limit" do
+          post(graphql_endpoint, :headers => headers, :params => { "query" => "
+            {
+              sources(filter: #{filter}, offset: 1, limit: 2) {
+                name
+                endpoints(offset: 0, limit: 2) {
+                  host
+                  port
+                  role
+                },
+                endpoints_aggregate {
+                  aggregate {
+                    total_count
+                  }
+                },
+              }
+            }" })
+
+
+          source = find_by_name_in(response.parsed_body["data"]["sources"],"source_b2")
+          sources_name = source["name"]
+          endpoints_count = Source.find_by(:name => sources_name).endpoints.count
+          endpoints_aggregate = source["endpoints_aggregate"]["aggregate"]
+          expect(endpoints_aggregate["total_count"]).to eq(endpoints_count)
+          expect(endpoints_aggregate["total_count"]).to eq(3)
+
+          another_source = find_by_name_in(response.parsed_body["data"]["sources"],"source_b3")
+          endpoints_count = Source.find_by(:name => another_source["name"]).endpoints.count
+          endpoints_aggregate = another_source["endpoints_aggregate"]["aggregate"]
+          expect(endpoints_aggregate["total_count"]).to eq(endpoints_count)
+          expect(endpoints_aggregate["total_count"]).to eq(0)
+          expect(response.status).to eq(200)
+        end
+
+        it "queries aggregation on association at second level with offset and limit" do
+          post(graphql_endpoint, :headers => headers, :params => { "query" => '
+            {
+              source_types {
+                vendor
+                product_name
+                sources {
+                  name
+                  endpoints {
+                    host
+                    port
+                    role
+                  },
+                  endpoints_aggregate {
+                    aggregate {
+                      total_count
+                    }
+                  }
+                }
+              }
+          }' })
+
+          source_type = find_by_name_in(response.parsed_body["data"]["source_types"], "redhat", "vendor")
+          source = find_by_name_in(source_type['sources'], "source_a1")
+          endpoints_aggregate = source["endpoints_aggregate"]["aggregate"]
+          endpoints_total_count = Source.find_by(:name => source['name']).endpoints.count
+          expect(endpoints_aggregate["total_count"]).to eq(endpoints_total_count)
+          expect(response.status).to eq(200)
+        end
+      end
+    end
   end
 
   context "supports result sorting" do

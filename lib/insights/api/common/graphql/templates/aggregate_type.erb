@@ -1,0 +1,14 @@
+AggregateType = ::GraphQL::ObjectType.define do
+  name "AggregateType"
+  description "A AggregateType type for aggregation metrics"
+
+  field :total_count, !types.Int do
+    resolve ->(object, _args, _ctx) {
+      if object.kind_of?(QueryRelation) # from nested aggregation
+        object.count # count is array operation
+      else
+        object
+      end
+    }
+  end
+end
