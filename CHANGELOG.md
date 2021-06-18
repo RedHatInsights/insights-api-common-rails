@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.5] - 2021-06-17
+### Added
+-  Support total counts for GraphQL #229 
+
 ## [5.0.4] - 2021-05-25
 ### Fixed
 - Ensure UTF-8 compatibility for ErrorDocument#to_h.to_json #227 
@@ -222,7 +226,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial release to rubygems.org
 
 
-[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.4.freeze...HEAD
+[Unreleased]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.5.freeze...HEAD
+[5.0.5]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.4.freeze...v5.0.5.freeze
 [5.0.4]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.3.freeze...v5.0.4.freeze
 [5.0.3]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.2.freeze...v5.0.3.freeze
 [5.0.2]: https://github.com/RedHatInsights/insights-api-common-rails/compare/v5.0.1.freeze...v5.0.2.freeze
