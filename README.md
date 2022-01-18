@@ -25,7 +25,36 @@ Or install it yourself as:
 
 ## Usage
 
-#### Insights::Api::Common::Filter
+### Insights::Api::Common::AuditLog
+
+Middleware and utility to add entries to an audit log.  By default it logs them to STDOUT,
+but eventually it can be tied into CloudWatch.
+Log entries are formatted into JSON, split by a new-line.
+
+Rails setup:
+```
+class Application < Rails::Application
+  ...
+  require 'insights/api/common'
+  config.middleware.use Insights::API::Common::AuditLog::Middleware
+end
+```
+
+Optionally the logger can be set up with:
+```
+Insights::API::Common::AuditLog.setup(Logger.new)
+```
+
+Setting context of an account (e.g. an authenticated account) can be done with these options
+```
+Insights::API::Common::AuditLog.with_account('12345')
+
+Insights::API::Common::AuditLog.with_account('12345') do
+  # limited context
+end
+```
+
+### Insights::Api::Common::Filter
 
 | Supported Comparators     | Comparator    |
 | ---------------------     | ----------    |

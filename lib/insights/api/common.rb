@@ -1,3 +1,4 @@
+require "insights/api/common/audit_log"
 require "insights/api/common/custom_exceptions"
 require "insights/api/common/engine"
 require "insights/api/common/entitlement"
